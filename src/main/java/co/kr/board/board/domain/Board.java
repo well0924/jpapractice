@@ -1,0 +1,47 @@
+package co.kr.board.board.domain;
+
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Table(name="board")
+@Builder
+@Setter
+@Getter
+@AllArgsConstructor
+@RequiredArgsConstructor
+public class Board {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer boardId;
+	
+	@Column(name = "board_title",nullable = false)
+	private String boardTitle;
+	
+	@Column(name = "board_contents",nullable = false)
+	private String boardContents;
+	
+	@Column(name = "board_author",nullable = false)
+	private String boardAuthor;
+	
+	@Column(name = "read_count",nullable = true)
+	private Integer readCount;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime createdAt;
+}
