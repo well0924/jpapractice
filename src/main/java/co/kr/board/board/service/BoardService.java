@@ -22,7 +22,6 @@ public class BoardService {
 	
 	private final BoardRepository repos;
 	
-	//글 목록o.k
 	@Transactional
 	public List<BoardResponseDto>findAll() throws Exception{
 	
@@ -46,8 +45,7 @@ public class BoardService {
 		
 		return list;
 	}
-	
-	//글 목록o.k
+
 	@Transactional
 	public Page<Board> findAll(Pageable pageable) throws Exception{
 		
@@ -56,14 +54,11 @@ public class BoardService {
 		return articlelist;
 	}
 	
-	
-	//글작성o.k
 	@Transactional
 	public Integer boardsave(BoardRequestDto dto)throws Exception{
 		return repos.save(dto.toEntity()).getBoardId();
 	}
 	
-	//글조회o.k
 	@Transactional
 	public BoardResponseDto getBoard(Integer boardId)throws Exception{
 		
@@ -86,14 +81,12 @@ public class BoardService {
 				.build();
 	}
 	
-	//글 삭제o.k
 	@Transactional
 	public void deleteBoard(Integer boardId)throws Exception{
 		
 		repos.deleteById(boardId);
 	}
 	
-	//글 수정o.k
 	@Transactional
 	public Integer updateBoard(Integer boardId, BoardRequestDto dto)throws Exception{
 		
@@ -105,4 +98,5 @@ public class BoardService {
 		
 		return boardId;
 	}
+	
 }

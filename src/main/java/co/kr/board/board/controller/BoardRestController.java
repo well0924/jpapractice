@@ -1,7 +1,5 @@
 package co.kr.board.board.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -33,8 +31,7 @@ import lombok.extern.log4j.Log4j2;
 public class BoardRestController {
 	
 	private final BoardService service;
-	
-	
+		
 	@GetMapping("/list")
 	public ResponseEntity<Page<Board>>articlelist(@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
@@ -63,7 +60,6 @@ public class BoardRestController {
 		return entity;
 	}
 	
-	//글 작성
 	@PostMapping("/write")
 	public ResponseEntity<Integer>writeproc(@Valid @RequestBody BoardRequestDto dto )throws Exception{
 
@@ -91,7 +87,6 @@ public class BoardRestController {
 		return entity;
 	}
 	
-	//글 조회
 	@GetMapping("/detail/{id}")
 	public ResponseEntity<BoardResponseDto> detailarticle(@PathVariable(value="id")Integer boardId)throws Exception{
 		
@@ -115,7 +110,6 @@ public class BoardRestController {
 		return entity;
 	}
 	
-	//글 삭제
 	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Integer>deletearticle(@PathVariable(value="id")Integer boardId )throws Exception{
 		
@@ -132,7 +126,6 @@ public class BoardRestController {
 		return entity;
 	}
 	
-	//글 수정
 	@PutMapping("/update/{id}")
 	public ResponseEntity<Integer>updatearticle(@PathVariable(value="id")Integer boardId,@Valid @RequestBody BoardRequestDto dto)throws Exception{
 		
@@ -144,11 +137,13 @@ public class BoardRestController {
 			result = service.updateBoard(boardId, dto);
 			
 			if(result > 0) {
-				log.info("result:"+result);
-				log.info("결?과?:"+dto);
+			
 				entity = new ResponseEntity<Integer>(result ,HttpStatus.OK);
+			
 			}else {
+			
 				entity = new ResponseEntity<Integer>(result,HttpStatus.BAD_REQUEST);
+			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -28,7 +28,7 @@ import lombok.Setter;
 public class Board {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer boardId;
 	
 	@Column(name = "board_title",nullable = false)

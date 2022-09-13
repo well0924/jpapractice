@@ -9,5 +9,6 @@ import co.kr.board.board.domain.Board;
 
 public interface BoardRepository extends PagingAndSortingRepository<Board, Integer>{
 	
+	//게시글 목록(페이징)
 	public Page<Board> findAll(Pageable pageable);
 }
