@@ -55,11 +55,16 @@ public class BoardService {
 	@Transactional
 	public BoardResponseDto getBoard(Integer boardId)throws Exception{
 		
-		Optional<Board>articlelist = repos.findById(boardId);
+		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
 		
+		//글 조회
 		Board board = articlelist.get();
-				
-		return BoardResponseDto.builder()
+		
+		//게시글 조회수 증가
+		board.countUp();		
+		
+		return BoardResponseDto
+				.builder()
 				.boardId(board.getBoardId())
 				.boardTitle(board.getBoardTitle())
 				.boardAuthor(board.getBoardAuthor())
@@ -72,7 +77,20 @@ public class BoardService {
 	//글 삭제o.k
 	@Transactional
 	public void deleteBoard(Integer boardId)throws Exception{
+		
 		repos.deleteById(boardId);
 	}
 	
+	//글 수정o.k
+	@Transactional
+	public Integer updateBoard(Integer boardId, BoardRequestDto dto)throws Exception{
+		
+		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
+		
+		Board board = articlelist.get();
+		
+		board.update(dto.getBoardTitle(),dto.getBoardContents(), dto.getBoardAuthor(),dto.getReadCount());
+		
+		return boardId;
+	}
 }

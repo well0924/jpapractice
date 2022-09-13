@@ -33,14 +33,28 @@ public class BoardRestController {
 	@GetMapping("/list")
 	public ResponseEntity<List<BoardResponseDto>>articlelist(@Valid BoardResponseDto dto)throws Exception{
 		
+		ResponseEntity<List<BoardResponseDto>>entity = null;
+		
 		List<BoardResponseDto>list =null;
+		
 		try {
 			list = service.findAll();
 			log.info(list);
+			
+			if(list.size() != 0) {
+			
+				entity= new ResponseEntity<List<BoardResponseDto>>(list,HttpStatus.OK);
+			
+			}else {
+			
+				entity= new ResponseEntity<List<BoardResponseDto>>(HttpStatus.BAD_REQUEST);
+			
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			entity= new ResponseEntity<List<BoardResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<>(list,HttpStatus.OK);
+		return entity;
 	}
 	
 	//글 작성
@@ -54,10 +68,18 @@ public class BoardRestController {
 		try {
 
 			result = service.boardsave(dto);
-		
-			entity = new ResponseEntity<Integer>(result,HttpStatus.OK);
+			
+			if(result > 0) {
+				
+				entity = new ResponseEntity<Integer>(result,HttpStatus.OK);
+			
+			}else if(result < 0) {
+				
+				entity = new ResponseEntity<Integer>(result,HttpStatus.BAD_REQUEST);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			entity = new ResponseEntity<Integer>(result,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return entity;
@@ -81,6 +103,7 @@ public class BoardRestController {
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			entity = new ResponseEntity<BoardResponseDto>(detail,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return entity;
@@ -97,9 +120,35 @@ public class BoardRestController {
 			entity = new ResponseEntity<Integer>(HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
+			entity = new ResponseEntity<Integer>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return entity;
 	}
 	
+	//글 수정
+	@PutMapping("/update/{id}")
+	public ResponseEntity<Integer>updatearticle(@PathVariable(value="id")Integer boardId,@Valid @RequestBody BoardRequestDto dto)throws Exception{
+		
+		ResponseEntity<Integer>entity = null;
+		
+		int result = 0;
+		
+		try {
+			result = service.updateBoard(boardId, dto);
+			
+			if(result > 0) {
+				log.info("result:"+result);
+				log.info("결?과?:"+dto);
+				entity = new ResponseEntity<Integer>(result ,HttpStatus.OK);
+			}else {
+				entity = new ResponseEntity<Integer>(result,HttpStatus.BAD_REQUEST);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			entity = new ResponseEntity<Integer>(result,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return entity;
+	}
 }
