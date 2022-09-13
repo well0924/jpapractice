@@ -1,7 +1,6 @@
 package co.kr.board.board.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardResponseDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
@@ -27,17 +27,22 @@ public class BoardController {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		List<BoardResponseDto> list =null;
+		Page<Board> list =null;
 
 		try {
 		
-			list = service.findAll();
+			list = service.findAll(pageable);
 		
 		} catch (Exception e) {
 			e.printStackTrace();		
 		}
 		
 		mv.addObject("list", list);
+		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
+		mv.addObject("next", pageable.next().getPageNumber());
+		mv.addObject("hasNext", list.hasNext());
+		mv.addObject("hasPrev", list.hasPrevious());
+		
 		mv.setViewName("board/boardlist");
 		
 		return mv;

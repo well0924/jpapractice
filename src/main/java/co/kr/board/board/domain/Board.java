@@ -1,5 +1,6 @@
 package co.kr.board.board.domain;
 
+
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -45,6 +46,9 @@ public class Board extends BaseTime{
 	
 	@Column(name = "read_count",nullable = true)
 	private Integer readCount;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+	private LocalDateTime createdAt;
 	
 	//게시글 수정
 	public void update(String boardTitle,String boardContents,String boardAuthor,Integer readCount) {	
