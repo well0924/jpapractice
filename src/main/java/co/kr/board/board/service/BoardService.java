@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
@@ -44,6 +46,16 @@ public class BoardService {
 		
 		return list;
 	}
+	
+	//글 목록o.k
+	@Transactional
+	public Page<Board> findAll(Pageable pageable) throws Exception{
+		
+		Page<Board> articlelist= repos.findAll(pageable);
+		
+		return articlelist;
+	}
+	
 	
 	//글작성o.k
 	@Transactional

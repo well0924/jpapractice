@@ -4,6 +4,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardRequestDto;
 import co.kr.board.board.domain.dto.BoardResponseDto;
 import co.kr.board.board.service.BoardService;
@@ -31,28 +36,29 @@ public class BoardRestController {
 	
 	
 	@GetMapping("/list")
-	public ResponseEntity<List<BoardResponseDto>>articlelist(@Valid BoardResponseDto dto)throws Exception{
+	public ResponseEntity<Page<Board>>articlelist(@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
-		ResponseEntity<List<BoardResponseDto>>entity = null;
+		ResponseEntity<Page<Board>>entity = null;
 		
-		List<BoardResponseDto>list =null;
+		Page<Board>list =null;
 		
 		try {
-			list = service.findAll();
+			list = service.findAll(pageable);
+			
 			log.info(list);
 			
-			if(list.size() != 0) {
+			if(list != null) {
 			
-				entity= new ResponseEntity<List<BoardResponseDto>>(list,HttpStatus.OK);
+				entity= new ResponseEntity<Page<Board>>(list,HttpStatus.OK);
 			
 			}else {
 			
-				entity= new ResponseEntity<List<BoardResponseDto>>(HttpStatus.BAD_REQUEST);
+				entity= new ResponseEntity<Page<Board>>(HttpStatus.BAD_REQUEST);
 			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			entity= new ResponseEntity<List<BoardResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR);
+			entity= new ResponseEntity<Page<Board>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return entity;
 	}
