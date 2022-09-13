@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import co.kr.board.board.domain.BaseTime;
 import co.kr.board.board.domain.Board;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class BoardRequestDto {
+public class BoardRequestDto extends BaseTime{
 	
 	private Integer boardId;
 	

@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Board {
+public class Board extends BaseTime{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,10 +46,6 @@ public class Board {
 	@Column(name = "read_count",nullable = true)
 	private Integer readCount;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime createdAt;
-	
-	
 	//게시글 수정
 	public void update(String boardTitle,String boardContents,String boardAuthor,Integer readCount) {	
 		this.boardTitle = boardTitle;
@@ -62,6 +58,5 @@ public class Board {
 	public void countUp() {
 		this.readCount ++;
 	}
-	
 	
 }
