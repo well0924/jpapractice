@@ -54,6 +54,26 @@ public class BoardController {
 		return mv;
 	}
 	
+	@GetMapping("/search")
+	public ModelAndView search(Pageable pageable,String keyword)throws Exception{
+		
+		ModelAndView mv = new ModelAndView();
+		
+		Page<Board>searchList = service.findByboardTitleContaining(keyword, pageable);
+		
+		
+		mv.addObject("searchList", searchList);
+		mv.addObject("keyword", keyword);        
+		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());        
+		mv.addObject("next", pageable.next().getPageNumber());        
+		mv.addObject("hasNext", searchList.hasNext());        
+		mv.addObject("hasPrev", searchList.hasPrevious());
+		
+		mv.setViewName("board/boardlist");
+		
+		return mv;
+	}
+	
 	@GetMapping("/detail/{id}")
 	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardResponseDto dto)throws Exception{
 	

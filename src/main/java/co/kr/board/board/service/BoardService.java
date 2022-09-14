@@ -55,7 +55,7 @@ public class BoardService {
 	}
 	
 	
-	//(페이징 검색)
+	//검색
 	@Transactional
 	public Page<Board> findByboardTitleContaining(String keyword,Pageable pageable){
 		
