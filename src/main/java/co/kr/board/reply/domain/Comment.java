@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 public class Comment extends BaseTime{
 	
 	@Id
+	@Column(name="reply_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer replyId;
 	

@@ -14,7 +14,7 @@ public class CommentService {
 	
 	private final CommentRepository repository;
 	
-	public List<Comment>getCommentList(Integer boardId)throws Exception{
-		return repository.getCommentList();
+	public List<Comment>findAll(Integer boardId)throws Exception{
+		return repository.findAll();
 	}
 }
