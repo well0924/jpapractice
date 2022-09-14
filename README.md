@@ -98,7 +98,7 @@
 - 기본적인 crud기능 포스트맨으로 테스트 
 
 
-- [게시판api 문서](https://documenter.getpostman.com/view/18344373/2s7YYsc4Ea)
+- [api 문서](https://documenter.getpostman.com/view/18344373/2s7YYsc4Ea)
 
 
 - 화면 렌더링 작업(목록 화면)
@@ -112,3 +112,7 @@
 - 등록 화면 유효성 검사 및 등록,수정,삭제 기능 
 
 
+- 댓글 기능(목록,작성,삭제) 포스트맨으로 테스트
+
+
+- [api 문서](https://documenter.getpostman.com/view/18344373/2s7YYsc4Ea)

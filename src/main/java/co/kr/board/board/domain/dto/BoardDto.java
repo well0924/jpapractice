@@ -2,7 +2,6 @@ package co.kr.board.board.domain.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import co.kr.board.board.domain.BaseTime;
 import co.kr.board.board.domain.Board;
 import co.kr.board.reply.domain.dto.CommentDto;
-import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

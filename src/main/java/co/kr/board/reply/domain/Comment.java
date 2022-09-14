@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name="reply")
 @Builder
+@Table(name="reply")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment extends BaseTime{
@@ -35,6 +35,7 @@ public class Comment extends BaseTime{
 	
 	@Column(name="reply_contents", nullable = false)
 	private String replyContents;
+	
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;

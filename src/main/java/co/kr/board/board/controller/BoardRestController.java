@@ -106,18 +106,19 @@ public class BoardRestController {
 	}
 	
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Integer>deletearticle(@PathVariable(value="id")Integer boardId )throws Exception{
+	public ResponseEntity<Integer>deletearticle(@PathVariable(value="id")Integer boardId)throws Exception{
 		
 		ResponseEntity<Integer> entity = null;		
 		
 		try {
 			service.deleteBoard(boardId);
-			entity = new ResponseEntity<Integer>(HttpStatus.OK);
+			
+			entity = new ResponseEntity<Integer>(200,HttpStatus.OK);
 			
 		} catch (Exception e) {
 			
 			e.printStackTrace();
-			entity = new ResponseEntity<Integer>(HttpStatus.INTERNAL_SERVER_ERROR);
+			entity = new ResponseEntity<Integer>(500,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return entity;

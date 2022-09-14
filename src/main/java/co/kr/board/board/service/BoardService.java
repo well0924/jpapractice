@@ -31,14 +31,15 @@ public class BoardService {
 		for(Board article : articlelist) {
 			
 			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
-					.builder()
-					.boardId(article.getBoardId())
-					.boardTitle(article.getBoardTitle())
-					.boardContents(article.getBoardContents())
-					.boardAuthor(article.getBoardAuthor())
-					.readCount(article.getReadCount())
-					.createdAt(article.getCreatedAt())
-					.build();
+												.builder()
+												.boardId(article.getBoardId())
+												.boardTitle(article.getBoardTitle())
+												.boardContents(article.getBoardContents())
+												.boardAuthor(article.getBoardAuthor())
+												.readCount(article.getReadCount())
+												.createdAt(article.getCreatedAt())
+												.build();
+			
 			list.add(boardDto);
 		}
 		
@@ -80,14 +81,14 @@ public class BoardService {
 		board.countUp();		
 		
 		return BoardDto.BoardResponseDto
-				.builder()
-				.boardId(board.getBoardId())
-				.boardTitle(board.getBoardTitle())
-				.boardAuthor(board.getBoardAuthor())
-				.boardContents(board.getBoardContents())
-				.readCount(board.getReadCount())
-				.createdAt(board.getCreatedAt())
-				.build();
+			   .builder()
+			   .boardId(board.getBoardId())
+			   .boardTitle(board.getBoardTitle())
+			   .boardAuthor(board.getBoardAuthor())
+			   .boardContents(board.getBoardContents())
+		       .readCount(board.getReadCount())
+			   .createdAt(board.getCreatedAt())
+			   .build();
 	}
 	
 	@Transactional
