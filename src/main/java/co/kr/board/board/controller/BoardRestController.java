@@ -1,5 +1,6 @@
 package co.kr.board.board.controller;
 
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -18,8 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.board.board.domain.Board;
-import co.kr.board.board.domain.dto.BoardRequestDto;
-import co.kr.board.board.domain.dto.BoardResponseDto;
+import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
 
@@ -57,7 +57,7 @@ public class BoardRestController {
 	}
 	
 	@PostMapping("/write")
-	public ResponseEntity<Integer>writeproc(@Valid @RequestBody BoardRequestDto dto)throws Exception{
+	public ResponseEntity<Integer>writeproc(@Valid @RequestBody BoardDto.BoardRequestDto dto)throws Exception{
 
 		ResponseEntity<Integer>entity = null;
 
@@ -83,23 +83,23 @@ public class BoardRestController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ResponseEntity<BoardResponseDto> detailarticle(@PathVariable(value="id")Integer boardId)throws Exception{
+	public ResponseEntity<BoardDto.BoardResponseDto> detailarticle(@PathVariable(value="id")Integer boardId)throws Exception{
 		
-		ResponseEntity<BoardResponseDto>entity = null;
+		ResponseEntity<BoardDto.BoardResponseDto>entity = null;
 		
-		BoardResponseDto detail = null;
+		BoardDto.BoardResponseDto detail = null;
 		
 		try {	   
 			
 			detail = service.getBoard(boardId);
 			
 			if(detail != null) {
-				entity = new ResponseEntity<BoardResponseDto>(detail,HttpStatus.OK);
+				entity = new ResponseEntity<BoardDto.BoardResponseDto>(detail,HttpStatus.OK);
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			entity = new ResponseEntity<BoardResponseDto>(detail,HttpStatus.INTERNAL_SERVER_ERROR);
+			entity = new ResponseEntity<BoardDto.BoardResponseDto>(detail,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return entity;
@@ -124,7 +124,7 @@ public class BoardRestController {
 	}
 	
 	@PutMapping("/update/{id}")
-	public ResponseEntity<Integer>updatearticle(@PathVariable(value="id")Integer boardId,@Valid @RequestBody BoardRequestDto dto)throws Exception{
+	public ResponseEntity<Integer>updatearticle(@PathVariable(value="id")Integer boardId,@Valid @RequestBody BoardDto.BoardRequestDto dto)throws Exception{
 		
 		ResponseEntity<Integer>entity = null;
 		

@@ -11,8 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
-import co.kr.board.board.domain.dto.BoardRequestDto;
-import co.kr.board.board.domain.dto.BoardResponseDto;
+import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.repsoitory.BoardRepository;
 import lombok.AllArgsConstructor;
 
@@ -23,15 +22,15 @@ public class BoardService {
 	private final BoardRepository repos;
 	
 	@Transactional
-	public List<BoardResponseDto>findAll() throws Exception{
+	public List<BoardDto.BoardResponseDto>findAll() throws Exception{
 	
 		List<Board> articlelist= (List<Board>)repos.findAll();
 		
-		List<BoardResponseDto> list = new ArrayList<>();
+		List<BoardDto.BoardResponseDto> list = new ArrayList<>();
 		
 		for(Board article : articlelist) {
 			
-			BoardResponseDto boardDto = BoardResponseDto
+			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
 					.builder()
 					.boardId(article.getBoardId())
 					.boardTitle(article.getBoardTitle())
@@ -65,12 +64,12 @@ public class BoardService {
 	};
 	
 	@Transactional
-	public Integer boardsave(BoardRequestDto dto)throws Exception{
+	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
 		return repos.save(dto.toEntity()).getBoardId();
 	}
 	
 	@Transactional
-	public BoardResponseDto getBoard(Integer boardId)throws Exception{
+	public BoardDto.BoardResponseDto getBoard(Integer boardId)throws Exception{
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
 		
@@ -80,7 +79,7 @@ public class BoardService {
 		//게시글 조회수 증가
 		board.countUp();		
 		
-		return BoardResponseDto
+		return BoardDto.BoardResponseDto
 				.builder()
 				.boardId(board.getBoardId())
 				.boardTitle(board.getBoardTitle())
@@ -98,7 +97,7 @@ public class BoardService {
 	}
 	
 	@Transactional
-	public Integer updateBoard(Integer boardId, BoardRequestDto dto)throws Exception{
+	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto)throws Exception{
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
 				

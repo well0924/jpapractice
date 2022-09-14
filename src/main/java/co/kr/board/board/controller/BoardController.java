@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import co.kr.board.board.domain.Board;
-import co.kr.board.board.domain.dto.BoardRequestDto;
-import co.kr.board.board.domain.dto.BoardResponseDto;
+import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
 
@@ -75,7 +74,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardResponseDto dto)throws Exception{
+	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
 		
@@ -92,7 +91,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/write")
-	public ModelAndView writepage(@Valid @ModelAttribute BoardRequestDto dto,BindingResult binding)throws Exception{
+	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
 		
@@ -107,7 +106,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardResponseDto dto)throws Exception{
+	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		
