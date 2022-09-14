@@ -8,6 +8,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,24 +63,23 @@ public class BoardRestController {
 	}
 	
 	@PostMapping("/write")
-	public ResponseEntity<Integer>writeproc(@Valid @RequestBody BoardRequestDto dto )throws Exception{
+	public ResponseEntity<Integer>writeproc(@Valid @RequestBody BoardRequestDto dto)throws Exception{
 
 		ResponseEntity<Integer>entity = null;
 
 		int result = 0;
 
 		try {
-
-			result = service.boardsave(dto);
-			
-			if(result > 0) {
+				result = service.boardsave(dto);
 				
-				entity = new ResponseEntity<Integer>(result,HttpStatus.OK);
-			
-			}else if(result < 0) {
+				if(result > 0) {
+					
+					entity = new ResponseEntity<Integer>(result,HttpStatus.OK);
 				
-				entity = new ResponseEntity<Integer>(result,HttpStatus.BAD_REQUEST);
-			}
+				}else if(result < 0) {
+					
+					entity = new ResponseEntity<Integer>(result,HttpStatus.BAD_REQUEST);
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 			entity = new ResponseEntity<Integer>(result,HttpStatus.INTERNAL_SERVER_ERROR);

@@ -67,6 +67,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
       <th scope="col">번호</th>
       <th scope="col">제목</th>
       <th scope="col">작성자</th>
+      <th scope="col">조회수</th>
       <th scope="col">등록일</th>
     </tr>
   </thead>
@@ -79,11 +80,14 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
       	</a>
       </td>
       <td>[[${list.boardAuthor}]]</td>
+      <td>[[${list.readCount}]]</td>
       <td>[[${#temporals.format(list.createdAt,'yyyy-MM-dd HH:mm')}]]</td>
     </tr>
   </tbody>
 </table>
-
+<div class="text-right">
+	<a th:href="@{/page/board/write}" class="btn btn-primary">글쓰기</a>
+</div>
 <!-- paging -->
 <div th:if="${!list.isEmpty()}">
   <nav th:with="pageNumber = ${list.pageable.pageNumber},
@@ -92,8 +96,9 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                 startPage = ${T(java.lang.Math).floor(pageNumber / pageSize) * pageSize + 1},
                 tempEndPage = ${startPage + pageSize - 1},
                 endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">	
+
   <ul class="pagination justify-content-center">
-    <li class="page-item disabled" th:classappend="${pageNumber < pageSize} ? 'disabled'">
+    <li class="page-item disabled" th:classappend="${pageNumber < pageSize}">
       <a class="page-link" th:href="@{/page/board/list(page=0)}">&laquo;</a>
     </li>
     <li th:classappend="${list.first} ? 'disabled'" class="page-item">
@@ -102,8 +107,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
             <span class="sr-only">Previous</span>
        </a>
     </li>
-    <li class="page-item active" th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'">
-      <a class="page-link" th:text="${page}" th:href="@{/page/board/list(page=${page - 1})}"></a>
+    <li class="page-item" th:each="page: ${#numbers.sequence(startPage, endPage)}" th:classappend="${page == pageNumber + 1} ? 'active'">
+      <a class="page-link" th:href="@{/page/board/list(page=${page - 1})}">[[${page}]]</a>
     </li>
     
     <li th:classappend="${list.last} ? 'disabled'" class="page-item">
@@ -112,14 +117,15 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
          <span class="sr-only">Next</span>
        </a>
     </li>
-    <li th:classappend=" ${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'" class="page-item">
+    <li th:classappend=" ${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage}" class="page-item">
        <a class="page-link" th:href="@{/page/board/list(page=${totalPages - 1})}">
          <span>&raquo;</span>
          <span class="sr-only">Last</span>
        </a>
     </li>
   </ul>
-  </nav>
+ 
+ </nav>
 </div>
 </body>
 </html>

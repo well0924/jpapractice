@@ -17,6 +17,82 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 </head>
 <body>
+<!-- nav -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Home
+            <span class="visually-hidden">(current)</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Features</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Pricing</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#">Separated link</a>
+          </div>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-sm-2" type="text" placeholder="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>
 
+<form>
+  <fieldset>
+    <legend>글 조회</legend>
+    <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
+    <div class="form-group">
+      <label for="boardTitle" class="form-label mt-4">글 제목</label>
+      <p id="boardTitle">[[${detail.boardTitle}]]</p>
+    </div>
+    <div class="form-group">
+      <label for="boardAuthor" class="form-label mt-4">글 작성자</label>
+      <p id="boardAuthor">[[${detail.boardAuthor}]]</p>
+    </div>
+    <div class="form-group">
+      <label for="boardContents" class="form-label mt-4">글 내용</label>
+      <p id="boardContents">[[${detail.boardContents}]]</p>
+    </div>
+    <button type="button" class="btn btn-primary" onclick='listpage()'>목록</button>
+    <button type="button" class="btn btn-primary" onclick='modifypage()'>수정페이지</button>
+  </fieldset>
+</form>
 </body>
+<script type="text/javascript">
+
+//목록
+function listpage(){
+	location.href='/page/board/list';
+}
+
+//수정페이지
+function modifypage(){
+	
+	let id = $('#boardid').val();
+	
+	location.href='/page/board/modify/'+id;
+}
+</script>
 </html>

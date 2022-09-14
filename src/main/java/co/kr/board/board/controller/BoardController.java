@@ -1,16 +1,21 @@
 package co.kr.board.board.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import co.kr.board.board.domain.Board;
+import co.kr.board.board.domain.dto.BoardRequestDto;
 import co.kr.board.board.domain.dto.BoardResponseDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
@@ -61,15 +66,20 @@ public class BoardController {
 		}
 		
 		mv.addObject("detail", dto);
-		mv.setViewName("board/detail");
+		mv.setViewName("board/detailpage");
 		
 		return mv;
 	}
 	
 	@GetMapping("/write")
-	public ModelAndView writepage()throws Exception{
+	public ModelAndView writepage(@Valid @ModelAttribute BoardRequestDto dto,BindingResult binding)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
+		
+		if(binding.hasErrors()) {
+			mv.setViewName("board/writeboard");
+		}
+		
 		
 		mv.setViewName("board/writeboard");
 	

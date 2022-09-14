@@ -11,4 +11,7 @@ public interface BoardRepository extends PagingAndSortingRepository<Board, Integ
 	
 	//게시글 목록(페이징)
 	public Page<Board> findAll(Pageable pageable);
+	
+	//게시글 목록(페이징 검색)
+	public Page<Board> findByboardTitleContaining(String keyword,Pageable pageable);
 }
