@@ -8,8 +8,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,12 +22,10 @@ import co.kr.board.board.domain.dto.BoardRequestDto;
 import co.kr.board.board.domain.dto.BoardResponseDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @RestController
-@RequestMapping("/api/board/*")
 @AllArgsConstructor
+@RequestMapping("/api/board/*")
 public class BoardRestController {
 	
 	private final BoardService service;
@@ -43,8 +39,6 @@ public class BoardRestController {
 		
 		try {
 			list = service.findAll(pageable);
-			
-			log.info(list);
 			
 			if(list != null) {
 			
@@ -119,7 +113,9 @@ public class BoardRestController {
 		try {
 			service.deleteBoard(boardId);
 			entity = new ResponseEntity<Integer>(HttpStatus.OK);
+			
 		} catch (Exception e) {
+			
 			e.printStackTrace();
 			entity = new ResponseEntity<Integer>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -147,6 +143,7 @@ public class BoardRestController {
 			
 			}
 		} catch (Exception e) {
+			
 			e.printStackTrace();
 			entity = new ResponseEntity<Integer>(result,HttpStatus.INTERNAL_SERVER_ERROR);
 		}

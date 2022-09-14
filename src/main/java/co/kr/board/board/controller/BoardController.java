@@ -28,7 +28,8 @@ public class BoardController {
 	private final BoardService service;
 	
 	@GetMapping("/list")
-	public ModelAndView pagelist(@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+	public ModelAndView pagelist(
+			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -53,7 +54,6 @@ public class BoardController {
 		return mv;
 	}
 	
-	
 	@GetMapping("/detail/{id}")
 	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardResponseDto dto)throws Exception{
 	
@@ -76,7 +76,7 @@ public class BoardController {
 	
 		ModelAndView mv = new ModelAndView();
 		
-		if(binding.hasErrors()) {
+		if(binding.hasErrors()) {//유효성 검사에 문제가 있는 경우
 			mv.setViewName("board/writeboard");
 		}
 		
@@ -87,7 +87,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId,BoardResponseDto dto)throws Exception{
+	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardResponseDto dto)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -102,5 +102,6 @@ public class BoardController {
 		
 		return mv;
 	}
+	
 	
 }

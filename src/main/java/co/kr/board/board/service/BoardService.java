@@ -45,7 +45,7 @@ public class BoardService {
 		
 		return list;
 	}
-
+	
 	@Transactional
 	public Page<Board> findAll(Pageable pageable) throws Exception{
 		
@@ -53,6 +53,16 @@ public class BoardService {
 		
 		return articlelist;
 	}
+	
+	
+	//(페이징 검색)
+	@Transactional
+	public Page<Board> findByboardTitleContaining(String keyword,Pageable pageable){
+		
+		Page<Board>articlelist = repos.findByboardTitleContaining(keyword, pageable);
+		
+		return articlelist;
+	};
 	
 	@Transactional
 	public Integer boardsave(BoardRequestDto dto)throws Exception{
@@ -91,10 +101,27 @@ public class BoardService {
 	public Integer updateBoard(Integer boardId, BoardRequestDto dto)throws Exception{
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
-		
-		Board board = articlelist.get();
-		
-		board.update(dto.getBoardTitle(),dto.getBoardContents(), dto.getBoardAuthor(),dto.getReadCount());
+				
+		articlelist.ifPresent(t->{
+			
+			if(dto.getBoardTitle() != null) {
+				t.setBoardTitle(dto.getBoardTitle());
+			}
+			if(dto.getBoardAuthor() != null) {
+				t.setBoardAuthor(dto.getBoardAuthor());
+			}
+			if(dto.getBoardContents() != null) {
+				t.setBoardContents(dto.getBoardContents());
+			}
+			if(dto.getReadCount() !=null) {
+				t.setReadCount(dto.getReadCount());
+			}
+			if(dto.getCreatedAt() != null) {
+				t.setCreatedAt(dto.getCreatedAt());
+			}
+			
+			this.repos.save(t);
+		});
 		
 		return boardId;
 	}

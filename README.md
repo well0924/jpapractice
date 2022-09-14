@@ -56,7 +56,7 @@
 - Build: Gradle
 
 
-- Templete: Theymleaf
+- Front-end: Theymleaf,Html,CSS,JQuery
 
 
 - TestTool: postman
@@ -80,7 +80,7 @@
 
 - [x] 페이징
 
-- [x] 검색
+- [ ] 검색
 
 - [ ] 댓글
 
@@ -109,4 +109,6 @@
 - 화면 랜더링 작업(등록,수정화면,조회화면)
 
 
- 
+- 등록 화면 유효성 검사 및 등록,수정,삭제 기능 
+
+

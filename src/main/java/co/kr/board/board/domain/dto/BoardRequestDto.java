@@ -56,8 +56,8 @@ public class BoardRequestDto extends BaseTime{
 				.boardTitle(boardTitle)
 				.boardContents(boardContents)
 				.boardAuthor(boardAuthor)
-				.readCount(readCount)
-				.createdAt(createdAt)
+				.readCount(0)
+				.createdAt(LocalDateTime.now())
 				.build();
 	}
 	

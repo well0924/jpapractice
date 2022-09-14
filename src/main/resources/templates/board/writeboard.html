@@ -85,8 +85,34 @@ function main(){
 	location.href="/page/board/list";
 }
 
-//글 작성기능
+//유효성 검사
+function validation(){
+	
+	let title = $('#boardtitle').val();
+	let author = $('#boardwriter').val();
+	let contents = $('#boardcontents').val();
+	
+	if(title.trim().length == 0){
+		alert('제목을 입력해주세요.');
+		return false;
+	}
+	
+	if(author.trim().length == 0){
+		alert('작성자를 입력해주세요.');
+		return false;
+	}
+	
+	if(contents.trim().length == 0){
+		alert('내용을 입력해주세요.');
+		return false;
+	}
+	
+	return true;
+}
+
+//글 작성기능 o.k
 function savepost(){
+	
 	let title = $('#boardtitle').val();
 	let author = $('#boardwriter').val();
 	let contents = $('#boardcontents').val();
@@ -97,17 +123,24 @@ function savepost(){
 			boardContents : contents
 	};
 	
-	$.ajax({
-		url:'/api/board/write',
-		type:'post',
-		data:JSON.stringify(date),
-		dataType:'json',
-		contentType:'application/json; charset=utf-8'
-	}).done(function(resp){
+	if(validation()){
 		
-		alert('글이 작성되었습니다.');
-		location.href='/page/board/list';
-	});
+		$.ajax({
+		
+			url:'/api/board/write',
+			type:'post',
+			data:JSON.stringify(date),
+			dataType:'json',
+			contentType:'application/json; charset=utf-8'
+		
+		}).done(function(resp){
+			
+			console.log(resp);
+			alert('글이 작성되었습니다.');
+			location.href='/page/board/list';
+		
+		});
+	}
 }
 </script>
 </body>
