@@ -32,7 +32,7 @@ public class BoardService {
 			
 			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
 												.builder()
-												.boardId(article.getBoardId())
+												.boardId(article.getId())
 												.boardTitle(article.getBoardTitle())
 												.boardContents(article.getBoardContents())
 												.boardAuthor(article.getBoardAuthor())
@@ -56,17 +56,11 @@ public class BoardService {
 	
 	
 	//검색
-	@Transactional
-	public Page<Board> findByboardTitleContaining(String keyword,Pageable pageable){
-		
-		Page<Board>articlelist = repos.findByboardTitleContaining(keyword, pageable);
-		
-		return articlelist;
-	};
+	
 	
 	@Transactional
 	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
-		return repos.save(dto.toEntity()).getBoardId();
+		return repos.save(dto.toEntity()).getId();
 	}
 	
 	@Transactional
@@ -82,7 +76,7 @@ public class BoardService {
 		
 		return BoardDto.BoardResponseDto
 			   .builder()
-			   .boardId(board.getBoardId())
+			   .boardId(board.getId())
 			   .boardTitle(board.getBoardTitle())
 			   .boardAuthor(board.getBoardAuthor())
 			   .boardContents(board.getBoardContents())

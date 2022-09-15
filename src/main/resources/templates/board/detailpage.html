@@ -83,20 +83,114 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <button type="button" class="btn btn-primary" onclick='modifypage()'>수정페이지</button>
   </fieldset>
 </form>
+<!-- 작성화면 -->
+ <div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">댓글 작성</h3>
+    </div>
+    <div class="box-body">
+    	<div class="form-group">
+            <label for="replywriter">댓글 작성자</label>
+            <input class="form-control" id="replywriter" name="replyWriter" placeholder="댓글 작성자를 입력해주세요">
+        </div>
+        <div class="form-group">
+            <label for="replycontents">댓글 내용</label>
+            <input class="form-control" id="replycontents" name="replyContents" placeholder="댓글 내용을 입력해주세요">
+        </div>
+        <button type="button" onclick="replyInsert()">댓글 작성</button>
+    </div>
+</div>
+<!-- 댓글 화면 -->
+<div id="replies"></div>
 </body>
 <script type="text/javascript">
+//댓글 목록 보이기.
+$(document).ready(function(){
 
-//목록
+});
+//목록가기o.k
 function listpage(){
 	location.href='/page/board/list';
 }
-
-//수정페이지
+//수정페이지 o.k
 function modifypage(){
 	
 	let id = $('#boardid').val();
 	
 	location.href='/page/board/modify/'+id;
+}
+//댓글 목록 출력하기.o.k
+function getCommentlist(){
+	let boardid = $('#boardid').val();
+	console.log(boardid);
+	$.ajax({
+		url:'/api/reply/list/'+boardid,
+		type:'get',
+		dataType:'json',
+		contentType:'application/json; charset=utf-8'
+	}).done(function(resp){
+		let html = "";
+		
+		var count = resp.length;
+		console.log(resp);
+		console.log(count);
+		console.log(resp[1].replyId);
+		
+		//게시물이 있는 경우
+		if(resp.length > 0){
+			for(let i = 0; i<resp.length; i++){
+				 
+				html += "<br>";
+				html += "<div class='mb-2'>";
+                html += "<input type='hidden' id='commentId_"+ resp[i].replyId +"' value='" + resp[i].replyId + "'>"
+                html += "<span style='float:right;' align='right' id='commentDate_"+ resp[i].replyId +"'> " + resp[i].createdAt + " </span>";
+                html += "<div class='mb-1 comment_container' >"
+                html += "<h5 id='commentText_" + resp[i].replyId + "' style='display: inline'>" + resp[i].replyContents +"</h5>";
+                html += "</div>"
+                html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp[i].replyId +"'>댓글 수정 </span>";
+                html += "<span style='cursor: pointer; color: blue' class='reCommentCloseBtn' id='reCommentCloseBtn_"+ resp[i].replyId +"'>댓글 삭제 </span>";
+                html += "<hr>";
+			}	
+		}else{
+			 //댓글이 없는 경우
+	         html += "<div class='mb-2'>";
+             html += "<h6><strong>등록된 댓글이 없습니다.</strong></h6>";
+             html += "</div>";
+		}
+		
+		$('#replies').html(html);
+	}).fail(function(error){
+		console.log(error);
+	});
+}
+
+//댓글 작성
+function replyInsert(){
+	
+	let writer=$('#replywriter').val();
+	let content=$('#replycontents').val();
+	let boardid=$('#boardid').val();
+
+	let data = {			
+		replyWriter : writer,
+		replyContents : content,
+		boardId : boardid
+	}
+	
+	$.ajax({
+	
+		url:'/api/reply/write',
+		type:'post',
+		data:JSON.stringify(data),
+		dataType:'json',
+		contentType:'application/json; charset=utf-8'
+	
+	}).done(function(resp){
+		alert('댓글이 작성 되었습니다.');
+		
+		$('#replywriter').val(" ");
+		$('#replycontents').val(" ");
+	});
 }
 </script>
 </html>

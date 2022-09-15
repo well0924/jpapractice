@@ -10,3 +10,7 @@ UPDATE board SET board_title = 'update title',board_contents='update_contents', 
 
 
 SELECT * FROM reply;
+
+INSERT INTO reply(reply_contents,board_id,created_at)VALUES('test!!!',1,NOW());
+
+SELECT * FROM reply WHERE board_id = 22;

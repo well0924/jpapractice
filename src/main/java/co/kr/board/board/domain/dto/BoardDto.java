@@ -57,7 +57,7 @@ public class BoardDto {
 		//entity변환
 		public Board toEntity() {
 			return Board.builder()
-					.boardId(boardId)
+					.id(boardId)
 					.boardTitle(boardTitle)
 					.boardContents(boardContents)
 					.boardAuthor(boardAuthor)

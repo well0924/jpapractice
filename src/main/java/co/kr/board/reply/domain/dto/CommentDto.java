@@ -32,6 +32,9 @@ public class CommentDto {
 		@NotBlank(message = "내용을 입력해 주세요.")
 		private String replyContents;
 		
+		@NotBlank(message = "작성자를 입력해 주세요")
+		private String replyWriter;
+		
 		private Board board;
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -41,9 +44,10 @@ public class CommentDto {
 			return Comment
 					.builder()
 					.replyId(replyId)
+					.replyWriter(replyWriter)
 					.replyContents(replyContents)
-					.board(board)
 					.createdAt(LocalDateTime.now())
+					.board(board)
 					.build();
 		}
 	}
@@ -56,9 +60,11 @@ public class CommentDto {
 		
 		private Integer replyId;
 		
+		private Integer boardId;
+		
 		private String replyContents;
 		
-		private Integer boardId;
+		private String replyWriter;
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
@@ -67,8 +73,8 @@ public class CommentDto {
 			
 			this.replyId = comment.getReplyId();
 			this.replyContents = comment.getReplyContents();
+			this.replyWriter = comment.getReplyWriter();
 			this.createdAt = comment.getCreatedAt();
-			this.boardId = comment.getBoard().getBoardId();
 		
 		}
 	}

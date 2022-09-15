@@ -1,17 +1,20 @@
 package co.kr.board.reply.service;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
 import co.kr.board.reply.domain.Comment;
 import co.kr.board.reply.domain.dto.CommentDto;
+import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import co.kr.board.reply.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 
@@ -24,34 +27,35 @@ public class CommentService {
 	private final BoardRepository boardrepository;
 	
 	@Transactional
-	public List<CommentDto.CommentResponseDto>findAll(Integer boardId)throws Exception{
+	public List<CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
 		
-		List<Comment>list = repository.findAll();
+		Optional<Board> board = boardrepository.findById(id);
 		
-		List<CommentDto.CommentResponseDto> replylist = new ArrayList<>();
+		Board bb = board.get();
 		
-		for(Comment reply : list) {
-			CommentDto.CommentResponseDto commentdto = CommentDto.CommentResponseDto
-													   .builder()
-													   .replyId(reply.getReplyId())
-													   .replyContents(reply.getReplyContents())
-													   .boardId(reply.getBoard().getBoardId())
-													   .createdAt(reply.getCreatedAt())
-													   .build();
+		List<Comment>comment = repository.findCommentsBoardId(id);
+		List<CommentDto.CommentResponseDto> list = new ArrayList<>();
+		
+		for(Comment co : comment) {
+			CommentDto.CommentResponseDto dto = CommentDto
+					.CommentResponseDto
+					.builder()
+					.boardId(bb.getId())
+					.replyId(co.getReplyId())
+					.replyContents(co.getReplyContents())
+					.replyWriter(co.getReplyWriter())
+					.createdAt(co.getCreatedAt())
+					.build();
 			
-			replylist.add(commentdto);
+			list.add(dto);
 		}
-		
-		return replylist;
-	}
+		return list;
+	};
 	
 	@Transactional
-	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
-		Optional<Board>detailBoard = boardrepository.findById(dto.getBoardId());
+	public Integer replysave(Comment dto)throws Exception{
 		
-		dto.setBoard(detailBoard.get());
-		
-		return repository.save(dto.toEntity()).getReplyId();
+		return null;
 	}
 	
 	@Transactional

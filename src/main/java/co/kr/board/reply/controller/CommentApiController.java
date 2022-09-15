@@ -1,5 +1,6 @@
 package co.kr.board.reply.controller;
 
+
 import java.util.List;
 
 import javax.validation.Valid;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.kr.board.reply.domain.Comment;
 import co.kr.board.reply.domain.dto.CommentDto;
+import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import co.kr.board.reply.service.CommentService;
 import lombok.AllArgsConstructor;
 
@@ -26,29 +29,26 @@ public class CommentApiController {
 	private final CommentService service;
 	
 	@GetMapping("/list/{id}")
-	public ResponseEntity<List<CommentDto.CommentResponseDto>>replylist(@PathVariable("id")Integer boardId)throws Exception{
+	public ResponseEntity<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
+		ResponseEntity<List<CommentDto.CommentResponseDto>>entity = null;
 		
-		ResponseEntity<List<CommentDto.CommentResponseDto>> entity = null;
-		
-		List<CommentDto.CommentResponseDto>replylist = null;
-		
+		List<CommentDto.CommentResponseDto>list = null;
 		try {
-			replylist = service.findAll(boardId);
+			list= service.findCommentsBoardId(boardId);
 			
-			if(replylist != null) {
-				entity = new ResponseEntity<List<CommentDto.CommentResponseDto>>(replylist,HttpStatus.OK);
+			if(list != null) {
+				entity = new ResponseEntity<List<CommentDto.CommentResponseDto>>(list,HttpStatus.OK);
 			}else {
-				entity = new ResponseEntity<List<CommentDto.CommentResponseDto>>(replylist,HttpStatus.BAD_REQUEST);
-			}
+				entity = new ResponseEntity<List<CommentDto.CommentResponseDto>>(list,HttpStatus.BAD_REQUEST);
+			}	
 		} catch (Exception e) {
 			e.printStackTrace();
-			entity = new ResponseEntity<List<CommentDto.CommentResponseDto>>(replylist, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return entity;
 	}
 	
 	@PostMapping("/write")
-	public ResponseEntity<Integer>replywrite(@Valid @RequestBody CommentDto.CommentRequestDto dto)throws Exception{
+	public ResponseEntity<Integer>replywrite(@Valid @RequestBody Comment dto)throws Exception{
 		
 		ResponseEntity<Integer>entity = null;
 		

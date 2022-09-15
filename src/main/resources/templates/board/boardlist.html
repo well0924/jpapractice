@@ -51,7 +51,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
           </div>
         </li>
       </ul>
-      <form action="/page/board/search" method="get" class="d-flex">
+      <form action="/page/board/list" method="get" class="d-flex">
         <input class="form-control me-sm-2" type="text"  placeholder="Search">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
@@ -98,8 +98,11 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                 endPage = (${tempEndPage < totalPages ? tempEndPage : totalPages})">	
 
   <ul class="pagination justify-content-center">
-    <li class="page-item disabled" th:classappend="${pageNumber < pageSize}">
-      <a class="page-link" th:href="@{/page/board/list(page=0)}">&laquo;</a>
+    <li class="page-item" th:classappend="${pageNumber < pageSize}">
+      <a class="page-link" th:href="@{/page/board/list(page=0)}">
+      		<span aria-hidden="true">&laquo;</span>
+      		<span class="sr-only">First</span>	
+      </a>
     </li>
     <li th:classappend="${list.first} ? 'disabled'" class="page-item">
        <a class="page-link" th:href="${list.first} ? '#' : @{/page/board/list(page=${pageNumber - 1})}" aria-label="Previous">

@@ -1,5 +1,6 @@
 package co.kr.board.board.controller;
 
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -47,26 +48,8 @@ public class BoardController {
 		mv.addObject("next", pageable.next().getPageNumber());
 		mv.addObject("hasNext", list.hasNext());
 		mv.addObject("hasPrev", list.hasPrevious());
-		
-		mv.setViewName("board/boardlist");
-		
-		return mv;
-	}
-	
-	@GetMapping("/search")
-	public ModelAndView search(Pageable pageable,String keyword)throws Exception{
-		
-		ModelAndView mv = new ModelAndView();
-		
-		Page<Board>searchList = service.findByboardTitleContaining(keyword, pageable);
-		
-		
-		mv.addObject("searchList", searchList);
-		mv.addObject("keyword", keyword);        
-		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());        
-		mv.addObject("next", pageable.next().getPageNumber());        
-		mv.addObject("hasNext", searchList.hasNext());        
-		mv.addObject("hasPrev", searchList.hasPrevious());
+		mv.addObject("hasNext", list.hasNext());        
+		mv.addObject("hasPrev", list.hasPrevious());
 		
 		mv.setViewName("board/boardlist");
 		
@@ -80,6 +63,7 @@ public class BoardController {
 		
 		try {
 			dto = service.getBoard(boardId);
+						
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
