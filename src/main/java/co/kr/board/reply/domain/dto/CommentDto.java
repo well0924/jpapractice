@@ -50,6 +50,10 @@ public class CommentDto {
 					.board(board)
 					.build();
 		}
+		
+		public void changeBoard(Board board) {
+			this.board = board;
+		}
 	}
 	
 	@Getter

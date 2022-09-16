@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import co.kr.board.board.domain.BaseTime;
 import co.kr.board.board.domain.Board;
@@ -30,7 +31,7 @@ public class Comment extends BaseTime{
 	@Column(name="reply_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer replyId;
-	
+		
 	@Column(name="reply_writer",nullable = false)
 	private String replyWriter;
 	
@@ -40,7 +41,8 @@ public class Comment extends BaseTime{
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="board_id")
 	private Board board;
 	
@@ -51,11 +53,10 @@ public class Comment extends BaseTime{
 		this.replyWriter = replyWriter;
 		this.replyContents = replyContents;
 		this.createdAt = createdAt;
-		
-		if(this.board != null) {
-			
-		}else {
-			this.board = board;
-		}
+		this.board = board;
+	}
+	
+	public void changeBoard(Board board) {
+		this.board = board;
 	}
 }

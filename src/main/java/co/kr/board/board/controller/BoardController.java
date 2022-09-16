@@ -19,7 +19,8 @@ import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
-
+import lombok.extern.log4j.Log4j2;
+@Log4j2
 @Controller
 @AllArgsConstructor
 @RequestMapping("/page/board/*")
@@ -38,7 +39,7 @@ public class BoardController {
 		try {
 		
 			list = service.findAll(pageable);
-		
+			log.info(list);
 		} catch (Exception e) {
 			e.printStackTrace();		
 		}
@@ -46,8 +47,6 @@ public class BoardController {
 		mv.addObject("list", list);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());
-		mv.addObject("hasNext", list.hasNext());
-		mv.addObject("hasPrev", list.hasPrevious());
 		mv.addObject("hasNext", list.hasNext());        
 		mv.addObject("hasPrev", list.hasPrevious());
 		
@@ -63,7 +62,7 @@ public class BoardController {
 		
 		try {
 			dto = service.getBoard(boardId);
-						
+			log.info("result:"+dto);			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

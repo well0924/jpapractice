@@ -32,7 +32,7 @@ public class BoardService {
 			
 			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
 												.builder()
-												.boardId(article.getId())
+												.boardId(article.getBoardId())
 												.boardTitle(article.getBoardTitle())
 												.boardContents(article.getBoardContents())
 												.boardAuthor(article.getBoardAuthor())
@@ -54,13 +54,9 @@ public class BoardService {
 		return articlelist;
 	}
 	
-	
-	//검색
-	
-	
 	@Transactional
 	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
-		return repos.save(dto.toEntity()).getId();
+		return repos.save(dto.toEntity()).getBoardId();
 	}
 	
 	@Transactional
@@ -76,7 +72,7 @@ public class BoardService {
 		
 		return BoardDto.BoardResponseDto
 			   .builder()
-			   .boardId(board.getId())
+			   .boardId(board.getBoardId())
 			   .boardTitle(board.getBoardTitle())
 			   .boardAuthor(board.getBoardAuthor())
 			   .boardContents(board.getBoardContents())
@@ -119,5 +115,6 @@ public class BoardService {
 		
 		return boardId;
 	}
+	
 	
 }

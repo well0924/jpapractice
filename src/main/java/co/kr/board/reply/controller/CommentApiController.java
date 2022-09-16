@@ -2,6 +2,7 @@ package co.kr.board.reply.controller;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -15,21 +16,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.board.reply.domain.Comment;
+import co.kr.board.board.domain.Board;
+import co.kr.board.board.domain.dto.BoardDto;
+import co.kr.board.board.service.BoardService;
 import co.kr.board.reply.domain.dto.CommentDto;
-import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import co.kr.board.reply.service.CommentService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/reply/*")
 public class CommentApiController {
 	
 	private final CommentService service;
+	private final BoardService boardservice;
 	
 	@GetMapping("/list/{id}")
 	public ResponseEntity<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
+		
 		ResponseEntity<List<CommentDto.CommentResponseDto>>entity = null;
 		
 		List<CommentDto.CommentResponseDto>list = null;
@@ -47,11 +53,19 @@ public class CommentApiController {
 		return entity;
 	}
 	
-	@PostMapping("/write")
-	public ResponseEntity<Integer>replywrite(@Valid @RequestBody Comment dto)throws Exception{
+	@PostMapping("/write/{boardid}")
+	public ResponseEntity<Integer>replywrite( @PathVariable("boardid")Integer boardId,@Valid @RequestBody CommentDto.CommentRequestDto dto)throws Exception{
 		
 		ResponseEntity<Integer>entity = null;
 		
+		Optional<BoardDto.BoardResponseDto>detail = Optional.ofNullable(boardservice.getBoard(boardId));
+		
+		log.info("번호:"+detail.get());
+		
+		detail.ifPresent(re->{
+			dto.setBoardId(boardId);
+		});
+		log.info("???:"+dto);
 		int insertresult = 0;
 		
 		try {
@@ -59,14 +73,13 @@ public class CommentApiController {
 			
 			if(insertresult > 0) {
 				entity = new ResponseEntity<Integer>(200,HttpStatus.OK);
-			}else {
+			}else if(insertresult < 0) {
 				entity = new ResponseEntity<Integer>(400,HttpStatus.BAD_REQUEST);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			entity = new ResponseEntity<Integer>(500,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
 		return entity;
 	}
 	

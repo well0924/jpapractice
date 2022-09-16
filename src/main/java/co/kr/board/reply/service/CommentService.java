@@ -40,7 +40,7 @@ public class CommentService {
 			CommentDto.CommentResponseDto dto = CommentDto
 					.CommentResponseDto
 					.builder()
-					.boardId(bb.getId())
+					.boardId(bb.getBoardId())
 					.replyId(co.getReplyId())
 					.replyContents(co.getReplyContents())
 					.replyWriter(co.getReplyWriter())
@@ -53,9 +53,9 @@ public class CommentService {
 	};
 	
 	@Transactional
-	public Integer replysave(Comment dto)throws Exception{
+	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
 		
-		return null;
+		return repository.save(dto.toEntity()).getBoard().getBoardId();
 	}
 	
 	@Transactional
