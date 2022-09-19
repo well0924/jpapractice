@@ -40,20 +40,6 @@ public class CommentDto {
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
-		public Comment toEntity() {
-			return Comment
-					.builder()
-					.replyId(replyId)
-					.replyWriter(replyWriter)
-					.replyContents(replyContents)
-					.createdAt(LocalDateTime.now())
-					.board(board)
-					.build();
-		}
-		
-		public void changeBoard(Board board) {
-			this.board = board;
-		}
 	}
 	
 	@Getter
@@ -72,14 +58,5 @@ public class CommentDto {
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
-		
-		public CommentResponseDto(Comment comment) {
-			
-			this.replyId = comment.getReplyId();
-			this.replyContents = comment.getReplyContents();
-			this.replyWriter = comment.getReplyWriter();
-			this.createdAt = comment.getCreatedAt();
-		
-		}
 	}
 }

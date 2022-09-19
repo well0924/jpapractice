@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import co.kr.board.board.domain.BaseTime;
-import co.kr.board.reply.domain.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

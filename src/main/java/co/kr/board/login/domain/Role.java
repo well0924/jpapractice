@@ -1,4 +1,4 @@
-package co.kr.board.reply.domain;
+package co.kr.board.login.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

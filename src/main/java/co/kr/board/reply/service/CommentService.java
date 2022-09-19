@@ -55,7 +55,11 @@ public class CommentService {
 	@Transactional
 	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
 		
-		return repository.save(dto.toEntity()).getBoard().getBoardId();
+		Comment reply = dtoToEntity(dto);
+		
+		repository.save(reply);
+		
+		return reply.getReplyId();
 	}
 	
 	@Transactional
@@ -63,4 +67,36 @@ public class CommentService {
 		
 		repository.deleteById(replyId);
 	}
+	
+	//entity => dto
+	public Comment dtoToEntity(CommentDto.CommentRequestDto dto){
+		
+		Board board = Board.builder().boardId(dto.getBoardId()).build();
+		
+		Comment comment = Comment
+				.builder()
+				.replyId(dto.getReplyId())
+				.replyWriter(dto.getReplyWriter())
+				.replyContents(dto.getReplyContents())
+				.createdAt(dto.getCreatedAt().now())
+				.board(board)
+				.build();
+		
+		return comment;
+	}
+	
+	//dto => entity
+	public CommentDto.CommentResponseDto entityToDto(Comment comment){
+		
+		CommentDto.CommentResponseDto commentlist = CommentDto.CommentResponseDto
+													.builder()
+													.replyId(comment.getReplyId())
+													.replyContents(comment.getReplyContents())
+													.replyWriter(comment.getReplyWriter())
+													.createdAt(comment.getCreatedAt())
+													.build();	
+		return commentlist;
+	}
+	
+	
 }

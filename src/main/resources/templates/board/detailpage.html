@@ -148,14 +148,15 @@ function getCommentlist(){
 				 
 				html += "<br>";
 				html += "<div class='mb-2'>";
-                html += "<input type='hidden' id='commentId_"+ resp[i].replyId +"' value='" + resp[i].replyId + "'>"
-                html += "<span style='float:right;' align='right' id='commentDate_"+ resp[i].replyId +"'> " + resp[i].createdAt + " </span>";
-                html += "<div class='mb-1 comment_container' >"
-                html += "<h5 id='commentText_" + resp[i].replyId + "' style='display: inline'>" + resp[i].replyContents +"</h5>";
+                	html += "<input type='hidden' id='commentId_"+ resp[i].replyId +"' value='" + resp[i].replyId + "'>"
+                	html += "<span style='float:right;' align='right' id='commentDate_"+ resp[i].replyId +"'> " + resp[i].createdAt + " </span>";
+                	html += "<div class='mb-1 comment_container' >"
+                		html += "<h5 id='commentText_" + resp[i].replyId + "' style='display: inline'>" + resp[i].replyContents +"</h5>";
+                	html += "</div>"
+                	html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp[i].replyId +"'>댓글 수정 </span>";
+                	html +='<button type="button" class="btn btn-primary" onClick="replyDelete('+resp[i].replyId+'\)">'+'삭제'+'</button>'
+                	html += "<hr>";
                 html += "</div>"
-                html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp[i].replyId +"'>댓글 수정 </span>";
-                html += "<span style='cursor: pointer; color: blue' class='reCommentCloseBtn' id='reCommentCloseBtn_"+ resp[i].replyId +"'>댓글 삭제 </span>";
-                html += "<hr>";
 			}	
 		}else{
 			 //댓글이 없는 경우
@@ -196,7 +197,30 @@ function replyInsert(){
 		
 		$('#replywriter').val(" ");
 		$('#replycontents').val(" ");
+		getCommentlist();
 	});
+}
+
+//댓글 삭제
+function replyDelete(replyId){
+	
+	let Isconfirm = confirm('삭제하겠습니까?');
+	
+	if(Isconfirm){
+		$.ajax({
+			url:'/api/reply/delete/'+replyId,
+			type:'delete',
+			data:null,
+			dataType:'json',
+			contentType:'application/json; charset=utf-8'
+		}).done(function(resp){
+			
+			alert("삭제 되었습니다.");
+			
+			$('#replies').empty();
+			getCommentlist();
+		});	
+	}
 }
 </script>
 </html>
