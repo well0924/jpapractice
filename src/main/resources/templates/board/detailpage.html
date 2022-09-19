@@ -210,13 +210,24 @@ function replyDelete(replyId){
 		$.ajax({
 			url:'/api/reply/delete/'+replyId,
 			type:'delete',
-			data:null,
 			dataType:'json',
 			contentType:'application/json; charset=utf-8'
+			
 		}).done(function(resp){
+			console.log(resp);
 			
 			alert("삭제 되었습니다.");
 			
+			$('#replies').empty();
+			
+			getCommentlist();
+		}).fail(function(error){
+			
+			console.log(error);
+			$('#replies').empty();
+			getCommentlist();
+		}).always(function(state){
+			alert("삭제 되었습니다.");
 			$('#replies').empty();
 			getCommentlist();
 		});	

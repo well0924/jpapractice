@@ -56,9 +56,14 @@ public class Board extends BaseTime{
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 	
+	//회원
+	
+	
+	//댓글
 	@JsonIgnore
 	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
 	private List<Comment>commentlist;
+	
 	
 	//게시글 수정
 	public void update(String boardTitle,String boardContents,String boardAuthor,Integer readCount) {	

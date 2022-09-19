@@ -3,7 +3,8 @@
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorator="/layout/mainlayout">
 <head>
 <meta charset="UTF-8">
 <title>게시글 목록</title>
@@ -20,7 +21,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!-- nav -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
+    <a class="navbar-brand" th:href="@{/page/board/list}">Navbar</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -58,7 +59,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     </div>
   </div>
 </nav>
-
+<th:block layout:fragment="contents">
 <!-- 테이블목록 -->
 <h1>게시물 목록</h1>
 <table class="table">
@@ -127,8 +128,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
        </a>
     </li>
   </ul>
- 
  </nav>
 </div>
+</th:block>
 </body>
 </html>
