@@ -17,6 +17,7 @@ import co.kr.board.board.domain.BaseTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -27,6 +28,7 @@ import lombok.ToString;
 @ToString
 @Table(name="member")
 @AllArgsConstructor
+@NoArgsConstructor
 public class Member extends BaseTime{
 	
 	@Id

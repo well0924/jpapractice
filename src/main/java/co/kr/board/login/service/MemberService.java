@@ -1,5 +1,8 @@
 package co.kr.board.login.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -7,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.dto.MemberDto;
+import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 
@@ -18,9 +22,32 @@ public class MemberService {
 	
 	private final BCryptPasswordEncoder encoder;
 	
+	@Transactional
+	public List<MemberDto.MemeberResponseDto>findAll()throws Exception{
+		List<Member>memberlist = repository.findAll();
+
+		List<MemberDto.MemeberResponseDto> list = new ArrayList<>();
+		
+		for(Member member : memberlist) {
+			MemeberResponseDto dto = MemberDto.MemeberResponseDto
+									.builder()
+									.useridx(member.getUseridx())
+									.userid(member.getUserid())
+									.membername(member.getMembername())
+									.password(member.getPassword())
+									.useremail(member.getUseremail())
+									.createdAt(member.getCreatedAt())
+									.role(member.getRole())
+									.build();
+			
+			list.add(dto);
+		}
+		return list;
+	}
+	
 	//회원가입
 	@Transactional
-	public int memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
+	public Integer memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
 		//비밀번호 암호화
 		dto.setPassword(encoder.encode(dto.getPassword()));
 		
@@ -31,7 +58,6 @@ public class MemberService {
 		return member.getUseridx();
 	}
 	
-	//아이디 중복기능
 	@Transactional
 	public Boolean checkmemberEmailDuplicate(String userid)throws Exception{
 		return repository.existsByUserid(userid);

@@ -61,7 +61,7 @@ public class MemberDto {
 		private String password;
 		private String membername;
 		private String useremail;
-
+		private Role role;
 		@JsonFormat(pattern = "yyyy-mm-dd HH:mm")
 		private LocalDateTime createdAt;
 		
