@@ -1,12 +1,16 @@
 package co.kr.board.login.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.dto.MemberDto;
@@ -63,7 +67,7 @@ public class MemberService {
 		return repository.existsByUserid(userid);
 	}
 	
-	//dto->entity
+	
 	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
 		
 		Member member = Member
@@ -77,20 +81,20 @@ public class MemberService {
 				.build();
 		
 		return member;
-	}	
-	
-	//entity->dto
-	public MemberDto.MemeberResponseDto entityToDto(Member member){
-		
-		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
-													.builder()
-													.useridx(member.getUseridx())
-													.userid(member.getUserid())
-													.membername(member.getMembername())
-													.password(member.getPassword())
-													.useremail(member.getUseremail())
-													.createdAt(member.getCreatedAt())
-													.build();
-		return memberlist;
 	}
+	
+	
+	// 회원가입 시, 유효성 체크
+	@Transactional
+    public Map<String, String> validateHandling(Errors errors) {
+        Map<String, String> validatorResult = new HashMap<>();
+
+        for (FieldError error : errors.getFieldErrors()) {
+            String validKeyName = String.format("valid_%s", error.getField());
+            validatorResult.put(validKeyName, error.getDefaultMessage());
+        }
+
+        return validatorResult;
+    }
+
 }

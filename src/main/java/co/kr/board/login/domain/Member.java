@@ -52,6 +52,6 @@ public class Member extends BaseTime{
 	@Column(nullable = false)
 	private Role role;
 	
-	@JsonFormat(pattern = "yyyy-mm-dd HH:mm")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 }
