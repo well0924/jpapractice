@@ -10,4 +10,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 	
 	Optional<Member>findByUserid(String userid);
 	
+	//회원 중복기능
+	Boolean existsByUserid(String usereid);
 }

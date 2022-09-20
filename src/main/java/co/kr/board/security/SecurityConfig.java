@@ -38,9 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.and()
 		.formLogin()
 		.loginPage("/page/login/loginpage")
+		.loginProcessingUrl("/loginProc")
 		.disable()
 		.logout()
-		.logoutSuccessUrl("/")                
+		.logoutSuccessUrl("/page/board/list")                
 		.invalidateHttpSession(true);
 	}
 	

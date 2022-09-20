@@ -22,4 +22,12 @@ public class LoginController {
 		mv.setViewName("login/loginpage");
 		return mv;
 	}
+	
+	@GetMapping("/memberjoin")
+	public ModelAndView mebmerjoin()throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		
+		return mv;
+	}
 }

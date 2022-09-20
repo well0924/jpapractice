@@ -18,6 +18,7 @@ public class MemberService {
 	
 	private final BCryptPasswordEncoder encoder;
 	
+	//회원가입
 	@Transactional
 	public int memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
 		//비밀번호 암호화
@@ -28,6 +29,12 @@ public class MemberService {
 		repository.save(member);
 		
 		return member.getUseridx();
+	}
+	
+	//아이디 중복기능
+	@Transactional
+	public Boolean checkmemberEmailDuplicate(String userid)throws Exception{
+		return repository.existsByUserid(userid);
 	}
 	
 	//dto->entity
