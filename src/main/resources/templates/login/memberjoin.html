@@ -27,20 +27,20 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="mb-3 abc">
         <input type="email" class="form-control mx-1 overlap" id="userId" name="userid" placeholder="아이디를 입력해 주세요">
         <input class="btn btn-outline-primary btn-sm idCheck mx-1" type="button" id="usernameOverlay" onclick="usernameCheck()" value="중복 체크"/>
-        <input class="btn btn-outline-success btn-sm reType" type="button" id="resetUsername" onclick="reUsername()" disabled value="다시입력"/>
+        <input class="btn btn-outline-success btn-sm reType" type="button" id="resetUsername" onclick="reUsername()" value="다시입력"/>
         <div id="valid_userid"></div>
         <div id="duplicatedid"></div>
     </div>
 
     <div class="mb-3">
         <label th:for="pwd">패스워드</label>
-        <input onchange="pwSame()" type="password" class="form-control" name="password" id="pwd" placeholder="비밀번호를 입력해 주세요">
+        <input type="password" class="form-control" name="password" id="pwd" placeholder="비밀번호를 입력해 주세요" autocomplete="off">
     	<div id="valid_password"></div>
     </div>
 
     <div class="mb-3">
         <label for="password_check">패스워드 확인</label>
-        <input onkeyup="pwSame()" type="password" class="form-control" id="password_check"  placeholder="비밀번호를 입력해 주세요">
+        <input onchange="pwSame()" type="password" class="form-control" id="pwd_check"  placeholder="비밀번호를 입력해 주세요" autocomplete="off">
         <span id="pw_check_msg"></span>       
     </div>
 
@@ -65,29 +65,54 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 </form>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 <script type="text/javascript">
-//아이디 중복처리
+function validation(){
+	let userid = $('#userId').val();
+	
+	if(userid.trim()== 0){
+		$('#duplicatedid').text('아이디를 입력해 주세요.');
+		$('#duplicatedid').css('color','red');
+		return false;
+	}
+	return true;
+}
+
 function usernameCheck(){
 	let userid = $('#userId').val();
 	
-	$.ajax({
-		url:'/api/login/logincheck/'+ userid,
-		type:'get',
-		dataType:'json',
-		contentType:'application/json; charset = utf-8'	
-	}).done(function(resp){
-		console.log(resp);
-		if(resp == true){
-			$('#duplicatedid').text('사용가능!');
-			$('#duplicatedid').css('color','blue');
-		}
-	}).fail(function(error){
-		$('#duplicatedid').text('아이디 중복!');
-		$('#duplicatedid').css('color','red');
-	});
+	if(validation()){
+		$.ajax({
+			url:'/api/login/logincheck/'+ userid,
+			type:'get',
+			dataType:'json',
+			contentType:'application/json; charset = utf-8'	
+		}).done(function(resp){
+			console.log(resp);
+			if(resp == true){
+				$('#duplicatedid').text('사용가능!');
+				$('#duplicatedid').css('color','blue');
+			}
+		}).fail(function(error){
+			$('#duplicatedid').text('아이디 중복!');
+			$('#duplicatedid').css('color','red');
+		});	
+	}
 }
-
-//비밀번호 일치여부
-
+//아이디 재입력
+function reUsername(){
+	let id =$('#userId').val(' ');
+}
+function pwSame(){
+	let pwd = $('#pwd').val();
+	let pwdcheck = $('#pwd_check').val();
+	
+	if(pwd.trim()==pwdcheck.trim()){
+		$('#pw_check_msg').text('비밀번호가 일치 합니다.');	
+		$('#pw_check_msg').css('color','blue');
+	}else{
+		$('#pw_check_msg').text('비밀번호가 일치하지 않습니다.');	
+		$('#pw_check_msg').css('color','red');
+	}
+}
 //회원가입
 function signUp(){
 	let id= $('#userId').val();
@@ -99,7 +124,7 @@ function signUp(){
 			userid : id,
 			password : pw,
 			useremail : email,
-			username : name
+			membername : name
 	};
 	
 	$.ajax({
@@ -123,8 +148,8 @@ function signUp(){
 			}else{
 				$('#valid_password').text('');
 			}
-			if(resp.data.hasOwnProperty('valid_username')){
-				$('#valid_username').text(resp.data.valid_username);
+			if(resp.data.hasOwnProperty('valid_membername')){
+				$('#valid_username').text(resp.data.valid_membername);
 				$('#valid_username').css('color','red');
 			}else{
 				$('#valid_username').text('');

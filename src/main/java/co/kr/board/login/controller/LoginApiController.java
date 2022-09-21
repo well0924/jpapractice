@@ -74,7 +74,6 @@ public class LoginApiController {
 		return entity;
 	}
 	
-	//회원 가입
 	@PostMapping("/memberjoin")
 	public Response<?>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 		
