@@ -20,8 +20,8 @@ public class MemberDto {
 	
 	@Getter
 	@Setter
-	@ToString
 	@Builder
+	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class MemberRequestDto{
@@ -53,6 +53,7 @@ public class MemberDto {
 	@Getter
 	@Builder
 	@ToString
+	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class MemeberResponseDto{
 		

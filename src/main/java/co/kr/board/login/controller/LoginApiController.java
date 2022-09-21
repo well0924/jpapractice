@@ -35,16 +35,21 @@ public class LoginApiController {
 		Boolean checkreuslt = null;
 		
 		try {
+			
 			checkreuslt = service.checkmemberEmailDuplicate(username);
 			
 			if(checkreuslt == true) {//아이디 중복
+			
 				new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
+			
 			}else if(checkreuslt ==false) {//사용가능한 아이디
+			
 				new Response<Boolean>(HttpStatus.OK.value(),true);
+			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-				new Response<Boolean>(HttpStatus.BAD_GATEWAY.value(),false);
+			new Response<Boolean>(HttpStatus.BAD_GATEWAY.value(),false);
 		}
 		
 		return new Response<Boolean>(HttpStatus.OK.value(),true);
@@ -59,12 +64,18 @@ public class LoginApiController {
 			list = service.findAll();
 			
 			if(list != null) {
+				
 				new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
+			
 			}else if(list == null){
+				
 				new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
+			
 			}
 		} catch (Exception e) {
+			
 			e.printStackTrace();
+			
 			new Response<List<MemeberResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
 		}
 		return new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
@@ -79,8 +90,10 @@ public class LoginApiController {
 			dto =service.getMember(useridx);
 			
 			if(dto != null) {
+				
 				new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
 			}else if(dto == null) {
+				
 				new Response<MemberDto.MemeberResponseDto>(HttpStatus.BAD_REQUEST.value(),dto);
 			}
 		} catch (Exception e) {
@@ -98,7 +111,9 @@ public class LoginApiController {
 		
 		//유효성 검사
 		if(bindingresult.hasErrors()) {
+			
 			Map<String, String> validatorResult = service.validateHandling(bindingresult);
+			
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
 		}
 		
@@ -108,7 +123,9 @@ public class LoginApiController {
 			
 			if(joinresult >0) {		
 				new Response<Integer>(HttpStatus.OK.value(),200);
+			
 			}else if(joinresult < 0) {
+				
 				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
 			}
 		} catch (Exception e) {
@@ -139,19 +156,23 @@ public class LoginApiController {
 		
 		//유효성 검사
 		if(bindingresult.hasErrors()) {
+			
 			Map<String, String> validatorResult = service.validateHandling(bindingresult);
+			
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
 		}
 		
-		try {
+		try {			
 			updateresult = service.memberupdate(useridx, dto);
 			
 			if(updateresult>0) {			
 				new Response<Integer>(HttpStatus.OK.value(),200);
+			
 			}else if(updateresult < 0) {
 				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
+			
 			}
-		} catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
 		}

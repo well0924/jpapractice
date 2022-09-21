@@ -1,5 +1,7 @@
 package co.kr.board.config.security.service;
 
+import java.util.Optional;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,14 +23,16 @@ public class CustomUserDetailService implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.info("userdetailservice-------");
-		Member member = repository.findByUsername(username);
 		
-		if(member == null) {
-			new UsernameNotFoundException("조회된 회원이 없습니다.");
-		}
+		Optional<Member> member = Optional.ofNullable(repository.findByUsername(username)
+				.orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
+		
+		Member userdetail = member.get();
+		
 		log.info(member.toString());
-		log.info(member.getRole());
-		return new CustomUserDetails(member);
+		log.info(userdetail.getRole());
+		
+		return new CustomUserDetails(userdetail);
 	}
 
 }
