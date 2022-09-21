@@ -18,36 +18,38 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 </head>
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
-<div class="row">
-	<div class="col-sm-3"></div>
-	<div class="col-sm-6">
-		<div class="card text-center">
-		  <div class="card-header">로그인</div>
-		  <div class="card-body">
-		    <h5 class="card-title">Log in</h5>
-		    <form id="loginform" action="/loginProc" method="post">
-		    	<div class="form-group">
-		    		<label for="user_id">아이디</label>
-		    		<input type="text" id="user_id" name="username" class="form-control"/> 
-		    	</div>
-		    	<div class="form-group">
-		    		<label for="user_pw">비밀번호</label>
-		    		<input type="password" id="user_pw" name="password" class="form-control" autocomplete=off/> 
-		    	</div>
-		    	<button type="submit" class="btn btn-primary">로그인</button>
-		    </form>
-		  </div>
-		  <div class="card-footer text-muted">
-		    <a th:href="@{/page/login/memberjoin}">회원가입</a>
-		    <br></br>
-		    <a>아이디 찾기</a>
-		    <br></br>
-		    <a>비밀번호찾기</a>
-		  </div>
-		</div>
-	</div>
-	<div class="col-sm-3"></div>
+<div class="card text-center">
+  <div class="card-header">
+    회원탈퇴
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">회원탈퇴</h5>
+    <p class="card-text">아이디를 입력해 주세요.</p>
+    <input type="text" name="userid" id="deleteid">
+    <br></br>
+    <button class="btn btn-primary" onclick="memberdelete()">회원탈퇴</button>
+  </div>
 </div>
+<script type="text/javascript">
+function memberdelete(){
+	
+	let id = $('#deleteid').val();
+	
+	const isconfirm = confirm('탈퇴하시겠습니까?');
+	
+	if(isconfirm){
+		$.ajax({
+			url:'/api/login/memberdelete/'+id+'/member',
+			type:'delete',
+			data:null,
+			contentType:'application/json; charset= utf-8'
+		}).done(function(resp){
+			alert('탈퇴되었습니다.');
+			location.href='/page/board/list';
+		});	
+	}
+}
+</script>   
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

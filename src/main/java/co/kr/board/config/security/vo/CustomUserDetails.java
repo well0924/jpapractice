@@ -1,4 +1,4 @@
-package co.kr.board.security.vo;
+package co.kr.board.config.security.vo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,14 +7,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import co.kr.board.login.domain.Member;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class CustomUserDetails implements UserDetails{
 
 	private static final long serialVersionUID = 1L;
 
-	private final Member member;
+	private Member member;
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -25,7 +23,11 @@ public class CustomUserDetails implements UserDetails{
 		 
 		return collectors;
 	}
-
+	
+	public CustomUserDetails(Member member) {
+		this.member = member;
+	}
+	
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub

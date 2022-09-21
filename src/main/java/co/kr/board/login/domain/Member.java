@@ -54,4 +54,15 @@ public class Member extends BaseTime{
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
+	
+	
+	//회원정보 수정.
+	public void memberupdate(String userid, String password,String membername,String useremail) {
+		
+		this.userid = userid;
+		this.password = password;
+		this.membername = membername;
+		this.useremail = useremail;
+	
+	}
 }

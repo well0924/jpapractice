@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.Board;
-import co.kr.board.reply.domain.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

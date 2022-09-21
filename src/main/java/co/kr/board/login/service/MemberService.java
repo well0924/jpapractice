@@ -1,9 +1,11 @@
 package co.kr.board.login.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -13,6 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
 import co.kr.board.login.domain.Member;
+import co.kr.board.login.domain.Role;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.repository.MemberRepository;
@@ -49,7 +52,23 @@ public class MemberService {
 		return list;
 	}
 	
-	//회원가입
+	@Transactional
+	public MemberDto.MemeberResponseDto getMember(Integer useridx)throws Exception{
+		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다.")));
+		
+		Member member = memberdetail.get();
+		return MemberDto.MemeberResponseDto
+				.builder()
+				.useridx(useridx)
+				.userid(member.getUserid())
+				.password(member.getPassword())
+				.membername(member.getMembername())
+				.useremail(member.getUseremail())
+				.role(member.getRole())
+				.createdAt(member.getCreatedAt())
+				.build();
+	}
+	
 	@Transactional
 	public Integer memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
 		//비밀번호 암호화
@@ -63,28 +82,44 @@ public class MemberService {
 	}
 	
 	@Transactional
+	public void memberdelete(String userid)throws Exception{
+		 repository.deleteByUserid(userid);
+	}
+	
+	//회원정보수정
+	@Transactional
+	public Integer memberupdate(Integer useridx,MemberDto.MemberRequestDto dto)throws Exception{
+		
+		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new IllegalArgumentException("조회된 회원이 없습니다.")));
+		
+		memberdetail.ifPresent(member -> {
+			
+			if(dto.getUserid() !=null) {
+				member.setUserid(dto.getUserid());
+			}
+			
+			if(dto.getMembername() !=null) {
+				member.setMembername(dto.getMembername());
+			}
+			
+			if(dto.getPassword()!=null) {
+				member.setPassword(encoder.encode(dto.getPassword()));
+			}
+			if(dto.getUseremail()!=null) {
+				member.setUseremail(dto.getUseremail());
+			}
+			
+			this.repository.save(member);
+		});
+		
+		return useridx;
+	}
+	
+	@Transactional
 	public Boolean checkmemberEmailDuplicate(String userid)throws Exception{
 		return repository.existsByUserid(userid);
 	}
-	
-	
-	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
 		
-		Member member = Member
-				.builder()
-				.userid(dto.getUserid())
-				.useridx(dto.getUseridx())
-				.membername(dto.getMembername())
-				.password(dto.getPassword())
-				.useremail(dto.getUseremail()).role(dto.getRole().USER)
-				.createdAt(dto.getCreatedAt().now())
-				.build();
-		
-		return member;
-	}
-	
-	
-	// 회원가입 시, 유효성 체크
 	@Transactional
     public Map<String, String> validateHandling(Errors errors) {
 		
@@ -97,5 +132,37 @@ public class MemberService {
 
         return validatorResult;
     }
-
+	
+	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
+		
+		dto.getCreatedAt();
+		dto.getRole();
+		
+		Member member = Member
+				.builder()
+				.userid(dto.getUserid())
+				.useridx(dto.getUseridx())
+				.membername(dto.getMembername())
+				.password(dto.getPassword())
+				.useremail(dto.getUseremail()).role(Role.USER)
+				.createdAt(LocalDateTime.now())
+				.build();
+		
+		return member;
+	}
+	
+	public MemberDto.MemeberResponseDto entityToDto(Member member){
+		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
+												.builder()
+												.useridx(member.getUseridx())
+												.userid(member.getUserid())
+												.password(member.getPassword())
+												.membername(member.getMembername())
+												.useremail(member.getUseremail())
+												.role(member.getRole())
+												.createdAt(LocalDateTime.now())
+												.build();
+		return memberlist;
+	}
+	
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.kr.board.config.Response;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
-import co.kr.board.login.domain.dto.Response;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
 
@@ -31,31 +30,28 @@ public class LoginApiController {
 	private final MemberService service;
 	
 	@GetMapping("/logincheck/{id}")
-	public ResponseEntity<Boolean>idcheck(@PathVariable(value="id")String userid)throws Exception{
-		
-		ResponseEntity<Boolean>entity = null;
-		
+	public Response<Boolean>idcheck(@PathVariable(value="id")String userid)throws Exception{
+				
 		Boolean checkreuslt = null;
 		
 		try {
 			checkreuslt = service.checkmemberEmailDuplicate(userid);
 			
 			if(checkreuslt == true) {//아이디 중복
-				entity = new ResponseEntity<Boolean>( false ,HttpStatus.BAD_REQUEST);
+				new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
 			}else if(checkreuslt ==false) {//사용가능한 아이디
-				entity = new ResponseEntity<Boolean>( true ,HttpStatus.OK);
+				new Response<Boolean>(HttpStatus.OK.value(),true);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			entity = new ResponseEntity<Boolean>(false,HttpStatus.BAD_GATEWAY);
+				new Response<Boolean>(HttpStatus.BAD_GATEWAY.value(),false);
 		}
 		
-		return entity;
+		return new Response<Boolean>(HttpStatus.OK.value(),true);
 	}
 	
 	@GetMapping("/list")
-	public ResponseEntity<List<MemberDto.MemeberResponseDto>>memberlist()throws Exception{
-		ResponseEntity<List<MemberDto.MemeberResponseDto>>entity = null;
+	public Response<List<MemberDto.MemeberResponseDto>>memberlist()throws Exception{
 		
 		List<MemberDto.MemeberResponseDto>list =null;
 		
@@ -63,16 +59,38 @@ public class LoginApiController {
 			list = service.findAll();
 			
 			if(list != null) {
-				entity = new ResponseEntity<List<MemeberResponseDto>>(list,HttpStatus.OK);
+				new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
 			}else if(list == null){
-				entity = new ResponseEntity<List<MemeberResponseDto>>(list,HttpStatus.BAD_REQUEST);
+				new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			entity = new ResponseEntity<List<MemeberResponseDto>>(list,HttpStatus.INTERNAL_SERVER_ERROR);
+			new Response<List<MemeberResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
 		}
-		return entity;
+		return new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
 	}
+	
+	@GetMapping("/detailmember/{idx}/member")
+	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable("idx")Integer useridx)throws Exception{
+		
+		MemberDto.MemeberResponseDto dto = null;
+		
+		try {
+			dto =service.getMember(useridx);
+			
+			if(dto != null) {
+				new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
+			}else if(dto == null) {
+				new Response<MemberDto.MemeberResponseDto>(HttpStatus.BAD_REQUEST.value(),dto);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			new Response<MemberDto.MemeberResponseDto>(HttpStatus.INTERNAL_SERVER_ERROR.value(),dto);
+		}
+		
+		return new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
+	}
+	
 	
 	@PostMapping("/memberjoin")
 	public Response<?>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
@@ -84,46 +102,61 @@ public class LoginApiController {
 			Map<String, String> validatorResult = service.validateHandling(bindingresult);
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
 		}
+		
 		//회원가입
 		try {
 			joinresult = service.memberjoin(dto);
+			
+			if(joinresult >0) {		
+				new Response<Integer>(HttpStatus.OK.value(),200);
+			}else if(joinresult < 0) {
+				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	
-		return new Response<Integer>(HttpStatus.OK.value(),1);
+		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 	
-	//회원탈퇴
 	@DeleteMapping("/memberdelete/{idx}/member")
-	public ResponseEntity<Integer>memberdelete()throws Exception{
-		
-		ResponseEntity<Integer>entity = null;
-		
-		int deleteresult = 0;
-		
-		try {
+	public Response<String>memberdelete(@PathVariable("idx")String userid)throws Exception{
+				
+		try {		
+			service.memberdelete(userid);
 			
+			new Response<>(HttpStatus.OK.value(),"delete");	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return entity;
+		return new Response<>(HttpStatus.OK.value(),"delete");
 	}
 	
 	//회원수정
 	@PutMapping("/memberupdate/{idx}/member")
-	public ResponseEntity<Integer>memberupdate(@Valid @RequestBody MemberDto.MemberRequestDto dto)throws Exception{
-		
-		ResponseEntity<Integer>entity = null;
-		
+	public Response<?>memberupdate(@PathVariable("idx")Integer useridx,@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
+				
 		int updateresult = 0;
 		
+		//유효성 검사
+		if(bindingresult.hasErrors()) {
+			Map<String, String> validatorResult = service.validateHandling(bindingresult);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
+		}
+		
 		try {
+			updateresult = service.memberupdate(useridx, dto);
 			
+			if(updateresult>0) {			
+				new Response<Integer>(HttpStatus.OK.value(),200);
+			}else if(updateresult < 0) {
+				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
 		}
-		return entity;
+		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 }

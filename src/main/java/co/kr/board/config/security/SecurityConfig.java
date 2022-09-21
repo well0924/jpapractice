@@ -1,27 +1,37 @@
-package co.kr.board.security;
+package co.kr.board.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import lombok.RequiredArgsConstructor;
+import co.kr.board.config.security.service.CustomUserDetailService;
+import lombok.AllArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
+	
+	private final CustomUserDetailService service;
 	
 	@Bean    
 	public BCryptPasswordEncoder encoder() {   
 		return new BCryptPasswordEncoder();    
 	}
-
+	
+	@Override    
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {        
+		 auth
+		 .userDetailsService(service)
+		 .passwordEncoder(encoder());    
+	}
+	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		 web                
@@ -35,15 +45,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.csrf().disable()
 		.authorizeRequests()
 		.antMatchers("/**").permitAll()
+		.anyRequest()
+		.authenticated()
 		.and()
 		.formLogin()
 		.loginPage("/page/login/loginpage")
-		.loginProcessingUrl("/loginProc")
+		.usernameParameter("username")
+		.passwordParameter("password")
+		.loginProcessingUrl("/loginProc").permitAll()
+		.defaultSuccessUrl("/page/board/list")
 		.disable()
-		.logout()
-		.logoutSuccessUrl("/page/board/list")                
-		.invalidateHttpSession(true);
-	}
-	
+		.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
+		.invalidateHttpSession(true)
+		.clearAuthentication(true);
+	}	
 	
 }

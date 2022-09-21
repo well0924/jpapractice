@@ -1,6 +1,7 @@
 package co.kr.board.reply.service;
 
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,12 +74,14 @@ public class CommentService {
 		
 		Board board = Board.builder().boardId(dto.getBoardId()).build();
 		
+		dto.getCreatedAt();
+		
 		Comment comment = Comment
 				.builder()
 				.replyId(dto.getReplyId())
 				.replyWriter(dto.getReplyWriter())
 				.replyContents(dto.getReplyContents())
-				.createdAt(dto.getCreatedAt().now())
+				.createdAt(LocalDateTime.now())
 				.board(board)
 				.build();
 		

@@ -92,7 +92,7 @@ public class BoardService {
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
 				
-		articlelist.ifPresent(t->{
+		articlelist.ifPresent(t -> {
 			
 			if(dto.getBoardTitle() != null) {
 				t.setBoardTitle(dto.getBoardTitle());

@@ -1,4 +1,4 @@
-package co.kr.board.security.vo;
+package co.kr.board.config.security.vo;
 
 import java.io.Serializable;
 
@@ -8,6 +8,8 @@ import lombok.Getter;
 
 @Getter
 public class SessionDto implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	
 	private Integer useridx;
 	private String userid;
@@ -22,6 +24,7 @@ public class SessionDto implements Serializable{
 		this.password =member.getPassword();
 		this.membername = member.getMembername();
 		this.useremail = member.getUseremail();
-		this.role = member.getRole();
+		this.role = member.getRole();	
 	}
+
 }
