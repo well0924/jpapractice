@@ -7,27 +7,34 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import co.kr.board.login.domain.Member;
+import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
+@Getter
 public class CustomUserDetails implements UserDetails{
-
+	
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
+	private static final String ROLE_PREFIX = "ROLE_";
+	
 	private Member member;
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		 
-		Collection<GrantedAuthority> collectors = new ArrayList<>();         
-		 
-		collectors.add(() -> "ROLE_"+member.getRole());         
-		 
-		return collectors;
-	}
 	
 	public CustomUserDetails(Member member) {
 		this.member = member;
 	}
 	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		Collection<GrantedAuthority> collectors = new ArrayList<>();
+
+		collectors.add(()-> ROLE_PREFIX + member.getRole());
+		log.info("userdetail:"+collectors);
+		return collectors;
+	}
+
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
@@ -36,31 +43,32 @@ public class CustomUserDetails implements UserDetails{
 
 	@Override
 	public String getUsername() {
-
-		return member.getUserid();
+		// TODO Auto-generated method stub
+		return member.getUsername();
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-
+		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-
+		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-
+		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		
+		// TODO Auto-generated method stub
 		return true;
 	}
+		
 }

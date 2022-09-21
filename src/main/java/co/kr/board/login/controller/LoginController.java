@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/page/login/")
+@RequestMapping("/page/login/*")
 public class LoginController {
 	
 	private final MemberService service;

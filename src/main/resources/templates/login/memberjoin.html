@@ -25,7 +25,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 	
 	<label th:for="useremail" class="form-label">아이디</label>
     <div class="mb-3 abc">
-        <input type="email" class="form-control mx-1 overlap" id="userId" name="userid" placeholder="아이디를 입력해 주세요">
+        <input type="email" class="form-control mx-1 overlap" id="userId" name="username" placeholder="아이디를 입력해 주세요">
         <input class="btn btn-outline-primary btn-sm idCheck mx-1" type="button" id="usernameOverlay" onclick="usernameCheck()" value="중복 체크"/>
         <input class="btn btn-outline-success btn-sm reType" type="button" id="resetUsername" onclick="reUsername()" value="다시입력"/>
         <div id="valid_userid"></div>
@@ -121,7 +121,7 @@ function signUp(){
 	let name = $('#memberName').val();
 	
 	const joindate = {
-			userid : id,
+			username : id,
 			password : pw,
 			useremail : email,
 			membername : name
@@ -136,8 +136,8 @@ function signUp(){
 	}).done(function(resp){
 		if(resp.status == 400){
 			
-			if(resp.data.hasOwnProperty('valid_userid')){
-				$('#valid_userid').text(resp.data.valid_userid);
+			if(resp.data.hasOwnProperty('valid_username')){
+				$('#valid_userid').text(resp.data.valid_username);
 				$('#valid_userid').css('color','red');
 			}else{
 				$('#valid_userid').text('');

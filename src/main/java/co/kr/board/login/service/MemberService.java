@@ -39,7 +39,7 @@ public class MemberService {
 			MemeberResponseDto dto = MemberDto.MemeberResponseDto
 									.builder()
 									.useridx(member.getUseridx())
-									.userid(member.getUserid())
+									.username(member.getUsername())
 									.membername(member.getMembername())
 									.password(member.getPassword())
 									.useremail(member.getUseremail())
@@ -57,10 +57,11 @@ public class MemberService {
 		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다.")));
 		
 		Member member = memberdetail.get();
+		System.out.println(member.toString());
 		return MemberDto.MemeberResponseDto
 				.builder()
 				.useridx(useridx)
-				.userid(member.getUserid())
+				.username(member.getUsername())
 				.password(member.getPassword())
 				.membername(member.getMembername())
 				.useremail(member.getUseremail())
@@ -82,8 +83,8 @@ public class MemberService {
 	}
 	
 	@Transactional
-	public void memberdelete(String userid)throws Exception{
-		 repository.deleteByUserid(userid);
+	public void memberdelete(String username)throws Exception{
+		 repository.deleteByUsername(username);
 	}
 	
 	//회원정보수정
@@ -94,8 +95,8 @@ public class MemberService {
 		
 		memberdetail.ifPresent(member -> {
 			
-			if(dto.getUserid() !=null) {
-				member.setUserid(dto.getUserid());
+			if(dto.getUsername() !=null) {
+				member.setUsername(dto.getUsername());
 			}
 			
 			if(dto.getMembername() !=null) {
@@ -116,8 +117,8 @@ public class MemberService {
 	}
 	
 	@Transactional
-	public Boolean checkmemberEmailDuplicate(String userid)throws Exception{
-		return repository.existsByUserid(userid);
+	public Boolean checkmemberEmailDuplicate(String username)throws Exception{
+		return repository.existsByUsername(username);
 	}
 		
 	@Transactional
@@ -140,7 +141,7 @@ public class MemberService {
 		
 		Member member = Member
 				.builder()
-				.userid(dto.getUserid())
+				.username(dto.getUsername())
 				.useridx(dto.getUseridx())
 				.membername(dto.getMembername())
 				.password(dto.getPassword())
@@ -155,7 +156,7 @@ public class MemberService {
 		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
 												.builder()
 												.useridx(member.getUseridx())
-												.userid(member.getUserid())
+												.username(member.getUsername())
 												.password(member.getPassword())
 												.membername(member.getMembername())
 												.useremail(member.getUseremail())

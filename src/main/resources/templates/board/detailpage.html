@@ -97,24 +97,24 @@ function getCommentlist(){
 	
 		let html = "";
 		
-		var count = resp.length;
+		var count = resp.data.length;
 	
 		console.log(resp);
 		console.log(count);
 		
 		//게시물이 있는 경우
-		if(resp.length > 0){
-			for(let i = 0; i<resp.length; i++){
+		if(resp.data.length > 0){
+			for(let i = 0; i<resp.data.length; i++){
 				 
 				html += "<br>";
 				html += "<div class='mb-2'>";
-                	html += "<input type='hidden' id='commentId_"+ resp[i].replyId +"' value='" + resp[i].replyId + "'>"
-                	html += "<span style='float:right;' align='right' id='commentDate_"+ resp[i].replyId +"'> " + resp[i].createdAt + " </span>";
+                	html += "<input type='hidden' id='commentId_"+ resp.data[i].replyId +"' value='" + resp.data[i].replyId + "'>"
+                	html += "<span style='float:right;' align='right' id='commentDate_"+ resp.data[i].replyId +"'> " + resp.data[i].createdAt + " </span>";
                 	html += "<div class='mb-1 comment_container' >"
-                		html += "<h5 id='commentText_" + resp[i].replyId + "' style='display: inline'>" + resp[i].replyContents +"</h5>";
+                		html += "<h5 id='commentText_" + resp.data[i].replyId + "' style='display: inline'>" + resp.data[i].replyContents +"</h5>";
                 	html += "</div>"
-                	html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp[i].replyId +"'>댓글 수정 </span>";
-                	html +='<button type="button" class="btn btn-primary" onClick="replyDelete('+resp[i].replyId+'\)">'+'삭제'+'</button>'
+                	html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp.data[i].replyId +"'>댓글 수정 </span>";
+                	html +='<button type="button" class="btn btn-primary" onClick="replyDelete('+resp.data[i].replyId+'\)">'+'삭제'+'</button>'
                 	html += "<hr>";
                 html += "</div>"
 			}	

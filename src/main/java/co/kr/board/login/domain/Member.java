@@ -17,7 +17,7 @@ import co.kr.board.board.domain.BaseTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -28,7 +28,7 @@ import lombok.ToString;
 @ToString
 @Table(name="member")
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class Member extends BaseTime{
 	
 	@Id
@@ -36,8 +36,8 @@ public class Member extends BaseTime{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer useridx;
 	
-	@Column(nullable = false)
-	private String userid;
+	@Column(name="userid",nullable = false)
+	private String username;
 
 	@Column(nullable = false , length=100)
 	private String password;
@@ -57,12 +57,17 @@ public class Member extends BaseTime{
 	
 	
 	//회원정보 수정.
-	public void memberupdate(String userid, String password,String membername,String useremail) {
-		
-		this.userid = userid;
+	public void memberupdate(String username, String password,String membername,String useremail) {
+		this.username = username;
 		this.password = password;
 		this.membername = membername;
 		this.useremail = useremail;
+	}
 	
+	@Builder
+	public Member(String username,String password,Role role) {
+		this.username = username;
+		this.password = password;
+		this.role = role;
 	}
 }

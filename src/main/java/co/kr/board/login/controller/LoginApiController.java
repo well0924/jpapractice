@@ -30,12 +30,12 @@ public class LoginApiController {
 	private final MemberService service;
 	
 	@GetMapping("/logincheck/{id}")
-	public Response<Boolean>idcheck(@PathVariable(value="id")String userid)throws Exception{
+	public Response<Boolean>idcheck(@PathVariable(value="id")String username)throws Exception{
 				
 		Boolean checkreuslt = null;
 		
 		try {
-			checkreuslt = service.checkmemberEmailDuplicate(userid);
+			checkreuslt = service.checkmemberEmailDuplicate(username);
 			
 			if(checkreuslt == true) {//아이디 중복
 				new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
@@ -90,8 +90,7 @@ public class LoginApiController {
 		
 		return new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
 	}
-	
-	
+		
 	@PostMapping("/memberjoin")
 	public Response<?>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 		
@@ -120,10 +119,10 @@ public class LoginApiController {
 	}
 	
 	@DeleteMapping("/memberdelete/{idx}/member")
-	public Response<String>memberdelete(@PathVariable("idx")String userid)throws Exception{
+	public Response<String>memberdelete(@PathVariable("idx")String username)throws Exception{
 				
 		try {		
-			service.memberdelete(userid);
+			service.memberdelete(username);
 			
 			new Response<>(HttpStatus.OK.value(),"delete");	
 		} catch (Exception e) {
@@ -133,7 +132,6 @@ public class LoginApiController {
 		return new Response<>(HttpStatus.OK.value(),"delete");
 	}
 	
-	//회원수정
 	@PutMapping("/memberupdate/{idx}/member")
 	public Response<?>memberupdate(@PathVariable("idx")Integer useridx,@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 				
