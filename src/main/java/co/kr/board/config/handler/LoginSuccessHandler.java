@@ -1,0 +1,81 @@
+package co.kr.board.config.handler;
+
+import java.io.IOException;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+
+import co.kr.board.login.domain.Role;
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
+public class LoginSuccessHandler implements AuthenticationSuccessHandler{
+	
+	private RequestCache requestCache = new HttpSessionRequestCache();
+	private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
+	private static final String DEFAULT_UTL= "/page/board/list";
+	
+	
+	@Override
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+			Authentication authentication) throws IOException, ServletException {
+		log.info("successhandler.");
+		
+		try {
+			clearAuthenticationAttributes(request);
+			redirectStrategy(request, response, authentication);
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		log.info(authentication.getAuthorities().iterator());
+		log.info(authentication.getPrincipal().getClass().toString());
+		log.info(authentication);
+		log.info(authentication.getDetails());
+	}
+	
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		
+		if(session !=null) {
+			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
+	}
+	
+	private void redirectStrategy(HttpServletRequest request,HttpServletResponse response,Authentication authentication)throws Exception {
+		
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		
+		if(savedRequest != null) {
+		
+			redirectStratgy.sendRedirect(request, response, "/page/login/memberjoin");
+		
+		}else {
+			
+			Set<String>roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+			
+			if(roles.contains(Role.ADMIN.getValue())) {
+				
+				redirectStratgy.sendRedirect(request, response,"/page/login/adminlist");
+			
+			}else if(roles.contains(Role.USER.getValue())) {
+				
+				redirectStratgy.sendRedirect(request, response, "/page/board/list");
+			}
+		}
+	}
+}

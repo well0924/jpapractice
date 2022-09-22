@@ -63,4 +63,12 @@ public class LoginController {
 		
 		return mv;
 	}
+	
+	//
+	@GetMapping("/adminlist")
+	public ModelAndView adminlist()throws Exception{
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("admin/adminlist");
+		return mv;
+	}
 }

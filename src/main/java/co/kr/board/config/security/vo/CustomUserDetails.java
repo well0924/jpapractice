@@ -31,7 +31,7 @@ public class CustomUserDetails implements UserDetails{
 		Collection<GrantedAuthority> collectors = new ArrayList<>();
 
 		collectors.add(()-> ROLE_PREFIX + member.getRole());
-		log.info("userdetail:"+collectors);
+		log.info("userdetail:"+collectors.toString());
 		return collectors;
 	}
 
@@ -70,5 +70,5 @@ public class CustomUserDetails implements UserDetails{
 		// TODO Auto-generated method stub
 		return true;
 	}
-		
+	
 }

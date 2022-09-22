@@ -8,7 +8,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import co.kr.board.config.handler.LoginFailuererHandler;
+import co.kr.board.config.handler.LoginSuccessHandler;
 import co.kr.board.config.security.service.CustomUserDetailService;
 
 @Configuration
@@ -54,16 +57,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.and()
 		.formLogin()
 		.loginPage("/page/login/loginpage")
-		.loginProcessingUrl("/loginProc")
-		.defaultSuccessUrl("/page/board/list")
+		.loginProcessingUrl("/loginProc").permitAll()
+		.successHandler(new LoginSuccessHandler())
+		.failureHandler(new LoginFailuererHandler())
 		.and()
 		.logout()
-		.logoutUrl("/logout")
-		.invalidateHttpSession(false)
+		.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
+		.invalidateHttpSession(true)
+		.clearAuthentication(true)
 		.and()
 		.sessionManagement()
         .maximumSessions(1) //세션 최대 허용 수 
-        .maxSessionsPreventsLogin(false); 
+        .maxSessionsPreventsLogin(true);//중복아이디 세션 차단 
 	}
 	
 	

@@ -29,9 +29,9 @@ public class CustomUserDetailService implements UserDetailsService{
 		
 		Member userdetail = member.get();
 		
-		log.info(member.toString());
 		log.info(userdetail.getRole());
-		
+		log.info(username);
+		log.info(member);
 		return new CustomUserDetails(userdetail);
 	}
 
