@@ -26,8 +26,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 	
 	private RequestCache requestCache = new HttpSessionRequestCache();
 	private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
-	private static final String DEFAULT_UTL= "/page/board/list";
-	
+	private static final String DEFAULT_URL= "/page/main/mainpage";
+	private static final String ADMIN_URL="/page/login/adminlist";
 	
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -62,7 +62,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 		
 		if(savedRequest != null) {
 		
-			redirectStratgy.sendRedirect(request, response, "/page/login/memberjoin");
+			redirectStratgy.sendRedirect(request, response, DEFAULT_URL);
 		
 		}else {
 			
@@ -70,12 +70,18 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 			
 			if(roles.contains(Role.ADMIN.getValue())) {
 				
-				redirectStratgy.sendRedirect(request, response,"/page/login/adminlist");
+				redirectStratgy.sendRedirect(request, response,ADMIN_URL);
 			
 			}else if(roles.contains(Role.USER.getValue())) {
 				
-				redirectStratgy.sendRedirect(request, response, "/page/board/list");
+				redirectStratgy.sendRedirect(request, response,DEFAULT_URL);
+			}else {
+				redirectStratgy.sendRedirect(request, response,DEFAULT_URL);
 			}
 		}
+		log.info(authentication.getAuthorities().iterator());
+		log.info(authentication.getPrincipal().getClass().toString());
+		log.info(authentication);
+		log.info(authentication.getDetails());
 	}
 }

@@ -18,7 +18,6 @@ layout:decorator="/layout/mainlayout">
 </head>
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
-<th:block layout:fragment="contents">
 <!-- 테이블목록 -->
 <h1>게시물 목록</h1>
 <table class="table">
@@ -89,7 +88,6 @@ layout:decorator="/layout/mainlayout">
   </ul>
  </nav>
 </div>
-</th:block>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

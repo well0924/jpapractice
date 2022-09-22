@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		web
 		.ignoring()
 		.antMatchers("/webjars/**", "/dist/**", "/plugins/**", "/css/**", "/user/**","/swagger-resources/**")
-		.antMatchers("/images/**", "/JS/**", "/font", "/webfonts/**", "/main/**", "/swagger-ui/**", "/v2/**","/page/board/list");
+		.antMatchers("/images/**", "/JS/**", "/font", "/webfonts/**", "/main/**", "/swagger-ui/**", "/v2/**");
 	}
 
 	@Override
@@ -50,8 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.authorizeRequests()
 		.antMatchers("/api/reply/write/*","/api/reply/delete/*").hasAnyRole("ADMIN","USER")
 		.antMatchers("/api/board/write","/api/board/delete/*","/api/board/modify/*").hasAnyRole("ADMIN","USER")
-		.antMatchers("/api/reply/list/*").permitAll()
-		.antMatchers("/page/**").permitAll()
+		.antMatchers("/api/reply/list/*","/main/*","/page/**").permitAll()
 		.anyRequest()
 		.authenticated()
 		.and()

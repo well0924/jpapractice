@@ -3,35 +3,43 @@
 xmlns="http://www.w3.org/1999/xhtml" 
 xmlns:th="http://www.thymeleaf.org" 
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorator="/layout/mainlayout">
 <th:block th:fragment="headerfragment">
 <!-- nav -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
-    <a class="navbar-brand" th:href="@{/page/board/list}">Blog</a>
+    <a class="navbar-brand">Blog</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarColor01">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link active" th:href="@{/page/board/list}">Home
+          <a class="nav-link active" th:href="@{/page/main/mainpage}">Home
             <span class="visually-hidden">(current)</span>
           </a>
         </li>
-        <li class="nav-item" sec:authorize-expr="!isAuthenticated()">
+        <li class="nav-item" sec:authorize="!isAuthenticated()">
           	<a class="nav-link" th:href="@{/page/login/loginpage}">로그인</a>
         </li>
         <li class="nav-item">
        		<a class="nav-link" th:href="@{/page/login/memberjoin}">회원가입</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" th:href="@{/page/board/list}">게시판</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="#">About</a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+          <a class="nav-link" th:href="@{/page/login/adminlist}">관리자 페이지</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
           <div class="dropdown-menu">
           	<div sec:authorize-expr="isAuthenticated()">
+          		[[${principal}]]
           		<a class="dropdown-item" th:href="@{/page/login/memberdelete}">회원탈퇴</a>
             	<a class="dropdown-item" th:href="@{/page/login/memberupdate}">회원수정</a>
             	<a class="dropdown-item" th:href="@{/logout}">로그아웃</a>
