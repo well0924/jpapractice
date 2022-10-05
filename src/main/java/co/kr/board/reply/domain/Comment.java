@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import co.kr.board.board.domain.BaseTime;
 import co.kr.board.board.domain.Board;
+import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,8 +48,20 @@ public class Comment extends BaseTime{
 	private LocalDateTime createdAt;
 	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="board_id")
 	private Board board;
 	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="useridx")
+	private Member member;
+	
+	public void changeBoard(Board board) {
+		this.board = board;
+	}
+	
+	public void changeMember(Member member) {
+		this.member = member;
+	}
 }

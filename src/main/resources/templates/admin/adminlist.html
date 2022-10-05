@@ -19,15 +19,41 @@ layout:decorator="/layout/mainlayout">
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
 어드민 페이지 입니다.
-<div sec:authorize="isAuthenticated()">
-  This content is only shown to authenticated users.
-</div>
 <div sec:authorize="hasRole('ROLE_ADMIN')">
   This content is only shown to administrators.
 </div>
 <div sec:authorize="hasRole('ROLE_USER')">
   This content is only shown to users.
 </div>
+<p th:text="${#authentication.name}"></p>
+<p th:text="${#authentication.authorities}"></p>
+<p th:text="${#authentication.authenticated}"></p>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">번호</th>
+      <th scope="col">아이디</th>
+      <th scope="col">이름</th>
+      <th scope="col">이메일</th>
+      <th scope="col">등급</th>
+      <th scope="col">등록일</th>
+    </tr>
+  </thead>
+  <tbody th:each="list:${memberlist}">
+    <tr>
+      <th scope="row">[[${list.useridx}]]</th>
+      <td>
+      	<a th:href="@{'/page/admin/detail/'+${list.useridx}}">
+      		[[${list.username}]]
+      	</a>
+      </td>
+      <td>[[${list.useremail}]]</td>
+      <td>[[${list.membername}]]</td>
+      <td>[[${list.role}]]</td>
+      <td>[[${#temporals.format(list.createdAt,'yyyy-MM-dd HH:mm')}]]</td>
+    </tr>
+  </tbody>
+</table>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

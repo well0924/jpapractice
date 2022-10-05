@@ -30,29 +30,27 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 	private static final String ADMIN_URL="/page/login/adminlist";
 	
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws IOException, ServletException {
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+		
 		log.info("successhandler.");
 		
 		try {
-			clearAuthenticationAttributes(request);
-			redirectStrategy(request, response, authentication);
 		
+			redirectStrategy(request, response, authentication);
+			clearAuthenticationAttributes(request);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		log.info(authentication.getAuthorities().iterator());
-		log.info(authentication.getPrincipal().getClass().toString());
-		log.info(authentication);
-		log.info(authentication.getDetails());
 	}
 	
 	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		
 		HttpSession session = request.getSession(false);
 		
 		if(session !=null) {
+	
 			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		
 		}
 	}
 	
@@ -62,7 +60,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 		
 		if(savedRequest != null) {
 		
-			redirectStratgy.sendRedirect(request, response, DEFAULT_URL);
+			redirectStratgy.sendRedirect(request, response, "/page/login/memberjoin");
 		
 		}else {
 			
@@ -75,13 +73,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 			}else if(roles.contains(Role.USER.getValue())) {
 				
 				redirectStratgy.sendRedirect(request, response,DEFAULT_URL);
-			}else {
-				redirectStratgy.sendRedirect(request, response,DEFAULT_URL);
+			
 			}
 		}
-		log.info(authentication.getAuthorities().iterator());
-		log.info(authentication.getPrincipal().getClass().toString());
-		log.info(authentication);
-		log.info(authentication.getDetails());
 	}
 }

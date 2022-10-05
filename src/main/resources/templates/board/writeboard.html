@@ -25,16 +25,19 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
       <label for="boardtitle" class="form-label mt-4">글 제목</label>
       <input type="text" class="form-control" id="boardtitle" name="boardTitle">
     </div>
+    <div id="valid_boardTitle"></div>
     <div class="form-group">
       <label for="boardwriter" class="form-label mt-4">글 작성자</label>
       <input type="text" class="form-control" id="boardwriter" name="boardAuthor">
     </div>
+    <div id="valid_boardAuthor"></div>
     <div class="form-group">
       <label for="boardcontents" class="form-label mt-4">글 내용</label>
-      <textarea class="form-control" id="boardcontents" rows="3"></textarea>
+      <textarea class="form-control" id="boardcontents" rows="3" name="boardContents"></textarea>
     </div>
+    <div id="valid_boardContents"></div>
     <button type="button" class="btn btn-primary" onclick="savepost()">글작성</button>
-    <button type="button" class="btn btn-primary" onclick="main()">메인페이지</button>
+    <button type="button" class="btn btn-primary" onclick="main()">목록</button>
   </fieldset>
 </form>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
@@ -43,31 +46,6 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 //메인페이지 이동
 function main(){
 	location.href="/page/board/list";
-}
-
-//유효성 검사
-function validation(){
-	
-	let title = $('#boardtitle').val();
-	let author = $('#boardwriter').val();
-	let contents = $('#boardcontents').val();
-	
-	if(title.trim().length == 0){
-		alert('제목을 입력해주세요.');
-		return false;
-	}
-	
-	if(author.trim().length == 0){
-		alert('작성자를 입력해주세요.');
-		return false;
-	}
-	
-	if(contents.trim().length == 0){
-		alert('내용을 입력해주세요.');
-		return false;
-	}
-	
-	return true;
 }
 
 //글 작성기능 o.k
@@ -82,8 +60,6 @@ function savepost(){
 			boardAuthor : author,
 			boardContents : contents
 	};
-	
-	if(validation()){
 		
 		$.ajax({
 		
@@ -94,13 +70,38 @@ function savepost(){
 			contentType:'application/json; charset=utf-8'
 		
 		}).done(function(resp){
-			
 			console.log(resp);
-			alert('글이 작성되었습니다.');
-			location.href='/page/board/list';
+			console.log(resp.status);
+			console.log(resp.data);
+			
+			if(resp.status== 400){
+				
+				if(resp.data.hasOwnProperty('valid_boardTitle')){
+					$('#valid_boardTitle').text(resp.data.valid_boardTitle);
+					$('#valid_boardTitle').css('color','red');
+				}else{
+					$('#valid_boardTitle').text('');
+				}
+				if(resp.data.hasOwnProperty('valid_boardAuthor')){
+					$('#valid_boardAuthor').text(resp.data.valid_boardAuthor);
+					$('#valid_boardAuthor').css('color','red');
+				}else{
+					$('#valid_boardAuthor').text('');
+				}
+				if(resp.data.hasOwnProperty('valid_boardContents')){
+					$('#valid_boardContents').text(resp.data.valid_boardContents);
+					$('#valid_boardContents').css('color','red');
+				}else{
+					$('#valid_boardContents').text('');
+				}
+			}
+			
+			if(resp.status == 200){
+				alert('글이 작성되었습니다.');
+	 			location.href='/page/board/list';	
+			}
 		
-		});
-	}
+		});	
 }
 </script>
 </body>

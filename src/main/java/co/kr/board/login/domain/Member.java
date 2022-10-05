@@ -32,20 +32,19 @@ import lombok.ToString;
 public class Member extends BaseTime{
 	
 	@Id
-	@Column(name="user_no")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer useridx;
 	
 	@Column(name="userid",nullable = false)
 	private String username;
 
-	@Column(nullable = false , length=100)
+	@Column(nullable = false,length = 500)
 	private String password;
 	
-	@Column(nullable = false,length = 50)
+	@Column(length = 200)
 	private String membername;
 	
-	@Column(nullable = false,length = 100)
+	@Column(nullable = false,length = 200)
 	private String useremail;
 	
 	@Enumerated(EnumType.STRING)
@@ -60,12 +59,5 @@ public class Member extends BaseTime{
 		this.password = password;
 		this.membername = membername;
 		this.useremail = useremail;
-	}
-	
-	@Builder
-	public Member(String username,String password,Role role) {
-		this.username = username;
-		this.password = password;
-		this.role = role;
 	}
 }

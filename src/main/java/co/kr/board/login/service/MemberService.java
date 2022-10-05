@@ -2,17 +2,15 @@ package co.kr.board.login.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
@@ -20,7 +18,9 @@ import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @AllArgsConstructor
 public class MemberService {
@@ -31,6 +31,7 @@ public class MemberService {
 	
 	@Transactional
 	public List<MemberDto.MemeberResponseDto>findAll()throws Exception{
+		
 		List<Member>memberlist = repository.findAll();
 
 		List<MemberDto.MemeberResponseDto> list = new ArrayList<>();
@@ -53,11 +54,19 @@ public class MemberService {
 	}
 	
 	@Transactional
+	public Page<Member>findAll(Pageable pageable){
+		
+		Page<Member>memberlist = repository.findAll(pageable);
+		
+		return memberlist;
+	};
+	
+	@Transactional
 	public MemberDto.MemeberResponseDto getMember(Integer useridx)throws Exception{
 		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다.")));
 		
 		Member member = memberdetail.get();
-		System.out.println(member.toString());
+
 		return MemberDto.MemeberResponseDto
 				.builder()
 				.useridx(useridx)
@@ -75,8 +84,8 @@ public class MemberService {
 		//비밀번호 암호화
 		dto.setPassword(encoder.encode(dto.getPassword()));
 		
-		Member member = dtoToEntity(dto);
-		
+		Member member = dtoToEntity(dto); 
+		log.info("들어왔는가?:"+member);
 		repository.save(member);
 		
 		return member.getUseridx();
@@ -120,19 +129,6 @@ public class MemberService {
 	public Boolean checkmemberEmailDuplicate(String username)throws Exception{
 		return repository.existsByUsername(username);
 	}
-		
-	@Transactional
-    public Map<String, String> validateHandling(Errors errors) {
-		
-        Map<String, String> validatorResult = new HashMap<>();
-
-        for (FieldError error : errors.getFieldErrors()) {
-            String validKeyName = String.format("valid_%s", error.getField());
-            validatorResult.put(validKeyName, error.getDefaultMessage());
-        }
-
-        return validatorResult;
-    }
 	
 	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
 		
@@ -141,11 +137,12 @@ public class MemberService {
 		
 		Member member = Member
 				.builder()
-				.username(dto.getUsername())
 				.useridx(dto.getUseridx())
-				.membername(dto.getMembername())
+				.username(dto.getUsername())
 				.password(dto.getPassword())
-				.useremail(dto.getUseremail()).role(Role.USER)
+				.membername(dto.getMembername())
+				.useremail(dto.getUseremail())
+				.role(Role.ADMIN)
 				.createdAt(LocalDateTime.now())
 				.build();
 		

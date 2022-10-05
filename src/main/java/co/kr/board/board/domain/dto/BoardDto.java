@@ -7,9 +7,9 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import co.kr.board.board.domain.BaseTime;
-import co.kr.board.board.domain.Board;
+import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.dto.CommentDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,8 @@ public class BoardDto {
 	@ToString
 	@Builder
 	@NoArgsConstructor
-	public static class BoardRequestDto extends BaseTime{
+	@AllArgsConstructor
+	public static class BoardRequestDto{
 		
 		private Integer boardId;
 		
@@ -38,33 +39,11 @@ public class BoardDto {
 		
 		private Integer readCount;
 		
+		private Member member;
+		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
-		
-		@Builder
-		public BoardRequestDto(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readCount,LocalDateTime createdAt) {
-			
-			this.boardId = boardId;
-			this.boardTitle = boardTitle;
-			this.boardContents = boardContents;
-			this.boardAuthor = boardAuthor;
-			this.readCount = readCount;
-			this.createdAt = createdAt;	
-		
-		}
-		
-		//entity변환
-		public Board toEntity() {
-			return Board.builder()
-					.boardId(boardId)
-					.boardTitle(boardTitle)
-					.boardContents(boardContents)
-					.boardAuthor(boardAuthor)
-					.readCount(0)
-					.createdAt(LocalDateTime.now())
-					.build();
-		}
 	}
 	
 	@Getter
@@ -90,12 +69,14 @@ public class BoardDto {
 		
 		@Builder
 		public BoardResponseDto(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readCount,LocalDateTime createdAt) {
+			
 			this.boardId = boardId;
 			this.boardTitle = boardTitle;
 			this.boardContents = boardContents;
 			this.boardAuthor = boardAuthor;
 			this.readCount = readCount;
-			this.createdAt = createdAt;	
+			this.createdAt = createdAt;
+			
 		}
 		
 	}

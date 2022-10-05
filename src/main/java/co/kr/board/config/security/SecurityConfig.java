@@ -47,18 +47,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 		.csrf().disable()
+		.httpBasic().disable()
 		.authorizeRequests()
-		.antMatchers("/api/reply/write/*","/api/reply/delete/*").hasAnyRole("ADMIN","USER")
-		.antMatchers("/api/board/write","/api/board/delete/*","/api/board/modify/*").hasAnyRole("ADMIN","USER")
-		.antMatchers("/api/reply/list/*","/main/*","/page/**").permitAll()
+		.antMatchers("/**").permitAll()
 		.anyRequest()
 		.authenticated()
 		.and()
 		.formLogin()
-		.loginPage("/page/login/loginpage")
-		.loginProcessingUrl("/loginProc").permitAll()
-		.successHandler(new LoginSuccessHandler())
-		.failureHandler(new LoginFailuererHandler())
+		.loginPage("/page/login/loginpage")//시큐리티에 적용되는 로그인페이지가 아닌 커스텀페이지로 이동
+		.loginProcessingUrl("/loginProc").permitAll()//로그인은 전부 허용
+		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
+		.failureHandler(new LoginFailuererHandler())//로그인에 실패를 하면 fail handler
 		.and()
 		.logout()
 		.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()

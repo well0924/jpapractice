@@ -1,5 +1,6 @@
 package co.kr.board.board.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
+import co.kr.board.board.domain.dto.BoardDto.BoardResponseDto;
 import co.kr.board.board.repsoitory.BoardRepository;
+import co.kr.board.login.domain.Member;
+import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -20,6 +24,8 @@ import lombok.AllArgsConstructor;
 public class BoardService {
 	
 	private final BoardRepository repos;
+	
+	private final MemberRepository user;
 	
 	@Transactional
 	public List<BoardDto.BoardResponseDto>findAll() throws Exception{
@@ -54,9 +60,38 @@ public class BoardService {
 		return articlelist;
 	}
 	
+	//페이징 + 검색기능
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
-		return repos.save(dto.toEntity()).getBoardId();
+	public Page<BoardDto.BoardResponseDto>findAllSearch(String boardTitle,String boardContents,Pageable pageable)throws Exception{
+		
+		Page<Board>allSearch = repos.findAllSearch(boardTitle, boardContents, pageable);
+		
+		Page<BoardDto.BoardResponseDto>list = allSearch.map(
+					board -> new BoardResponseDto(
+							board.getBoardId(),
+							board.getBoardTitle(),
+							board.getBoardAuthor(),
+							board.getBoardContents(),
+							board.getReadCount(),
+							board.getCreatedAt()
+							));
+ 		return list;
+	}
+	
+	@Transactional
+	public Integer boardsave(BoardDto.BoardRequestDto dto,String username)throws Exception{
+		//회원 조회
+		Optional<Member> member = user.findByUsername(username);
+		
+		Member memberdetail =  member.get();
+		//작성자 이름을 아이디로.
+		dto.setMember(memberdetail);
+		
+		Board board = dtoToEntity(dto);
+		
+		repos.save(board);
+		
+		return board.getBoardId();
 	}
 	
 	@Transactional
@@ -116,5 +151,19 @@ public class BoardService {
 		return boardId;
 	}
 	
-	
+	public Board dtoToEntity(BoardDto.BoardRequestDto dto) {
+		
+		Board board = Board
+				.builder()
+				.boardId(dto.getBoardId())
+				.boardTitle(dto.getBoardTitle())
+				.boardAuthor(dto.getBoardAuthor())
+				.boardContents(dto.getBoardContents())
+				.readCount(0)
+				.member(dto.getMember())
+				.createdAt(LocalDateTime.now())
+				.build();
+		
+		return board;
+	}
 }

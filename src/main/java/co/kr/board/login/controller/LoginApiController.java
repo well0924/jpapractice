@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.board.config.Response;
+import co.kr.board.config.aop.ValidationCheck;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/login/*")
@@ -29,8 +32,11 @@ public class LoginApiController {
 	
 	private final MemberService service;
 	
+	private final ValidationCheck check;
+	
+	
 	@GetMapping("/logincheck/{id}")
-	public Response<Boolean>idcheck(@PathVariable(value="id")String username)throws Exception{
+	public Response<?>idcheck(@PathVariable(value="id",required = true)String username)throws Exception{
 				
 		Boolean checkreuslt = null;
 		
@@ -39,17 +45,17 @@ public class LoginApiController {
 			checkreuslt = service.checkmemberEmailDuplicate(username);
 			
 			if(checkreuslt == true) {//아이디 중복
-			
-				new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
+				log.info("결과값:"+checkreuslt);
+				return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
 			
 			}else if(checkreuslt ==false) {//사용가능한 아이디
 			
-				new Response<Boolean>(HttpStatus.OK.value(),true);
+				return	new Response<Boolean>(HttpStatus.OK.value(),true);
 			
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			new Response<Boolean>(HttpStatus.BAD_GATEWAY.value(),false);
+			return new Response<Boolean>(HttpStatus.BAD_GATEWAY.value(),false);
 		}
 		
 		return new Response<Boolean>(HttpStatus.OK.value(),true);
@@ -63,26 +69,23 @@ public class LoginApiController {
 		try {
 			list = service.findAll();
 			
-			if(list != null) {
+			if(list == null){
 				
-				new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
-			
-			}else if(list == null){
-				
-				new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
+				return new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
 			
 			}
 		} catch (Exception e) {
 			
 			e.printStackTrace();
 			
-			new Response<List<MemeberResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
+			return new Response<List<MemeberResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
 		}
+		
 		return new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
 	}
 	
 	@GetMapping("/detailmember/{idx}/member")
-	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable("idx")Integer useridx)throws Exception{
+	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable(value="idx",required = true)Integer useridx)throws Exception{
 		
 		MemberDto.MemeberResponseDto dto = null;
 		
@@ -112,36 +115,43 @@ public class LoginApiController {
 		//유효성 검사
 		if(bindingresult.hasErrors()) {
 			
-			Map<String, String> validatorResult = service.validateHandling(bindingresult);
-			
+			Map<String, String> validatorResult = check.validateHandling(bindingresult);
+			log.info("result:"+validatorResult);
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
 		}
 		
 		//회원가입
 		try {
+			
 			joinresult = service.memberjoin(dto);
 			
-			if(joinresult >0) {		
-				new Response<Integer>(HttpStatus.OK.value(),200);
+			if(joinresult > 0) {	
+				
+			return	new Response<Integer>(HttpStatus.OK.value(),joinresult);
 			
 			}else if(joinresult < 0) {
 				
-				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
+			return	new Response<Integer>(HttpStatus.BAD_GATEWAY.value(),joinresult);
+			
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	
-		return new Response<Integer>(HttpStatus.OK.value(),200);
+			e.printStackTrace();
+	
+			return	new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),joinresult);
+		}
+		
+		return new Response<Integer>(HttpStatus.OK.value(),joinresult);
 	}
 	
 	@DeleteMapping("/memberdelete/{idx}/member")
-	public Response<String>memberdelete(@PathVariable("idx")String username)throws Exception{
+	public Response<String>memberdelete(@PathVariable(value="idx")String username)throws Exception{
 				
 		try {		
 			service.memberdelete(username);
 			
-			new Response<>(HttpStatus.OK.value(),"delete");	
+		return	new Response<>(HttpStatus.OK.value(),"delete");	
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,15 +160,15 @@ public class LoginApiController {
 	}
 	
 	@PutMapping("/memberupdate/{idx}/member")
-	public Response<?>memberupdate(@PathVariable("idx")Integer useridx,@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
+	public Response<?>memberupdate(@PathVariable(value="idx")Integer useridx,@Valid @RequestBody MemberDto.MemberRequestDto dto,BindingResult bindingresult)throws Exception{
 				
 		int updateresult = 0;
 		
 		//유효성 검사
 		if(bindingresult.hasErrors()) {
 			
-			Map<String, String> validatorResult = service.validateHandling(bindingresult);
-			
+			Map<String, String> validatorResult = check.validateHandling(bindingresult);
+			log.info("result:"+validatorResult);
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
 		}
 		
@@ -166,15 +176,15 @@ public class LoginApiController {
 			updateresult = service.memberupdate(useridx, dto);
 			
 			if(updateresult>0) {			
-				new Response<Integer>(HttpStatus.OK.value(),200);
+			return	new Response<Integer>(HttpStatus.OK.value(),200);
 			
 			}else if(updateresult < 0) {
-				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
+			return	new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
 			
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
+			return new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
 		}
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}

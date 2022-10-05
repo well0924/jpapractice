@@ -186,11 +186,7 @@ function replyDelete(replyId){
 			console.log(error);
 			$('#replies').empty();
 			getCommentlist();
-		}).always(function(state){
-			alert("삭제 되었습니다.");
-			$('#replies').empty();
-			getCommentlist();
-		});	
+		});
 	}
 }
 </script>
