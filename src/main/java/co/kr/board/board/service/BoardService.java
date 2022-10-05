@@ -18,7 +18,9 @@ import co.kr.board.board.repsoitory.BoardRepository;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @AllArgsConstructor
 public class BoardService {
@@ -62,9 +64,9 @@ public class BoardService {
 	
 	//페이징 + 검색기능
 	@Transactional
-	public Page<BoardDto.BoardResponseDto>findAllSearch(String boardTitle,String boardContents,Pageable pageable)throws Exception{
+	public Page<BoardDto.BoardResponseDto>findAllSearch(String keyword,Pageable pageable)throws Exception{
 		
-		Page<Board>allSearch = repos.findAllSearch(boardTitle, boardContents, pageable);
+		Page<Board>allSearch = repos.findAllSearch(keyword, pageable);
 		
 		Page<BoardDto.BoardResponseDto>list = allSearch.map(
 					board -> new BoardResponseDto(
@@ -79,13 +81,7 @@ public class BoardService {
 	}
 	
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto,String username)throws Exception{
-		//회원 조회
-		Optional<Member> member = user.findByUsername(username);
-		
-		Member memberdetail =  member.get();
-		//작성자 이름을 아이디로.
-		dto.setMember(memberdetail);
+	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
 		
 		Board board = dtoToEntity(dto);
 		

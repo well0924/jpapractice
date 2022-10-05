@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +27,6 @@ import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
 import co.kr.board.config.Response;
 import co.kr.board.config.aop.ValidationCheck;
-import co.kr.board.login.domain.dto.MemberDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -40,7 +39,8 @@ public class BoardRestController {
 	private final BoardService service;
 	
 	private final ValidationCheck check;
-	
+	//페이징
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping("/list")
 	public Response<Page<Board>>articlelist(
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
@@ -67,21 +67,29 @@ public class BoardRestController {
 		return new Response<Page<Board>>(HttpStatus.OK.value(),list);
 	}
 	
-	//페이징 및 검색
-	@GetMapping("/list")
-	public Response<Page<Board>>findAllSearch(
-			@RequestParam String boardTitle, 
-			@RequestParam String boardContents,
+	@CrossOrigin
+	@GetMapping("/list/search")
+	public Response<Page<BoardDto.BoardResponseDto>>searchlist(
+			@RequestParam String keyword,
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
-		Page<Board>boardlist;
-		
-		return null;
+		Page<BoardDto.BoardResponseDto>list = null;
+		try {
+			list = service.findAllSearch(keyword, pageable);
+			
+			if(list != null) {
+				return new Response<>(HttpStatus.OK.value(),list);
+			}else {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(),list);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
+		}
 	}
 	
 	@PostMapping("/write")
 	public Response<?>writeproc(@Valid @RequestBody BoardDto.BoardRequestDto dto,
-			MemberDto.MemeberResponseDto user,
 			BindingResult bindingresult)throws Exception{
 		
 		int result = 0;
@@ -94,7 +102,7 @@ public class BoardRestController {
 		
 		try {
 			
-				result = service.boardsave(dto,user.getUsername());
+				result = service.boardsave(dto);
 				
 				log.info("결과값:"+result);
 				
