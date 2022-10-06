@@ -67,13 +67,13 @@ public class BoardRestController {
 		return new Response<Page<Board>>(HttpStatus.OK.value(),list);
 	}
 	
-	@CrossOrigin
 	@GetMapping("/list/search")
 	public Response<Page<BoardDto.BoardResponseDto>>searchlist(
 			@RequestParam String keyword,
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		Page<BoardDto.BoardResponseDto>list = null;
+		
 		try {
 			list = service.findAllSearch(keyword, pageable);
 			
