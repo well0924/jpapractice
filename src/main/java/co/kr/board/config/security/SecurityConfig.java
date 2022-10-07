@@ -56,8 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.formLogin()
 		.loginPage("/page/login/loginpage")//시큐리티에 적용되는 로그인페이지가 아닌 커스텀페이지로 이동
 		.loginProcessingUrl("/loginProc").permitAll()//로그인은 전부 허용
-		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
 		.failureHandler(new LoginFailuererHandler())//로그인에 실패를 하면 fail handler
+		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
 		.and()
 		.logout()
 		.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
