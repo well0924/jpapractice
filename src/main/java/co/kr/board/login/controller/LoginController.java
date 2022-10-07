@@ -98,4 +98,12 @@ public class LoginController {
 		
 		return mv;
 	}
+	
+	@GetMapping("/detail/{id}")
+	public ModelAndView memberdetail(@PathVariable(value="id")Integer useridx)throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		
+		return mv;
+	}
 }
