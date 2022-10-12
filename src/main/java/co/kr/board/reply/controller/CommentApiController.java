@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.board.config.Response;
+import co.kr.board.config.exception.Response;
 import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.service.CommentService;
 import lombok.AllArgsConstructor;
@@ -31,18 +31,14 @@ public class CommentApiController {
 		
 		List<CommentDto.CommentResponseDto>list = null;
 
-		try {
-			list= service.findCommentsBoardId(boardId);
-			
-			if(list != null) {
-				 new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.OK.value(),list);
-			}else {
-				 new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
-			}	
-		} catch (Exception e) {
-			e.printStackTrace();
-			new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
-		}
+		list= service.findCommentsBoardId(boardId);
+		
+		if(list != null) {
+			 new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.OK.value(),list);
+		}else {
+			 new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
+		}	
+		
 		return new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.OK.value(),list);
 	}
 	
@@ -50,32 +46,21 @@ public class CommentApiController {
 	public Response<Integer>replywrite( @PathVariable("boardid")Integer boardId,@Valid @RequestBody CommentDto.CommentRequestDto dto)throws Exception{
 		
 		int insertresult = 0;
-		
-		try {		
-			insertresult = service.replysave(dto);
+				
+		insertresult = service.replysave(dto);
 			
-			if(insertresult > 0) {							
-				 new Response<Integer>(HttpStatus.OK.value(),200);
-			}else if(insertresult < 0) {
-				 new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
+		if(insertresult > 0) {							
+			 new Response<Integer>(HttpStatus.OK.value(),200);
+		}else if(insertresult < 0) {
+			 new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
 		}
+		
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 	
 	@DeleteMapping("/delete/{replyid}")
 	public Response<String>replydelete(@PathVariable("replyid")Integer replyId)throws Exception{
-						
-		try {
-			service.replydelete(replyId);
-			new Response<String>(HttpStatus.OK.value(),"o.k");			
-		} catch (Exception e) {
-			e.printStackTrace();
-			new Response<String>(HttpStatus.INTERNAL_SERVER_ERROR.value(),"500");
-		}
+		service.replydelete(replyId);
 		return new Response<String>(HttpStatus.OK.value(),"o.k");
 	}
 }

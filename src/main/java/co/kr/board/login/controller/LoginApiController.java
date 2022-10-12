@@ -1,7 +1,6 @@
 package co.kr.board.login.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -16,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.board.config.Response;
-import co.kr.board.config.aop.ValidationCheck;
+import co.kr.board.config.exception.Response;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.service.MemberService;
@@ -32,30 +30,24 @@ public class LoginApiController {
 	
 	private final MemberService service;
 	
-	private final ValidationCheck check;
+//	private final ValidationCheck check;
 	
 	
 	@GetMapping("/logincheck/{id}")
 	public Response<?>idcheck(@PathVariable(value="id",required = true)String username)throws Exception{
 				
 		Boolean checkreuslt = null;
-		
-		try {
+				
+		checkreuslt = service.checkmemberEmailDuplicate(username);
 			
-			checkreuslt = service.checkmemberEmailDuplicate(username);
+		if(checkreuslt == true) {//아이디 중복
+			log.info("결과값:"+checkreuslt);
+			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
 			
-			if(checkreuslt == true) {//아이디 중복
-				log.info("결과값:"+checkreuslt);
-				return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
+		}else if(checkreuslt ==false) {//사용가능한 아이디
 			
-			}else if(checkreuslt ==false) {//사용가능한 아이디
+			return	new Response<Boolean>(HttpStatus.OK.value(),true);
 			
-				return	new Response<Boolean>(HttpStatus.OK.value(),true);
-			
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new Response<Boolean>(HttpStatus.BAD_GATEWAY.value(),false);
 		}
 		
 		return new Response<Boolean>(HttpStatus.OK.value(),true);
@@ -66,20 +58,15 @@ public class LoginApiController {
 		
 		List<MemberDto.MemeberResponseDto>list =null;
 		
-		try {
-			list = service.findAll();
+		
+		list = service.findAll();
 			
-			if(list == null){
+		if(list == null){
 				
-				return new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
+			return new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
 			
-			}
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-			return new Response<List<MemeberResponseDto>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
 		}
+		
 		
 		return new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
 	}
@@ -89,19 +76,17 @@ public class LoginApiController {
 		
 		MemberDto.MemeberResponseDto dto = null;
 		
-		try {
-			dto =service.getMember(useridx);
 			
-			if(dto != null) {
+		dto =service.getMember(useridx);
+			
+		if(dto != null) {
 				
-				new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
-			}else if(dto == null) {
+			new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
+			
+		}else if(dto == null) {
 				
-				new Response<MemberDto.MemeberResponseDto>(HttpStatus.BAD_REQUEST.value(),dto);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			new Response<MemberDto.MemeberResponseDto>(HttpStatus.INTERNAL_SERVER_ERROR.value(),dto);
+			new Response<MemberDto.MemeberResponseDto>(HttpStatus.BAD_REQUEST.value(),dto);
+			
 		}
 		
 		return new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
@@ -113,79 +98,62 @@ public class LoginApiController {
 		int joinresult = 0;
 		
 		//유효성 검사
-		if(bindingresult.hasErrors()) {
-			
-			Map<String, String> validatorResult = check.validateHandling(bindingresult);
-			log.info("result:"+validatorResult);
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
-		}
+//		if(bindingresult.hasErrors()) {
+//			
+//			Map<String, String> validatorResult = check.validateHandling(bindingresult);
+//			log.info("result:"+validatorResult);
+//			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
+//		}
 		
-		//회원가입
-		try {
 			
 			joinresult = service.memberjoin(dto);
 			
 			if(joinresult > 0) {	
 				
-			return	new Response<Integer>(HttpStatus.OK.value(),joinresult);
+				return	new Response<Integer>(HttpStatus.OK.value(),joinresult);
 			
 			}else if(joinresult < 0) {
 				
-			return	new Response<Integer>(HttpStatus.BAD_GATEWAY.value(),joinresult);
+				return	new Response<Integer>(HttpStatus.BAD_GATEWAY.value(),joinresult);
 			
 			}
-		} catch (Exception e) {
-	
-			e.printStackTrace();
-	
-			return	new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),joinresult);
-		}
-		
+			
 		return new Response<Integer>(HttpStatus.OK.value(),joinresult);
 	}
 	
 	@DeleteMapping("/memberdelete/{idx}/member")
 	public Response<String>memberdelete(@PathVariable(value="idx")String username)throws Exception{
-				
-		try {		
-			service.memberdelete(username);
-			
-		return	new Response<>(HttpStatus.OK.value(),"delete");	
 		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		service.memberdelete(username);		
 		
 		return new Response<>(HttpStatus.OK.value(),"delete");
 	}
 	
 	@PutMapping("/memberupdate/{idx}/member")
-	public Response<?>memberupdate(@PathVariable(value="idx")Integer useridx,@Valid @RequestBody MemberDto.MemberRequestDto dto,BindingResult bindingresult)throws Exception{
+	public Response<?>memberupdate(
+			@PathVariable(value="idx")Integer useridx,
+			@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 				
 		int updateresult = 0;
 		
 		//유효성 검사
-		if(bindingresult.hasErrors()) {
-			
-			Map<String, String> validatorResult = check.validateHandling(bindingresult);
-			log.info("result:"+validatorResult);
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
-		}
+//		if(bindingresult.hasErrors()) {
+//			
+//			Map<String, String> validatorResult = check.validateHandling(bindingresult);
+//			log.info("result:"+validatorResult);
+//			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
+//		}
 		
-		try {			
 			updateresult = service.memberupdate(useridx, dto);
 			
 			if(updateresult>0) {			
 			return	new Response<Integer>(HttpStatus.OK.value(),200);
 			
 			}else if(updateresult < 0) {
-			return	new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
+			return	new Response<Integer>(HttpStatus.BAD_REQUEST.value(), 400);
 			
 			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			return new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
-		}
+		
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 }

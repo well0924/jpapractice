@@ -1,4 +1,4 @@
-package co.kr.board.config.handler;
+package co.kr.board.config.security.handler;
 
 import java.io.IOException;
 import java.net.URLEncoder;

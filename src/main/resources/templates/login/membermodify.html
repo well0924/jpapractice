@@ -68,6 +68,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <script type="text/javascript">
 //회원 수정
 function memberupdate(){
+	
 	let idx = $('#userno').val();
 	let id = $('#user_id').val();
 	let pwd = $('#user_pw').val();
@@ -76,12 +77,13 @@ function memberupdate(){
 	
 	let memberdate={
 		username : id,
-		userpw : pw,
-		username : name,
+		userpw : pwd,
+		membername : name,
 		useremail : email
 	}
+	
 	$.ajax({
-		url:'api/login/memberupdate/'+idx+'/member',
+		url:'/api/login/memberupdate/'+idx+'/member',
 		type:'put',
 		data:JSON.stringify(memberdate),
 		dataType:'json',
@@ -93,10 +95,11 @@ function memberupdate(){
 }
 //회원 탈퇴
 function memberdelete(){
+	
 	let idx = $('#userno').val();
 	
 	$.ajax({
-		url:'api/login/memberdelete/'+idx+'/member',
+		url:'/api/login/memberdelete/'+idx+'/member',
 		type:'delete',
 		data:null,
 		contentType:'application/json; charset=utf-8'

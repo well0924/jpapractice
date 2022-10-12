@@ -1,4 +1,4 @@
-package co.kr.board.config;
+package co.kr.board.config.exception;
 
 
 import lombok.AllArgsConstructor;
@@ -15,5 +15,6 @@ import lombok.Setter;
 public class Response<T> {
 	
 	private Integer status;
+	
 	private T data;
 }

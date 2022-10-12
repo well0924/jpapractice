@@ -1,7 +1,6 @@
 package co.kr.board.board.controller;
 
 
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -25,8 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
-import co.kr.board.config.Response;
-import co.kr.board.config.aop.ValidationCheck;
+import co.kr.board.config.exception.Response;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,11 +32,10 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/board/*")
-public class BoardRestController {
+public class BoardApiController {
 	
 	private final BoardService service;
 	
-	private final ValidationCheck check;
 	//페이징
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping("/list")
@@ -46,24 +43,18 @@ public class BoardRestController {
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 				
 		Page<Board>list =null;
-		
-		try {
-			
-			list = service.findAll(pageable);
-			
-			if(list != null) {			
-			
-				new Response<Page<Board>>(HttpStatus.OK.value(),list);
-			
-			}else {
 				
-				new Response<Page<Board>>(HttpStatus.BAD_REQUEST.value(),list);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		list = service.findAll(pageable);
+		
+		if(list != null) {			
+		
+			new Response<Page<Board>>(HttpStatus.OK.value(),list);
+		
+		}else {
 			
-			new Response<Page<Board>>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
+			new Response<Page<Board>>(HttpStatus.BAD_REQUEST.value(),list);
 		}
+		
 		return new Response<Page<Board>>(HttpStatus.OK.value(),list);
 	}
 	
@@ -74,18 +65,15 @@ public class BoardRestController {
 		
 		Page<BoardDto.BoardResponseDto>list = null;
 		
-		try {
-			list = service.findAllSearch(keyword, pageable);
+		
+		list = service.findAllSearch(keyword, pageable);
 			
-			if(list != null) {
-				return new Response<>(HttpStatus.OK.value(),list);
-			}else {
-				return new Response<>(HttpStatus.BAD_REQUEST.value(),list);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),list);
+		if(list != null) {
+			return new Response<>(HttpStatus.OK.value(),list);
+		}else {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(),list);
 		}
+		
 	}
 	
 	@PostMapping("/write")
@@ -94,32 +82,17 @@ public class BoardRestController {
 		
 		int result = 0;
 		
-		if(bindingresult.hasErrors()) {
-			Map<String, String> validatorResult = check.validateHandling(bindingresult);
-			log.info("result:"+validatorResult);
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
+		result = service.boardsave(dto);
+								
+		if(result > 0) {					
+				
+			return new Response<Integer>(HttpStatus.OK.value(),200);
+				
+		}else if(result <0) {
+					
+			return new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
 		}
-		
-		try {
-			
-				result = service.boardsave(dto);
-				
-				log.info("결과값:"+result);
-				
-				if(result > 0) {					
-				
-					return new Response<Integer>(HttpStatus.OK.value(),200);
-				
-				}else if(result <0) {
-					return new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
-				}
-				
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-			return new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
-		}
+	
 		return new Response<Integer>(HttpStatus.OK.value(),result);
 	}
 	
@@ -127,21 +100,14 @@ public class BoardRestController {
 	public Response<BoardDto.BoardResponseDto> detailarticle(@PathVariable(value="id",required = true)Integer boardId)throws Exception{
 				
 		BoardDto.BoardResponseDto detail = null;
-		
-		try {	   
-			detail = service.getBoard(boardId);
+		   
+		detail = service.getBoard(boardId);
 			
-			if(detail != null) {
+		if(detail != null) {
 	
-				new Response<BoardDto.BoardResponseDto>(HttpStatus.OK.value(),detail);
+		new Response<BoardDto.BoardResponseDto>(HttpStatus.OK.value(),detail);
 			
-			}		
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-			new Response<BoardDto.BoardResponseDto>(HttpStatus.INTERNAL_SERVER_ERROR.value(),detail);
-		}
+		}		
 		
 		return new Response<BoardDto.BoardResponseDto>(HttpStatus.OK.value(),detail);
 	}
@@ -149,19 +115,10 @@ public class BoardRestController {
 	@DeleteMapping("/delete/{id}")
 	public Response<Integer>deletearticle(@PathVariable(value="id")Integer boardId)throws Exception{
 				
-		try {
-			service.deleteBoard(boardId);
+		service.deleteBoard(boardId);
 	
-			new Response<Integer>(HttpStatus.OK.value(),200);
-		
-		} catch (Exception e) {		
-		
-			e.printStackTrace();
-			
-			new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),500);
-		
-		}
-		
+		new Response<Integer>(HttpStatus.OK.value(),200);
+				
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 	
@@ -170,31 +127,17 @@ public class BoardRestController {
 			@PathVariable(value="id")Integer boardId,
 			@Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult)throws Exception{
 		
-		if(bindingresult.hasErrors()) {
-			Map<String, String> validatorResult = check.validateHandling(bindingresult);
-			log.info("result:"+validatorResult);
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
-		}
-		
 		int result = 0;
+					
+		result = service.updateBoard(boardId, dto);
 		
-		try {
-			
-			result = service.updateBoard(boardId, dto);
-			
-			if(result > 0) {			
+		if(result > 0) {			
 
-				new Response<Integer>(HttpStatus.OK.value(),result);
-			
-			}else {
-			
-				new Response<Integer>(HttpStatus.BAD_REQUEST.value(),result);
-			}
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			
-			new Response<Integer>(HttpStatus.INTERNAL_SERVER_ERROR.value(),result);
+			new Response<Integer>(HttpStatus.OK.value(),result);
+		
+		}else {
+		
+			new Response<Integer>(HttpStatus.BAD_REQUEST.value(),result);
 		}
 		
 		return new Response<Integer>(HttpStatus.OK.value(),result);

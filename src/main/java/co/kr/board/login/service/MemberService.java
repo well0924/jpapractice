@@ -142,7 +142,7 @@ public class MemberService {
 				.password(dto.getPassword())
 				.membername(dto.getMembername())
 				.useremail(dto.getUseremail())
-				.role(Role.ADMIN)
+				.role(Role.USER)
 				.createdAt(LocalDateTime.now())
 				.build();
 		

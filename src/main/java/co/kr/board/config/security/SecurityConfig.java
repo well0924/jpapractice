@@ -10,8 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import co.kr.board.config.handler.LoginFailuererHandler;
-import co.kr.board.config.handler.LoginSuccessHandler;
+import co.kr.board.config.security.handler.LoginFailuererHandler;
+import co.kr.board.config.security.handler.LoginSuccessHandler;
 import co.kr.board.config.security.service.CustomUserDetailService;
 
 @Configuration
