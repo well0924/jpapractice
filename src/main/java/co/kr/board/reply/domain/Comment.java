@@ -15,14 +15,12 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import co.kr.board.board.domain.BaseTime;
 import co.kr.board.board.domain.Board;
 import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
 @Getter
@@ -30,8 +28,7 @@ import lombok.ToString;
 @Table(name="reply")
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "board")
-public class Comment extends BaseTime{
+public class Comment{
 	
 	@Id
 	@Column(name="reply_id")
@@ -47,15 +44,17 @@ public class Comment extends BaseTime{
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 	
-	@JsonIgnore
+	//게시글
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="board_id")
 	private Board board;
 	
-	@JsonIgnore
+	//회원
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="useridx")
 	private Member member;
+	
+	
 	
 	public void changeBoard(Board board) {
 		this.board = board;

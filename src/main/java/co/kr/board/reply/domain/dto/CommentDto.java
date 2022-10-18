@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.Board;
+import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class CommentDto {
 		private Integer replyId;
 		
 		private Integer boardId;
-		
+				
 		@NotBlank(message = "내용을 입력해 주세요.")
 		private String replyContents;
 		
@@ -35,6 +36,8 @@ public class CommentDto {
 		private String replyWriter;
 		
 		private Board board;
+		
+		private Member member;
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;

@@ -57,14 +57,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 	private void redirectStrategy(HttpServletRequest request,HttpServletResponse response,Authentication authentication)throws Exception {
 		
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
-		
-		if(savedRequest != null) {
-		
-			redirectStratgy.sendRedirect(request, response, "/page/login/memberjoin");
-		
-		}else {
+		log.info(savedRequest);
 			
-			Set<String>roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
+		Set<String>roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 			
 			if(roles.contains(Role.ADMIN.getValue())) {
 				
@@ -74,7 +69,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 				
 				redirectStratgy.sendRedirect(request, response,DEFAULT_URL);
 			
-			}
 		}
+		
 	}
 }

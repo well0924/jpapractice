@@ -13,10 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
@@ -55,16 +55,23 @@ public class Board extends BaseTime{
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 	
-	//회원
-	@ManyToOne(fetch =FetchType.LAZY)
-	@JoinColumn(name="useridx")
-	private Member member;
-	
 	//댓글
-	@JsonIgnore
 	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+	@OrderBy("replyId desc")
 	private List<Comment>commentlist;
 	
+	//회원
+	@ManyToOne(fetch =FetchType.LAZY)
+	@JoinColumn(name="useridx",nullable = false)
+	private Member writer;
+	
+	public Board(String boardTitle,String boardContents,Member writer,Integer readCount,LocalDateTime createdAt) {
+		this.boardTitle = boardTitle;
+		this.boardContents = boardContents;
+		this.writer = writer;
+		this.readCount = readCount;
+		this.createdAt = LocalDateTime.now();
+	}
 	
 	//게시글 수정
 	public void update(String boardTitle,String boardContents,String boardAuthor,Integer readCount) {	
@@ -79,4 +86,8 @@ public class Board extends BaseTime{
 		this.readCount ++;
 	}
 	
+	//댓글 넣기
+	public void writeCommnet(Comment comment) {
+		this.commentlist.add(comment);
+	}
 }

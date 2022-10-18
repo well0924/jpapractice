@@ -15,8 +15,7 @@ import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.domain.dto.BoardDto.BoardResponseDto;
 import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.repository.MemberRepository;
+import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,9 +24,9 @@ import lombok.extern.log4j.Log4j2;
 @AllArgsConstructor
 public class BoardService {
 	
-	private final BoardRepository repos;
+	private final BoardRepository repos;		
 	
-	private final MemberRepository user;
+	private final MemberService service;
 	
 	@Transactional
 	public List<BoardDto.BoardResponseDto>findAll() throws Exception{
@@ -55,11 +54,19 @@ public class BoardService {
 	}
 	
 	@Transactional
-	public Page<Board> findAll(Pageable pageable) throws Exception{
+	public Page<BoardDto.BoardResponseDto> findAll(Pageable pageable) throws Exception{
 		
-		Page<Board> articlelist= repos.findAll(pageable);
+		Page<Board> articlelist = repos.findAll(pageable);
 		
-		return articlelist;
+		Page<BoardDto.BoardResponseDto> list = articlelist.map(board ->new BoardResponseDto(
+				board.getBoardId(),
+				board.getBoardAuthor(),
+				board.getBoardContents(),
+				board.getBoardTitle(),
+				board.getReadCount(),
+				board.getCreatedAt()));
+		
+		return list;
 	}
 	
 	//페이징 + 검색기능
@@ -83,7 +90,7 @@ public class BoardService {
 	@Transactional
 	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
 		
-		Board board = dtoToEntity(dto);
+		Board board = EntityTodto(dto);
 		
 		repos.save(board);
 		
@@ -147,8 +154,9 @@ public class BoardService {
 		return boardId;
 	}
 	
-	public Board dtoToEntity(BoardDto.BoardRequestDto dto) {
-		
+	//Entity 에서 dto로 변경
+	public Board EntityTodto(BoardDto.BoardRequestDto dto) throws Exception {
+				
 		Board board = Board
 				.builder()
 				.boardId(dto.getBoardId())
@@ -156,10 +164,10 @@ public class BoardService {
 				.boardAuthor(dto.getBoardAuthor())
 				.boardContents(dto.getBoardContents())
 				.readCount(0)
-				.member(dto.getMember())
+				.writer(dto.getMember())
 				.createdAt(LocalDateTime.now())
 				.build();
-		
+				
 		return board;
 	}
 }

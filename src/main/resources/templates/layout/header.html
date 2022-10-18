@@ -23,7 +23,7 @@ layout:decorator="/layout/mainlayout">
         <li class="nav-item" sec:authorize="!isAuthenticated()">
           	<a class="nav-link" th:href="@{/page/login/loginpage}">로그인</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" sec:authorize="!isAuthenticated()">
        		<a class="nav-link" th:href="@{/page/login/memberjoin}">회원가입</a>
         </li>
         <li class="nav-item">
@@ -39,7 +39,6 @@ layout:decorator="/layout/mainlayout">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
           <div class="dropdown-menu">
           	<div sec:authorize-expr="isAuthenticated()">
-          		[[${principal}]]
           		<a class="dropdown-item" th:href="@{/page/login/memberdelete}">회원탈퇴</a>
             	<a class="dropdown-item" th:href="@{/page/login/memberupdate}">회원수정</a>
             	<a class="dropdown-item" th:href="@{/logout}">로그아웃</a>
@@ -51,8 +50,8 @@ layout:decorator="/layout/mainlayout">
           </div>
         </li>
       </ul>
-      <form action="/page/board/list" method="get" class="d-flex">
-        <input class="form-control me-sm-2" type="text"  placeholder="Search">
+      <form th:action=@{/page/board/list} method="get" class="d-flex" th:value="${param.keyword}">
+        <input class="form-control me-sm-2" type="text"  placeholder="Search" id="keyword" name="keyword">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>

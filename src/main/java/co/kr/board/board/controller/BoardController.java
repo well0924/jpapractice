@@ -13,43 +13,42 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 @Log4j2
 @Controller
 @AllArgsConstructor
 @RequestMapping("/page/board/*")
 public class BoardController {
 	
-	private final BoardService service;
-	
+	private final BoardService service;	
+		
 	@GetMapping("/list")
 	public ModelAndView pagelist(
+			@RequestParam(required = false,defaultValue = "") String keyword,
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		
-		Page<Board> list =null;
-
-		try {
+		Page<BoardDto.BoardResponseDto> list =null;
 		
-			list = service.findAll(pageable);
-			log.info(list);
-		} catch (Exception e) {
-			e.printStackTrace();		
-		}
+		list =service.findAllSearch(keyword, pageable);
+			
+		list = service.findAll(pageable);
+		log.info(list);
 		
 		mv.addObject("list", list);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());
 		mv.addObject("hasNext", list.hasNext());        
 		mv.addObject("hasPrev", list.hasPrevious());
-		
+		mv.addObject("keyword", keyword);
 		mv.setViewName("board/boardlist");
 		
 		return mv;
@@ -60,12 +59,8 @@ public class BoardController {
 	
 		ModelAndView mv = new ModelAndView();
 		
-		try {
-			dto = service.getBoard(boardId);
-			log.info("result:"+dto);			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		dto = service.getBoard(boardId);
+		log.info("result:"+dto);			
 		
 		mv.addObject("detail", dto);
 		mv.setViewName("board/detailpage");
@@ -76,12 +71,7 @@ public class BoardController {
 	@GetMapping("/write")
 	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding)throws Exception{
 	
-		ModelAndView mv = new ModelAndView();
-		
-		if(binding.hasErrors()) {//유효성 검사에 문제가 있는 경우
-			mv.setViewName("board/writeboard");
-		}
-		
+		ModelAndView mv = new ModelAndView();	
 		
 		mv.setViewName("board/writeboard");
 	
@@ -93,11 +83,7 @@ public class BoardController {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		try {
-			dto = service.getBoard(boardId);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		dto = service.getBoard(boardId);
 		
 		mv.addObject("modify", dto);
 		mv.setViewName("board/modifyboard");

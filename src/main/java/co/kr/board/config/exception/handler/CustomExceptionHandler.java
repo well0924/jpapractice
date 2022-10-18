@@ -1,17 +1,17 @@
 package co.kr.board.config.exception.handler;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import co.kr.board.config.exception.dto.ErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import co.kr.board.config.exception.Response;
-
-@RestControllerAdvice
-public class CustomExceptionHandler {
+@Getter
+@AllArgsConstructor
+public class CustomExceptionHandler extends RuntimeException{
 	
-	@ExceptionHandler(value= IllegalArgumentException.class)
-	public Response<String>illefalArgumentException(Exception e)throws Exception{
-		
-		return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage());
-	}
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private final ErrorCode errorcode;
 }

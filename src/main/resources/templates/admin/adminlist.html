@@ -19,15 +19,7 @@ layout:decorator="/layout/mainlayout">
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
 어드민 페이지 입니다.
-<div sec:authorize="hasRole('ROLE_ADMIN')">
-  This content is only shown to administrators.
-</div>
-<div sec:authorize="hasRole('ROLE_USER')">
-  This content is only shown to users.
-</div>
-<p th:text="${#authentication.name}"></p>
-<p th:text="${#authentication.authorities}"></p>
-<p th:text="${#authentication.authenticated}"></p>
+
 <table class="table">
   <thead>
     <tr>

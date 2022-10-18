@@ -13,12 +13,15 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
+import co.kr.board.login.repository.MemberRepository;
 import co.kr.board.reply.domain.Comment;
 import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import co.kr.board.reply.repository.CommentRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @AllArgsConstructor
 public class CommentService {
@@ -26,6 +29,8 @@ public class CommentService {
 	private final CommentRepository repository;
 	
 	private final BoardRepository boardrepository;
+	
+	private final MemberRepository memberrepository;
 	
 	@Transactional
 	public List<CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
@@ -55,6 +60,11 @@ public class CommentService {
 	
 	@Transactional
 	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
+
+		Board board = Board.builder().boardId(dto.getBoardId()).build();
+		
+		dto.setBoard(board);
+		log.info("service save:"+board);
 		
 		Comment reply = dtoToEntity(dto);
 		
@@ -72,8 +82,6 @@ public class CommentService {
 	//entity => dto
 	public Comment dtoToEntity(CommentDto.CommentRequestDto dto){
 		
-		Board board = Board.builder().boardId(dto.getBoardId()).build();
-		
 		dto.getCreatedAt();
 		
 		Comment comment = Comment
@@ -82,7 +90,8 @@ public class CommentService {
 				.replyWriter(dto.getReplyWriter())
 				.replyContents(dto.getReplyContents())
 				.createdAt(LocalDateTime.now())
-				.board(board)
+				.board(dto.getBoard())
+				.member(dto.getMember())
 				.build();
 		
 		return comment;

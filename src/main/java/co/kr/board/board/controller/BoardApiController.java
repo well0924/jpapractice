@@ -1,7 +1,5 @@
 package co.kr.board.board.controller;
 
-
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -21,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
-import co.kr.board.config.exception.Response;
+import co.kr.board.config.exception.dto.Response;
+import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,64 +34,43 @@ public class BoardApiController {
 	
 	private final BoardService service;
 	
+	private final MemberRepository memberrepo;
+	
 	//페이징
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping("/list")
-	public Response<Page<Board>>articlelist(
+	public Response<Page<BoardDto.BoardResponseDto>>articlelist(
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 				
-		Page<Board>list =null;
+		Page<BoardDto.BoardResponseDto>list =null;
 				
 		list = service.findAll(pageable);
 		
-		if(list != null) {			
-		
-			new Response<Page<Board>>(HttpStatus.OK.value(),list);
-		
-		}else {
-			
-			new Response<Page<Board>>(HttpStatus.BAD_REQUEST.value(),list);
-		}
-		
-		return new Response<Page<Board>>(HttpStatus.OK.value(),list);
+		return new Response<Page<BoardDto.BoardResponseDto>>(HttpStatus.OK.value(),list);
 	}
 	
+	//페이징+검색.
 	@GetMapping("/list/search")
 	public Response<Page<BoardDto.BoardResponseDto>>searchlist(
-			@RequestParam String keyword,
+			@RequestParam(required = false) String keyword,
 			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		Page<BoardDto.BoardResponseDto>list = null;
 		
-		
 		list = service.findAllSearch(keyword, pageable);
 			
-		if(list != null) {
-			return new Response<>(HttpStatus.OK.value(),list);
-		}else {
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),list);
-		}
-		
+		return new Response<>(HttpStatus.OK.value(),list);	
 	}
 	
+	//작성
 	@PostMapping("/write")
-	public Response<?>writeproc(@Valid @RequestBody BoardDto.BoardRequestDto dto,
-			BindingResult bindingresult)throws Exception{
+	public Response<?>writeproc(@Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult)throws Exception{
 		
 		int result = 0;
 		
-		result = service.boardsave(dto);
-								
-		if(result > 0) {					
-				
-			return new Response<Integer>(HttpStatus.OK.value(),200);
-				
-		}else if(result <0) {
-					
-			return new Response<Integer>(HttpStatus.BAD_REQUEST.value(),400);
-		}
-	
-		return new Response<Integer>(HttpStatus.OK.value(),result);
+		result = service.boardsave(dto);				
+		
+		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 	
 	@GetMapping("/detail/{id}")
@@ -102,13 +79,7 @@ public class BoardApiController {
 		BoardDto.BoardResponseDto detail = null;
 		   
 		detail = service.getBoard(boardId);
-			
-		if(detail != null) {
-	
-		new Response<BoardDto.BoardResponseDto>(HttpStatus.OK.value(),detail);
-			
-		}		
-		
+					
 		return new Response<BoardDto.BoardResponseDto>(HttpStatus.OK.value(),detail);
 	}
 	
@@ -116,30 +87,18 @@ public class BoardApiController {
 	public Response<Integer>deletearticle(@PathVariable(value="id")Integer boardId)throws Exception{
 				
 		service.deleteBoard(boardId);
-	
-		new Response<Integer>(HttpStatus.OK.value(),200);
 				
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 	
 	@PutMapping("/update/{id}")
 	public Response<?>updatearticle(
-			@PathVariable(value="id")Integer boardId,
-			@Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult)throws Exception{
+			@PathVariable(value="id")Integer boardId, @Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult)throws Exception{
 		
 		int result = 0;
 					
 		result = service.updateBoard(boardId, dto);
-		
-		if(result > 0) {			
-
-			new Response<Integer>(HttpStatus.OK.value(),result);
-		
-		}else {
-		
-			new Response<Integer>(HttpStatus.BAD_REQUEST.value(),result);
-		}
-		
+				
 		return new Response<Integer>(HttpStatus.OK.value(),result);
 	}
 }

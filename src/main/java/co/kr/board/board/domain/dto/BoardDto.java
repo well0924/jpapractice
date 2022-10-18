@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.dto.CommentDto;
@@ -27,6 +28,8 @@ public class BoardDto {
 	public static class BoardRequestDto{
 		
 		private Integer boardId;
+		
+		private Integer useridx;
 		
 		@NotBlank(message ="제목을 입력해주세요.")
 		private String boardTitle;
@@ -65,18 +68,20 @@ public class BoardDto {
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
+		@JsonIgnore
+		private Member member;
+		
+		@JsonIgnore
 		private List<CommentDto.CommentResponseDto> comments;
 		
 		@Builder
 		public BoardResponseDto(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readCount,LocalDateTime createdAt) {
-			
 			this.boardId = boardId;
 			this.boardTitle = boardTitle;
 			this.boardContents = boardContents;
 			this.boardAuthor = boardAuthor;
 			this.readCount = readCount;
-			this.createdAt = createdAt;
-			
+			this.createdAt = createdAt;			
 		}
 		
 	}

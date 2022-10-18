@@ -52,10 +52,12 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
             <label for="replywriter">댓글 작성자</label>
             <input class="form-control" id="replywriter" name="replyWriter" placeholder="댓글 작성자를 입력해주세요">
         </div>
+        <div id="valid_replyWriter"></div>
         <div class="form-group">
             <label for="replycontents">댓글 내용</label>
             <input class="form-control" id="replycontents" name="replyContents" placeholder="댓글 내용을 입력해주세요">
         </div>
+        <div id="valid_replyContents"></div>
         <button type="button" onclick="replyInsert()">댓글 작성</button>
     </div>
 </div>
@@ -153,11 +155,36 @@ function replyInsert(){
 		contentType:'application/json; charset=utf-8'
 	
 	}).done(function(resp){
-		alert('댓글이 작성 되었습니다.');
+	
+		console.log(resp);
+		console.log(resp.status);
+		console.log(resp.data);
+	
+		if(resp.status == 200){
 		
-		$('#replywriter').val(" ");
-		$('#replycontents').val(" ");
-		getCommentlist();
+			alert('댓글이 작성 되었습니다.');	
+			$('#replywriter').val(" ");
+			$('#replycontents').val(" ");
+			getCommentlist();
+		}
+		
+		if(resp.status == 400){
+			console.log("valid!");
+			
+			if(resp.data.hasOwnProperty('valid_replyWriter')){
+				$('#valid_replyWriter').text(resp.data.valid_replyWriter);
+				$('#valid_replyWriter').css('color','red');
+			}else{
+				$('#valid_replyWriter').text('');
+			}
+			
+			if(resp.data.hasOwnProperty('valid_replyContents')){
+				$('#valid_replyContents').text(resp.data.valid_replyContents);
+				$('#valid_replyContents').css('color','red');
+			}else{
+				$('#valid_replyContents').text('');
+			}
+		}
 	});
 }
 

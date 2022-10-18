@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.board.config.exception.Response;
+import co.kr.board.config.exception.dto.Response;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.service.MemberService;
@@ -29,9 +29,6 @@ import lombok.extern.log4j.Log4j2;
 public class LoginApiController {
 	
 	private final MemberService service;
-	
-//	private final ValidationCheck check;
-	
 	
 	@GetMapping("/logincheck/{id}")
 	public Response<?>idcheck(@PathVariable(value="id",required = true)String username)throws Exception{
@@ -58,15 +55,7 @@ public class LoginApiController {
 		
 		List<MemberDto.MemeberResponseDto>list =null;
 		
-		
-		list = service.findAll();
-			
-		if(list == null){
-				
-			return new Response<List<MemeberResponseDto>>(HttpStatus.BAD_REQUEST.value(),list);
-			
-		}
-		
+		list = service.findAll();		
 		
 		return new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
 	}
@@ -76,19 +65,8 @@ public class LoginApiController {
 		
 		MemberDto.MemeberResponseDto dto = null;
 		
-			
 		dto =service.getMember(useridx);
-			
-		if(dto != null) {
 				
-			new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
-			
-		}else if(dto == null) {
-				
-			new Response<MemberDto.MemeberResponseDto>(HttpStatus.BAD_REQUEST.value(),dto);
-			
-		}
-		
 		return new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
 	}
 		
@@ -97,28 +75,9 @@ public class LoginApiController {
 		
 		int joinresult = 0;
 		
-		//유효성 검사
-//		if(bindingresult.hasErrors()) {
-//			
-//			Map<String, String> validatorResult = check.validateHandling(bindingresult);
-//			log.info("result:"+validatorResult);
-//			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
-//		}
-		
-			
-			joinresult = service.memberjoin(dto);
-			
-			if(joinresult > 0) {	
-				
-				return	new Response<Integer>(HttpStatus.OK.value(),joinresult);
-			
-			}else if(joinresult < 0) {
-				
-				return	new Response<Integer>(HttpStatus.BAD_GATEWAY.value(),joinresult);
-			
-			}
-			
-		return new Response<Integer>(HttpStatus.OK.value(),joinresult);
+		joinresult = service.memberjoin(dto);
+					
+		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}
 	
 	@DeleteMapping("/memberdelete/{idx}/member")
@@ -136,23 +95,7 @@ public class LoginApiController {
 				
 		int updateresult = 0;
 		
-		//유효성 검사
-//		if(bindingresult.hasErrors()) {
-//			
-//			Map<String, String> validatorResult = check.validateHandling(bindingresult);
-//			log.info("result:"+validatorResult);
-//			return new Response<>(HttpStatus.BAD_REQUEST.value(),validatorResult);
-//		}
-		
-			updateresult = service.memberupdate(useridx, dto);
-			
-			if(updateresult>0) {			
-			return	new Response<Integer>(HttpStatus.OK.value(),200);
-			
-			}else if(updateresult < 0) {
-			return	new Response<Integer>(HttpStatus.BAD_REQUEST.value(), 400);
-			
-			}
+		updateresult = service.memberupdate(useridx, dto);
 		
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}

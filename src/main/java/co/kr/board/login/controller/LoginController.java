@@ -1,8 +1,5 @@
 package co.kr.board.login.controller;
 
-
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,13 +63,7 @@ public class LoginController {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		try {
-		
-			dto = service.getMember(useridx);
-		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		dto = service.getMember(useridx);
 		
 		mv.addObject("detail", dto);
 		mv.setViewName("login/membermodify");
@@ -86,33 +77,22 @@ public class LoginController {
 		ModelAndView mv = new ModelAndView();
 		
 		Page<Member>list= null;
-		
-		try {
 			
-			list = service.findAll(pageable);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+		list = service.findAll(pageable);
+				
 		mv.addObject("memberlist", list);
+		
 		mv.setViewName("admin/adminlist");
 		
 		return mv;
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView memberdetail(@PathVariable(value="id",required = true)Integer useridx,MemberDto.MemeberResponseDto dto)throws Exception{
+	public ModelAndView memberdetail(@PathVariable(value="id",required = true)Integer useridx, MemberDto.MemeberResponseDto dto)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		
-		try {
-		
-			dto = service.getMember(useridx);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		dto = service.getMember(useridx);
 		
 		mv.addObject("detail", dto);
 		mv.setViewName("/login/membermodify");

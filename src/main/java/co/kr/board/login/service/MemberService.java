@@ -63,7 +63,7 @@ public class MemberService {
 	
 	@Transactional
 	public MemberDto.MemeberResponseDto getMember(Integer useridx)throws Exception{
-		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다.")));
+		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new IllegalArgumentException("해당 회원이 없습니다.")));
 		
 		Member member = memberdetail.get();
 
@@ -85,7 +85,6 @@ public class MemberService {
 		dto.setPassword(encoder.encode(dto.getPassword()));
 		
 		Member member = dtoToEntity(dto); 
-		log.info("들어왔는가?:"+member);
 		repository.save(member);
 		
 		return member.getUseridx();
