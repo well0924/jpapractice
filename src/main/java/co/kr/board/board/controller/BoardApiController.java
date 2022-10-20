@@ -1,5 +1,6 @@
 package co.kr.board.board.controller;
 
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,13 +36,13 @@ public class BoardApiController {
 	
 	private final BoardService service;
 	
-	private final MemberRepository memberrepo;
+	private final MemberRepository reposi;
 	
 	//페이징
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping("/list")
 	public Response<Page<BoardDto.BoardResponseDto>>articlelist(
-			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 				
 		Page<BoardDto.BoardResponseDto>list =null;
 				
@@ -53,7 +55,7 @@ public class BoardApiController {
 	@GetMapping("/list/search")
 	public Response<Page<BoardDto.BoardResponseDto>>searchlist(
 			@RequestParam(required = false) String keyword,
-			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		Page<BoardDto.BoardResponseDto>list = null;
 		
@@ -64,11 +66,11 @@ public class BoardApiController {
 	
 	//작성
 	@PostMapping("/write")
-	public Response<?>writeproc(@Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult)throws Exception{
+	public Response<?>writeproc(@Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult,Authentication authentication)throws Exception{
 		
 		int result = 0;
-		
-		result = service.boardsave(dto);				
+			    
+		//result = service.boardsave(dto);				
 		
 		return new Response<Integer>(HttpStatus.OK.value(),200);
 	}

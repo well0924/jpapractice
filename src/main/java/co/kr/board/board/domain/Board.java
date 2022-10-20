@@ -4,6 +4,7 @@ package co.kr.board.board.domain;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,6 +19,8 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import co.kr.board.board.domain.dto.BoardDto;
+import co.kr.board.file.domain.Files;
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
 import lombok.AllArgsConstructor;
@@ -38,47 +41,45 @@ public class Board extends BaseTime{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="board_id")
-	private Integer boardId;
+	private Integer id;
 	
-	@Column(name = "board_title",nullable = false)
+	@Column(name = "board_title")
 	private String boardTitle;
 	
-	@Column(name = "board_contents",nullable = false)
+	@Column(name = "board_contents")
 	private String boardContents;
 	
-	@Column(name = "board_author",nullable = false)
+	//회원
+	@ManyToOne(cascade=CascadeType.ALL, fetch =FetchType.EAGER)
+	@JoinColumn(name="useridx")
+	private Member writer;
+	
+	@Column(name = "board_author")
 	private String boardAuthor;
 	
-	@Column(name = "read_count",nullable = true)
+	@Column(name = "read_count")
 	private Integer readCount;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 	
 	//댓글
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@OrderBy("replyId desc")
 	private List<Comment>commentlist;
 	
-	//회원
-	@ManyToOne(fetch =FetchType.LAZY)
-	@JoinColumn(name="useridx",nullable = false)
-	private Member writer;
+	//첨부파일
+	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY)
+	private List<Files>filelist;
 	
-	public Board(String boardTitle,String boardContents,Member writer,Integer readCount,LocalDateTime createdAt) {
-		this.boardTitle = boardTitle;
-		this.boardContents = boardContents;
-		this.writer = writer;
-		this.readCount = readCount;
-		this.createdAt = LocalDateTime.now();
+	//댓글 넣기
+	public void writeCommnet(Comment comment) {
+		this.commentlist.add(comment);
 	}
 	
-	//게시글 수정
-	public void update(String boardTitle,String boardContents,String boardAuthor,Integer readCount) {	
-		this.boardTitle = boardTitle;
-		this.boardContents = boardContents;
-		this.boardAuthor = boardAuthor;
-		this.readCount = readCount;
+	//회원 정보 
+	public void changeUser(Member member) {
+		this.writer = member;
 	}
 	
 	//게시글 조회수 증가
@@ -86,8 +87,10 @@ public class Board extends BaseTime{
 		this.readCount ++;
 	}
 	
-	//댓글 넣기
-	public void writeCommnet(Comment comment) {
-		this.commentlist.add(comment);
+	//게시글 수정
+	public void updateBoard(BoardDto.BoardRequestDto dto) {
+		this.boardTitle = dto.getBoardTitle();
+		this.boardContents =dto.getBoardContents();
+		this.createdAt = LocalDateTime.now();
 	}
 }

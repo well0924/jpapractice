@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.login.repository.MemberRepository;
+import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
 import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
@@ -29,15 +29,13 @@ public class CommentService {
 	private final CommentRepository repository;
 	
 	private final BoardRepository boardrepository;
-	
-	private final MemberRepository memberrepository;
-	
+		
 	@Transactional
 	public List<CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
 		
-		Optional<Board> board = boardrepository.findById(id);
+		Optional<Board> detail = boardrepository.findById(id);
 		
-		Board bb = board.get();
+		Board board = detail.get();
 		
 		List<Comment>comment = repository.findCommentsBoardId(id);
 		List<CommentDto.CommentResponseDto> list = new ArrayList<>();
@@ -46,8 +44,8 @@ public class CommentService {
 			CommentDto.CommentResponseDto dto = CommentDto
 					.CommentResponseDto
 					.builder()
-					.boardId(bb.getBoardId())
-					.replyId(co.getReplyId())
+					.boardId(board.getId())
+					.replyId(co.getId())
 					.replyContents(co.getReplyContents())
 					.replyWriter(co.getReplyWriter())
 					.createdAt(co.getCreatedAt())
@@ -61,16 +59,20 @@ public class CommentService {
 	@Transactional
 	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
 
-		Board board = Board.builder().boardId(dto.getBoardId()).build();
+		Board board = Board.builder().id(dto.getBoardId()).build();
+		Member member = Member.builder().id(dto.getMember().getId()).build();
 		
 		dto.setBoard(board);
+		dto.setMember(member);
+		
 		log.info("service save:"+board);
+		log.info("result:"+member);
 		
 		Comment reply = dtoToEntity(dto);
 		
 		repository.save(reply);
 		
-		return reply.getReplyId();
+		return reply.getId();
 	}
 	
 	@Transactional
@@ -86,7 +88,7 @@ public class CommentService {
 		
 		Comment comment = Comment
 				.builder()
-				.replyId(dto.getReplyId())
+				.id(dto.getReplyId())
 				.replyWriter(dto.getReplyWriter())
 				.replyContents(dto.getReplyContents())
 				.createdAt(LocalDateTime.now())
@@ -102,7 +104,7 @@ public class CommentService {
 		
 		CommentDto.CommentResponseDto commentlist = CommentDto.CommentResponseDto
 													.builder()
-													.replyId(comment.getReplyId())
+													.replyId(comment.getId())
 													.replyContents(comment.getReplyContents())
 													.replyWriter(comment.getReplyWriter())
 													.createdAt(comment.getCreatedAt())

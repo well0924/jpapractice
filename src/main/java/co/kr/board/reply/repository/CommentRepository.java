@@ -10,7 +10,7 @@ import co.kr.board.reply.domain.Comment;
 
 public interface CommentRepository extends CrudRepository<Comment, Integer>{
 	
-	@Query("select c from Comment c where c.board.boardId = :id")
+	@Query("select c from Comment c where c.board.id = :id")
 	List<Comment>findCommentsBoardId(@Param("id") Integer boardId)throws Exception;
 	
 	

@@ -33,7 +33,7 @@ public class Comment{
 	@Id
 	@Column(name="reply_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer replyId;
+	private Integer id;
 		
 	@Column(name="reply_writer",nullable = false)
 	private String replyWriter;
@@ -45,22 +45,24 @@ public class Comment{
 	private LocalDateTime createdAt;
 	
 	//게시글
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="board_id")
 	private Board board;
 	
 	//회원
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="useridx")
 	private Member member;
 	
 	
-	
 	public void changeBoard(Board board) {
 		this.board = board;
+		board.setWriter(member);
 	}
 	
-	public void changeMember(Member member) {
+	public void changeUser(Member member) {
 		this.member = member;
 	}
 }

@@ -17,7 +17,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer>{
 	//게시글 검색
 	@Query(
 		value="SELECT b FROM Board b WHERE b.boardTitle LIKE %:keyword% OR b.boardContents LIKE %:keyword%",
-		countQuery="SELECT COUNT(b.boardId) FROM Board b WHERE b.boardTitle LIKE %:keyword% OR b.boardContents LIKE %:keyword%"
+		countQuery="SELECT COUNT(b.id) FROM Board b WHERE b.boardTitle LIKE %:keyword% OR b.boardContents LIKE %:keyword%"
 	)
 	public Page<Board> findAllSearch(@Param("keyword") String keyword, Pageable pageable);
 }

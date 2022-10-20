@@ -72,7 +72,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/adminlist")
-	public ModelAndView adminlist(@PageableDefault(sort="useridx",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+	public ModelAndView adminlist(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		

@@ -1,6 +1,5 @@
 package co.kr.board.board.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,19 +14,15 @@ import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.domain.dto.BoardDto.BoardResponseDto;
 import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.login.service.MemberService;
+import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 @AllArgsConstructor
 public class BoardService {
 	
 	private final BoardRepository repos;		
-	
-	private final MemberService service;
-	
+		
 	@Transactional
 	public List<BoardDto.BoardResponseDto>findAll() throws Exception{
 	
@@ -39,7 +34,7 @@ public class BoardService {
 			
 			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
 												.builder()
-												.boardId(article.getBoardId())
+												.boardId(article.getId())
 												.boardTitle(article.getBoardTitle())
 												.boardContents(article.getBoardContents())
 												.boardAuthor(article.getBoardAuthor())
@@ -59,7 +54,8 @@ public class BoardService {
 		Page<Board> articlelist = repos.findAll(pageable);
 		
 		Page<BoardDto.BoardResponseDto> list = articlelist.map(board ->new BoardResponseDto(
-				board.getBoardId(),
+				board.getId(),
+				board.getId(),
 				board.getBoardAuthor(),
 				board.getBoardContents(),
 				board.getBoardTitle(),
@@ -77,7 +73,8 @@ public class BoardService {
 		
 		Page<BoardDto.BoardResponseDto>list = allSearch.map(
 					board -> new BoardResponseDto(
-							board.getBoardId(),
+							board.getId(),
+							board.getId(),
 							board.getBoardTitle(),
 							board.getBoardAuthor(),
 							board.getBoardContents(),
@@ -88,13 +85,20 @@ public class BoardService {
 	}
 	
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto)throws Exception{
+	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member)throws Exception{
 		
-		Board board = EntityTodto(dto);
-		
+		Board board = Board
+				.builder()
+				.id(null)
+				.writer(member)
+				.boardTitle(dto.getBoardTitle())
+				.boardContents(dto.getBoardContents())
+				.readCount(0)
+				.createdAt(dto.getCreatedAt())
+				.build();
 		repos.save(board);
 		
-		return board.getBoardId();
+		return board.getId();
 	}
 	
 	@Transactional
@@ -104,13 +108,12 @@ public class BoardService {
 		
 		//글 조회
 		Board board = articlelist.get();
-		
 		//게시글 조회수 증가
 		board.countUp();		
 		
 		return BoardDto.BoardResponseDto
 			   .builder()
-			   .boardId(board.getBoardId())
+			   .boardId(board.getId())
 			   .boardTitle(board.getBoardTitle())
 			   .boardAuthor(board.getBoardAuthor())
 			   .boardContents(board.getBoardContents())
@@ -129,7 +132,7 @@ public class BoardService {
 	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto)throws Exception{
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new IllegalArgumentException("해당 게시글이 없습니다.")));
-				
+	
 		articlelist.ifPresent(t -> {
 			
 			if(dto.getBoardTitle() != null) {
@@ -153,21 +156,5 @@ public class BoardService {
 		
 		return boardId;
 	}
-	
-	//Entity 에서 dto로 변경
-	public Board EntityTodto(BoardDto.BoardRequestDto dto) throws Exception {
-				
-		Board board = Board
-				.builder()
-				.boardId(dto.getBoardId())
-				.boardTitle(dto.getBoardTitle())
-				.boardAuthor(dto.getBoardAuthor())
-				.boardContents(dto.getBoardContents())
-				.readCount(0)
-				.writer(dto.getMember())
-				.createdAt(LocalDateTime.now())
-				.build();
-				
-		return board;
-	}
+
 }

@@ -33,9 +33,9 @@ layout:decorator="/layout/mainlayout">
   </thead>
   <tbody th:each="list:${memberlist}">
     <tr>
-      <th scope="row">[[${list.useridx}]]</th>
+      <th scope="row">[[${list.id}]]</th>
       <td>
-      	<a th:href="@{'/page/login/detail/'+${list.useridx}}">
+      	<a th:href="@{'/page/login/detail/'+${list.id}}">
       		[[${list.username}]]
       	</a>
       </td>

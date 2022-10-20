@@ -35,7 +35,7 @@ public class LoginApiController {
 				
 		Boolean checkreuslt = null;
 				
-		checkreuslt = service.checkmemberEmailDuplicate(username);
+		checkreuslt = service.checkmemberIdDuplicate(username);
 			
 		if(checkreuslt == true) {//아이디 중복
 			log.info("결과값:"+checkreuslt);

@@ -33,7 +33,7 @@ public class Member extends BaseTime{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer useridx;
+	private Integer id;
 	
 	@Column(name="userid",nullable = false)
 	private String username;
@@ -53,9 +53,9 @@ public class Member extends BaseTime{
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
-
-	//회원수정
-	public void memberupdate(String username, String password,String membername,String useremail) {
+	
+	//회원 수정
+	public void memberupdate(String username,String password,String membername,String useremail) {
 		this.username = username;
 		this.password = password;
 		this.membername = membername;

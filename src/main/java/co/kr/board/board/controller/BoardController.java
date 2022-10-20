@@ -1,6 +1,5 @@
 package co.kr.board.board.controller;
 
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -28,11 +27,11 @@ import lombok.extern.log4j.Log4j2;
 public class BoardController {
 	
 	private final BoardService service;	
-		
+	
 	@GetMapping("/list")
 	public ModelAndView pagelist(
 			@RequestParam(required = false,defaultValue = "") String keyword,
-			@PageableDefault(sort="boardId",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -72,7 +71,7 @@ public class BoardController {
 	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();	
-		
+
 		mv.setViewName("board/writeboard");
 	
 		return mv;

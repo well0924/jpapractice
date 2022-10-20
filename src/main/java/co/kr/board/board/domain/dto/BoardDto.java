@@ -1,15 +1,11 @@
 package co.kr.board.board.domain.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import co.kr.board.login.domain.Member;
-import co.kr.board.reply.domain.dto.CommentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +24,7 @@ public class BoardDto {
 	public static class BoardRequestDto{
 		
 		private Integer boardId;
-		
-		private Integer useridx;
-		
+				
 		@NotBlank(message ="제목을 입력해주세요.")
 		private String boardTitle;
 		
@@ -41,9 +35,7 @@ public class BoardDto {
 		private String boardAuthor;
 		
 		private Integer readCount;
-		
-		private Member member;
-		
+				
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
@@ -56,7 +48,9 @@ public class BoardDto {
 	public static class BoardResponseDto{
 		
 		private Integer boardId;
-
+		
+		private Integer useridx;
+		
 		private String boardTitle;
 
 		private String boardContents;
@@ -68,15 +62,10 @@ public class BoardDto {
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
-		@JsonIgnore
-		private Member member;
-		
-		@JsonIgnore
-		private List<CommentDto.CommentResponseDto> comments;
-		
 		@Builder
-		public BoardResponseDto(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readCount,LocalDateTime createdAt) {
+		public BoardResponseDto(Integer boardId,Integer useridx,String boardTitle,String boardContents,String boardAuthor,Integer readCount,LocalDateTime createdAt) {
 			this.boardId = boardId;
+			this.useridx = useridx;
 			this.boardTitle = boardTitle;
 			this.boardContents = boardContents;
 			this.boardAuthor = boardAuthor;
