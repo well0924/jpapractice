@@ -23,6 +23,7 @@ import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.file.domain.Files;
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
+import groovy.transform.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +33,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@ToString
 @Builder
 @Table(name="board")
 @AllArgsConstructor
@@ -50,7 +52,7 @@ public class Board extends BaseTime{
 	private String boardContents;
 	
 	//회원
-	@ManyToOne(cascade=CascadeType.ALL, fetch =FetchType.EAGER)
+	@ManyToOne(fetch =FetchType.LAZY)
 	@JoinColumn(name="useridx")
 	private Member writer;
 	
@@ -64,13 +66,24 @@ public class Board extends BaseTime{
 	private LocalDateTime createdAt;
 	
 	//댓글
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-	@OrderBy("replyId desc")
+	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@OrderBy(value="reply_id")
 	private List<Comment>commentlist;
 	
 	//첨부파일
 	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY)
 	private List<Files>filelist;
+	
+	@Builder
+	public Board(String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
+		
+		this.boardTitle = boardTitle;
+		this.boardContents = boardContents;
+		this.boardAuthor = member.getUsername();
+		this.readCount = readcount;
+		this.createdAt = LocalDateTime.now();
+		this.writer = member;
+	}
 	
 	//댓글 넣기
 	public void writeCommnet(Comment comment) {
@@ -93,4 +106,5 @@ public class Board extends BaseTime{
 		this.boardContents =dto.getBoardContents();
 		this.createdAt = LocalDateTime.now();
 	}
+
 }

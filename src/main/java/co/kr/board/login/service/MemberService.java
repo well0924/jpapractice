@@ -13,6 +13,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.domain.dto.MemberDto;
@@ -82,7 +84,7 @@ public class MemberService {
 									.ofNullable(
 									repository
 									.findById(useridx)
-									.orElseThrow(()->new IllegalArgumentException("해당 회원이 없습니다.")));
+									.orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
 		
 		Member member = memberdetail.get();
 
@@ -206,6 +208,7 @@ public class MemberService {
 	
 	//Entity 에서 Dto로 변환
 	public MemberDto.MemeberResponseDto entityToDto(Member member){
+		
 		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
 												.builder()
 												.useridx(member.getId())
@@ -216,6 +219,7 @@ public class MemberService {
 												.role(member.getRole())
 												.createdAt(LocalDateTime.now())
 												.build();
+		
 		return memberlist;
 	}
 	

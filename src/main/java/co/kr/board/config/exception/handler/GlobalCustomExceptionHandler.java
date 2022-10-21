@@ -18,7 +18,7 @@ public class GlobalCustomExceptionHandler {
 	}
 	
 	@ExceptionHandler({CustomExceptionHandler.class})
-	protected ResponseEntity<ErrorDto> handleCustomException(CustomExceptionHandler ex) {
+	protected ResponseEntity<ErrorDto> HandleCustomException(CustomExceptionHandler ex) {
         return new ResponseEntity<ErrorDto>(
         		new ErrorDto(ex.getErrorcode().getStatus(), ex.getErrorcode().getMessage()), HttpStatus.valueOf(ex.getErrorcode().getStatus()));
     }

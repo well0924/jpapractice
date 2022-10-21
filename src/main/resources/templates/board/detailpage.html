@@ -7,14 +7,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>게시글 조회화면</title>
-<!-- bootstrap5 -->
-<!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<!-- JavaScript Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<!-- jquery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<th:block th:replace="/layout/script :: scriptfragment"></th:block>
 </head>
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
@@ -22,7 +15,6 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <fieldset>
     <legend>글 조회</legend>
     <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
-    <input type="hidden" id="userid" name="userdix" th:value="${detail.useridx}">
     <div class="form-group">
       <label for="boardTitle" class="form-label mt-4">글 제목</label>
       <p id="boardTitle">[[${detail.boardTitle}]]</p>
@@ -49,10 +41,10 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         <h3 class="box-title">댓글 작성</h3>
     </div>
     <div class="box-body">
-    	<div class="form-group">
-            <label for="replywriter">댓글 작성자</label>
-            <input class="form-control" id="replywriter" name="replyWriter" placeholder="댓글 작성자를 입력해주세요">
-        </div>
+<!--     	<div class="form-group"> -->
+<!--             <label for="replywriter">댓글 작성자</label> -->
+<!--             <input class="form-control" id="replywriter" name="replyWriter" placeholder="댓글 작성자를 입력해주세요"> -->
+<!--         </div> -->
         <div id="valid_replyWriter"></div>
         <div class="form-group">
             <label for="replycontents">댓글 내용</label>
@@ -64,158 +56,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 </div>
 <!-- 댓글 화면 -->
 <div id="replies"></div>
+<script type="text/javascript" th:src="@{/js/board/boarddetail.js}"></script>
+<script type="text/javascript" th:src="@{/js/reply/reply.js}"></script>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
-<script type="text/javascript">
-//댓글 목록 보이기.
-$(document).ready(function(){
-	getCommentlist();
-});
-//목록가기o.k
-function listpage(){
-	location.href='/page/board/list';
-}
-//수정페이지 o.k
-function modifypage(){
-	
-	let id = $('#boardid').val();
-	
-	location.href='/page/board/modify/'+id;
-}
-//댓글 목록 출력하기.o.k
-function getCommentlist(){
-	
-	let boardid = $('#boardid').val();
-	
-	console.log(boardid);
-	
-	$.ajax({
-	
-		url:'/api/reply/list/'+boardid,
-		type:'get',
-		dataType:'json',
-		contentType:'application/json; charset=utf-8'
-	
-	}).done(function(resp){
-	
-		let html = "";
-		
-		var count = resp.data.length;
-	
-		console.log(resp);
-		console.log(count);
-		
-		//게시물이 있는 경우
-		if(resp.data.length > 0){
-			for(let i = 0; i<resp.data.length; i++){
-				 
-				html += "<br>";
-				html += "<div class='mb-2'>";
-                	html += "<input type='hidden' id='commentId_"+ resp.data[i].replyId +"' value='" + resp.data[i].replyId + "'>"
-                	html += "<span style='float:right;' align='right' id='commentDate_"+ resp.data[i].replyId +"'> " + resp.data[i].createdAt + " </span>";
-                	html += "<div class='mb-1 comment_container' >"
-                		html += "<h5 id='commentText_" + resp.data[i].replyId + "' style='display: inline'>" + resp.data[i].replyContents +"</h5>";
-                	html += "</div>"
-                	html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp.data[i].replyId +"'>댓글 수정 </span>";
-                	html +='<button type="button" class="btn btn-primary" onClick="replyDelete('+resp.data[i].replyId+'\)">'+'삭제'+'</button>'
-                	html += "<hr>";
-                html += "</div>"
-			}	
-		}else{
-			 //댓글이 없는 경우
-	         html += "<div class='mb-2'>";
-             html += "<h6><strong>등록된 댓글이 없습니다.</strong></h6>";
-             html += "</div>";
-		}
-		
-		$('#replies').html(html);
-	}).fail(function(error){
-		console.log(error);
-	});
-}
-
-//댓글 작성 o.k
-function replyInsert(){
-	
-	let writer=$('#replywriter').val();
-	let content=$('#replycontents').val();
-	let boardid=$('#boardid').val();
-
-	let data = {			
-		replyWriter : writer,
-		replyContents : content,
-		boardId : boardid
-	}
-	
-	$.ajax({
-	
-		url:'/api/reply/write/'+boardid,
-		type:'post',
-		data:JSON.stringify(data),
-		dataType:'json',
-		contentType:'application/json; charset=utf-8'
-	
-	}).done(function(resp){
-	
-		console.log(resp);
-		console.log(resp.status);
-		console.log(resp.data);
-	
-		if(resp.status == 200){
-		
-			alert('댓글이 작성 되었습니다.');	
-			$('#replywriter').val(" ");
-			$('#replycontents').val(" ");
-			getCommentlist();
-		}
-		
-		if(resp.status == 400){
-			console.log("valid!");
-			
-			if(resp.data.hasOwnProperty('valid_replyWriter')){
-				$('#valid_replyWriter').text(resp.data.valid_replyWriter);
-				$('#valid_replyWriter').css('color','red');
-			}else{
-				$('#valid_replyWriter').text('');
-			}
-			
-			if(resp.data.hasOwnProperty('valid_replyContents')){
-				$('#valid_replyContents').text(resp.data.valid_replyContents);
-				$('#valid_replyContents').css('color','red');
-			}else{
-				$('#valid_replyContents').text('');
-			}
-		}
-	});
-}
-
-//댓글 삭제
-function replyDelete(replyId){
-	
-	let Isconfirm = confirm('삭제하겠습니까?');
-	
-	if(Isconfirm){
-		$.ajax({
-			url:'/api/reply/delete/'+replyId,
-			type:'delete',
-			dataType:'json',
-			contentType:'application/json; charset=utf-8'
-			
-		}).done(function(resp){
-			console.log(resp);
-			
-			alert("삭제 되었습니다.");
-			
-			$('#replies').empty();
-			
-			getCommentlist();
-		}).fail(function(error){
-			
-			console.log(error);
-			$('#replies').empty();
-			getCommentlist();
-		});
-	}
-}
-</script>
 </html>

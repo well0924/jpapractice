@@ -15,7 +15,9 @@ import lombok.extern.log4j.Log4j2;
 public class CustomUserDetails implements UserDetails{
 	
 	private static final long serialVersionUID = 1L;
+	
 	private static final String ROLE_PREFIX = "ROLE_";
+	
 	private Member member;
 	
 	public CustomUserDetails(Member member) {

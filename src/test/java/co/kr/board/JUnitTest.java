@@ -17,10 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
+import co.kr.board.board.service.BoardService;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.repository.MemberRepository;
+import co.kr.board.login.service.MemberService;
 
 @SpringBootTest
 public class JUnitTest {
@@ -33,6 +35,12 @@ public class JUnitTest {
 	
 	@Autowired
 	BCryptPasswordEncoder encode;
+	
+	@Autowired
+	BoardService boardservice;
+	
+	@Autowired
+	MemberService memberservice;
 	
 	@Test
 	@DisplayName("회원가입 테스트")
@@ -137,6 +145,19 @@ public class JUnitTest {
 		List<Board>boardlist = reposi.findAll();
 		
 		assertThat(boardlist);
+		
+		Pageable pageable = Pageable.ofSize(5);
+
+		Page<Board>list = reposi.findAll(pageable);
+		
+		List<Board>content = list.getContent();
+		
+		Integer total = list.getTotalPages();
+
+		for(int i=0; i<content.size();i++) {
+			System.out.println("boardpaging content:"+content.get(i).getClass());
+		}
+		System.out.println("boardpaging total:"+total);
 	}
 	
 	@Test
@@ -144,7 +165,7 @@ public class JUnitTest {
 	public void boarddetail() {
 		Optional<Board> board = reposi.findById(1);
 		Board detail = board.get();
-		
+		System.out.println(board.get());
 		assertEquals("well4149", detail.getBoardAuthor());
 	}
 	

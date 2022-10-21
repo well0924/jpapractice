@@ -29,7 +29,12 @@ public class CommentService {
 	private final CommentRepository repository;
 	
 	private final BoardRepository boardrepository;
-		
+	
+	/*
+	 * 댓글 목록
+	 * @Param id
+	 * 게시글 조회화면에서 댓글 목록 출력 
+	 */
 	@Transactional
 	public List<CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
 		
@@ -56,6 +61,10 @@ public class CommentService {
 		return list;
 	};
 	
+	/*
+	 * 댓글 추가하기.
+	 * @Param CommentRequestDto 
+	 */
 	@Transactional
 	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
 
@@ -75,6 +84,10 @@ public class CommentService {
 		return reply.getId();
 	}
 	
+	/*
+	 * 댓글 삭제 
+	 * @Param replyId
+	 */
 	@Transactional
 	public void replydelete(Integer replyId)throws Exception{	
 		

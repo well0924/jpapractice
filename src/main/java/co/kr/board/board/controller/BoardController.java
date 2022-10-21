@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
+import co.kr.board.config.security.vo.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -35,7 +37,7 @@ public class BoardController {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		Page<BoardDto.BoardResponseDto> list =null;
+		Page<BoardDto.ResponseDto> list =null;
 		
 		list =service.findAllSearch(keyword, pageable);
 			
@@ -54,7 +56,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto)throws Exception{
+	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.ResponseDto dto)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
 		
@@ -68,17 +70,17 @@ public class BoardController {
 	}
 	
 	@GetMapping("/write")
-	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding)throws Exception{
+	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();	
-
+		
 		mv.setViewName("board/writeboard");
 	
 		return mv;
 	}
 	
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
+	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.ResponseDto dto)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		

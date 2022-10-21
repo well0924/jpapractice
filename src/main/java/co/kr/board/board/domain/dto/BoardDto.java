@@ -6,10 +6,11 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.AllArgsConstructor;
+import co.kr.board.board.domain.Board;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -18,60 +19,58 @@ public class BoardDto {
 	@Getter
 	@Setter
 	@ToString
-	@Builder
 	@NoArgsConstructor
-	@AllArgsConstructor
 	public static class BoardRequestDto{
-		
-		private Integer boardId;
-				
+						
 		@NotBlank(message ="제목을 입력해주세요.")
 		private String boardTitle;
 		
 		@NotBlank(message ="내용을 입력해주세요.")
 		private String boardContents;
 		
-		@NotBlank(message ="작성자를 입력해주세요.")
-		private String boardAuthor;
+		//@NotBlank(message ="작성자를 입력해주세요.")
+		//private String boardAuthor;
 		
 		private Integer readCount;
 				
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
+		@Builder
+		public BoardRequestDto(String boardTitle,String boardContents,Integer readCount,LocalDateTime createdAt) {
+			this.boardTitle =boardTitle;
+			this.boardContents = boardContents;
+			this.readCount = readCount;
+			this.createdAt = createdAt;
+		}
 	}
 	
 	@Getter
-	@Builder
-	@NoArgsConstructor
 	@ToString
-	public static class BoardResponseDto{
+	@RequiredArgsConstructor
+	public static class ResponseDto{
 		
 		private Integer boardId;
-		
-		private Integer useridx;
-		
+				
 		private String boardTitle;
 
 		private String boardContents;
 
 		private String boardAuthor;
-
+		
 		private Integer readCount;
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
-		
+				
 		@Builder
-		public BoardResponseDto(Integer boardId,Integer useridx,String boardTitle,String boardContents,String boardAuthor,Integer readCount,LocalDateTime createdAt) {
-			this.boardId = boardId;
-			this.useridx = useridx;
-			this.boardTitle = boardTitle;
-			this.boardContents = boardContents;
-			this.boardAuthor = boardAuthor;
-			this.readCount = readCount;
-			this.createdAt = createdAt;			
-		}
-		
+		public ResponseDto(Board board) {
+			this.boardId = board.getId();
+			this.boardTitle = board.getBoardTitle();
+			this.boardAuthor = board.getWriter().getUsername();
+			this.boardContents = board.getBoardContents();
+			this.readCount = board.getReadCount();
+			this.createdAt = board.getCreatedAt();
+		}		
 	}
 }

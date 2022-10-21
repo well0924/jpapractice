@@ -61,4 +61,5 @@ public class Member extends BaseTime{
 		this.membername = membername;
 		this.useremail = useremail;
 	}
+	
 }
