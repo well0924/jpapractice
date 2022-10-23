@@ -28,9 +28,6 @@ public class BoardDto {
 		@NotBlank(message ="내용을 입력해주세요.")
 		private String boardContents;
 		
-		//@NotBlank(message ="작성자를 입력해주세요.")
-		//private String boardAuthor;
-		
 		private Integer readCount;
 				
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")

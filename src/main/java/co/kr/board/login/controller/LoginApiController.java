@@ -3,6 +3,7 @@ package co.kr.board.login.controller;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -31,22 +32,40 @@ public class LoginApiController {
 	private final MemberService service;
 	
 	@GetMapping("/logincheck/{id}")
-	public Response<?>idcheck(@PathVariable(value="id",required = true)String username)throws Exception{
+	public Response<Boolean>idcheck(@PathVariable(value="id",required = true) String username)throws Exception{
 				
-		Boolean checkreuslt = null;
+		Boolean checkresult = null;
 				
-		checkreuslt = service.checkmemberIdDuplicate(username);
+		checkresult = service.checkmemberIdDuplicate(username);
 			
-		if(checkreuslt == true) {//아이디 중복
-			log.info("결과값:"+checkreuslt);
+		if(checkresult == true) {//아이디 중복
+			log.info("결과값:"+checkresult);
 			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
 			
-		}else if(checkreuslt ==false) {//사용가능한 아이디
-			
+		}else if(checkresult ==false) {//사용가능한 아이디
+			log.info("결과값:"+checkresult);
 			return	new Response<Boolean>(HttpStatus.OK.value(),true);
 			
 		}
 		
+		return new Response<Boolean>(HttpStatus.OK.value(),true);
+	}
+	
+	@GetMapping("/emailcheck/{email}")
+	public Response<Boolean>emailcheck(@PathVariable(value="email",required = true)@Email String useremail)throws Exception{
+		Boolean checkresult = null;
+		
+		checkresult = service.checkmemberEmailDuplicate(useremail);
+		
+		if(checkresult == true) {//아이디 중복
+			log.info("결과값:"+checkresult);
+			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
+			
+		}else if(checkresult ==false) {//사용가능한 아이디
+			log.info("결과값:"+checkresult);
+			return	new Response<Boolean>(HttpStatus.OK.value(),true);
+			
+		}
 		return new Response<Boolean>(HttpStatus.OK.value(),true);
 	}
 	
@@ -71,13 +90,13 @@ public class LoginApiController {
 	}
 		
 	@PostMapping("/memberjoin")
-	public Response<?>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
+	public Response<Integer>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 		
 		int joinresult = 0;
 		
 		joinresult = service.memberjoin(dto);
 					
-		return new Response<Integer>(HttpStatus.OK.value(),200);
+		return new Response<Integer>(HttpStatus.OK.value(),joinresult);
 	}
 	
 	@DeleteMapping("/memberdelete/{idx}/member")
@@ -89,7 +108,7 @@ public class LoginApiController {
 	}
 	
 	@PutMapping("/memberupdate/{idx}/member")
-	public Response<?>memberupdate(
+	public Response<Integer>memberupdate(
 			@PathVariable(value="idx")Integer useridx,
 			@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 				
@@ -97,6 +116,16 @@ public class LoginApiController {
 		
 		updateresult = service.memberupdate(useridx, dto);
 		
-		return new Response<Integer>(HttpStatus.OK.value(),200);
+		return new Response<Integer>(HttpStatus.OK.value(),updateresult);
+	}
+	
+	@PostMapping("/userfind/{name}/{email}")
+	public Response<?>userfindid(
+			@PathVariable(value="name",required = true)String membername,
+			@PathVariable(value="email",required = true)String useremail)throws Exception{
+		
+		String userid = service.findByMembernameAndUseremail(membername, useremail);
+		
+		return new Response<>(HttpStatus.OK.value(),userid);
 	}
 }

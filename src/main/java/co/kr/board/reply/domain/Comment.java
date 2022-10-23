@@ -13,20 +13,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
 @Builder
 @Table(name="reply")
-@NoArgsConstructor
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class Comment{
 	
@@ -45,24 +44,21 @@ public class Comment{
 	private LocalDateTime createdAt;
 	
 	//게시글
-	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="board_id")
 	private Board board;
 	
 	//회원
-	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="useridx")
 	private Member member;
 	
-	
-	public void changeBoard(Board board) {
+	@Builder
+	public Comment(Member member,Board board,String replyWriter,String replyContents,LocalDateTime createdAt) {
 		this.board = board;
-		board.setWriter(member);
-	}
-	
-	public void changeUser(Member member) {
 		this.member = member;
+		this.replyContents = replyContents;
+		this.replyWriter = member.getUsername();
+		this.createdAt = LocalDateTime.now();
 	}
 }

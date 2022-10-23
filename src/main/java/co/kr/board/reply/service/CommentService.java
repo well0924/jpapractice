@@ -1,7 +1,5 @@
 package co.kr.board.reply.service;
 
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,15 +11,15 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
 import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import co.kr.board.reply.repository.CommentRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Service
 @AllArgsConstructor
 public class CommentService {
@@ -63,23 +61,34 @@ public class CommentService {
 	
 	/*
 	 * 댓글 추가하기.
-	 * @Param CommentRequestDto 
+	 * @Param CommentRequestDto
+	 * @Param CustomUserDetails
+	 * @Exception : 댓글사용시 로그인을 하지 않은 경우 ONLY_USER
+	 * @Exception : 게시판글 조회시 글이 없는 경우에는 NOT_BOARDDETAIL 
 	 */
 	@Transactional
-	public Integer replysave(CommentDto.CommentRequestDto dto)throws Exception{
-
-		Board board = Board.builder().id(dto.getBoardId()).build();
-		Member member = Member.builder().id(dto.getMember().getId()).build();
+	public Integer replysave(CommentDto.CommentRequestDto dto,Member principal,Integer boardId)throws Exception{
 		
-		dto.setBoard(board);
-		dto.setMember(member);
+		//유저가 아니면 사용불가
+		if(principal == null) {
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
 		
-		log.info("service save:"+board);
-		log.info("result:"+member);
+		//게시판에서 글 조회 -> 글이 없으면 Exception
+		Board board = boardrepository.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL));
 		
-		Comment reply = dtoToEntity(dto);
+		
+		Comment reply = Comment.builder()
+				.board(board)
+				.member(principal)
+				.replyWriter(principal.getUsername())
+				.replyContents(dto.getReplyContents())
+				.createdAt(dto.getCreatedAt())
+				.build();
 		
 		repository.save(reply);
+		
+		board.getCommentlist().add(reply);
 		
 		return reply.getId();
 	}
@@ -93,37 +102,5 @@ public class CommentService {
 		
 		repository.deleteById(replyId);
 	}
-	
-	//entity => dto
-	public Comment dtoToEntity(CommentDto.CommentRequestDto dto){
-		
-		dto.getCreatedAt();
-		
-		Comment comment = Comment
-				.builder()
-				.id(dto.getReplyId())
-				.replyWriter(dto.getReplyWriter())
-				.replyContents(dto.getReplyContents())
-				.createdAt(LocalDateTime.now())
-				.board(dto.getBoard())
-				.member(dto.getMember())
-				.build();
-		
-		return comment;
-	}
-	
-	//dto => entity
-	public CommentDto.CommentResponseDto entityToDto(Comment comment){
-		
-		CommentDto.CommentResponseDto commentlist = CommentDto.CommentResponseDto
-													.builder()
-													.replyId(comment.getId())
-													.replyContents(comment.getReplyContents())
-													.replyWriter(comment.getReplyWriter())
-													.createdAt(comment.getCreatedAt())
-													.build();	
-		return commentlist;
-	}
-	
 	
 }

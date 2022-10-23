@@ -75,8 +75,9 @@ function deletepost(){
 		
 		console.log(resp);
 		console.log(resp.data);
-		//alert('글이 삭제되었습니다.');
-		//location.href='/page/board/list';
+		
+		alert('글이 삭제되었습니다.');
+		location.href='/page/board/list';
 	
 	}).fail(function(error){
 		console.log(error);

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.board.config.exception.dto.Response;
+import co.kr.board.config.security.vo.CustomUserDetails;
 import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.service.CommentService;
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ public class CommentApiController {
 	private final CommentService service;
 	
 	@GetMapping("/list/{id}")
-	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
+	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id",required = true)Integer boardId)throws Exception{
 		
 		List<CommentDto.CommentResponseDto>list = null;
 
@@ -41,20 +43,23 @@ public class CommentApiController {
 	
 	@PostMapping("/write/{boardid}")
 	public Response<?>replywrite( 
-			@PathVariable("boardid")Integer boardId,
+			@PathVariable(value="boardid",required = true)Integer boardId,
 			@Valid @RequestBody CommentDto.CommentRequestDto dto,
-			BindingResult bindingresult)throws Exception{
+			BindingResult bindingresult,
+			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
 		int insertresult = 0;
 				
-		insertresult = service.replysave(dto);
+		insertresult = service.replysave(dto, user.getMember(), boardId);
 		
-		return new Response<Integer>(HttpStatus.OK.value(),200);
+		return new Response<Integer>(HttpStatus.OK.value(),insertresult);
 	}
 	
 	@DeleteMapping("/delete/{replyid}")
-	public Response<?>replydelete(@PathVariable("replyid")Integer replyId)throws Exception{
+	public Response<?>replydelete(@PathVariable(value="replyid",required = true)Integer replyId)throws Exception{
+		
 		service.replydelete(replyId);
+		
 		return new Response<String>(HttpStatus.OK.value(),"o.k");
 	}
 }

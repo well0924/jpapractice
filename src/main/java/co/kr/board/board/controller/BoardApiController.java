@@ -10,7 +10,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +34,6 @@ public class BoardApiController {
 	private final BoardService service;
 		
 	//페이징
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping("/list")
 	public Response<Page<BoardDto.ResponseDto>>articlelist(
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
@@ -87,7 +85,7 @@ public class BoardApiController {
 	
 	//삭제
 	@DeleteMapping("/delete/{id}")
-	public Response<?>deletearticle(@PathVariable(value="id")Integer boardId,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+	public Response<?>deletearticle(@PathVariable(value="id",required = true)Integer boardId,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
 		service.deleteBoard(boardId,user.getMember());
 				
@@ -96,7 +94,7 @@ public class BoardApiController {
 	
 	//수정
 	@PutMapping("/update/{id}")
-	public Response<Integer>updatearticle(@PathVariable(value="id")Integer boardId, @Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+	public Response<Integer>updatearticle(@PathVariable(value="id",required = true)Integer boardId, @Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
 		int result = 0;
 					

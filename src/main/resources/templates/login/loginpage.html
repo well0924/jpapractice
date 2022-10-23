@@ -8,14 +8,15 @@ layout:decorator="/layout/mainlayout">
 <head>
 <meta charset="UTF-8">
 <title>로그인</title>
-<!-- bootstrap5 -->
-<!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<!-- JavaScript Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<!-- jquery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<th:block th:replace="/layout/script ::scriptfragment"></th:block>
+<style type="text/css">
+.col-sm-3{
+	margin-top: 10px;
+}
+.col-sm-6{
+	margin-top: 50px;
+}
+</style>
 </head>
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
@@ -27,11 +28,11 @@ layout:decorator="/layout/mainlayout">
 		  <div class="card-body">
 		    <h5 class="card-title">Log in</h5>
 		    <form id="loginform" th:action="@{/loginProc}" method="post">
-		    <div th:if="${param.error}">
+		    	<div th:if="${param.error}">
             		<div class="alert alert-danger">
                 		<a class="alert-link"  th:text="${exception}"></a>
             		</div>
-        	</div>
+        		</div>
 		    	<div class="form-group">
 		    		<label for="user_id">아이디</label>
 		    		<input type="text" id="user_id" name="username" class="form-control"/> 
@@ -46,9 +47,9 @@ layout:decorator="/layout/mainlayout">
 		  <div class="card-footer text-muted">
 		    <a th:href="@{/page/login/memberjoin}">회원가입</a>
 		    <br></br>
-		    <a>아이디 찾기</a>
+		    <a th:href="@{/page/login/finduserid}">아이디 찾기</a>
 		    <br></br>
-		    <a>비밀번호찾기</a>
+		    <a th:href="@{/page/login/finduserpw}">비밀번호찾기</a>
 		  </div>
 		</div>
 	</div>

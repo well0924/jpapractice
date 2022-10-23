@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -103,7 +102,8 @@ public class MemberService {
 	/*
 	 * 회원가입 기능
 	 * @Param MemberDto.MemberRequestDto
-	 * 
+	 * @Exception:아이디가 중복이 되면 USERID_DUPLICATE
+	 * @Exception:이메일이 중복이 되면 USEREMAIL_DUPLICATE 
 	 */
 	@Transactional
 	public Integer memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
@@ -135,7 +135,7 @@ public class MemberService {
 	@Transactional
 	public Integer memberupdate(Integer useridx,MemberDto.MemberRequestDto dto)throws Exception{
 		
-		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new IllegalArgumentException("조회된 회원이 없습니다.")));
+		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
 		
 		memberdetail.ifPresent(member -> {
 			
@@ -163,27 +163,47 @@ public class MemberService {
 	/*
 	 * 회원아이디 중복 확인 
 	 * @Param username
+	 * @Exception: 아이디가 중복이 되면 USERID_DUPLICATE
 	 * 회원가입 페이지에서 아이디 중복확인
 	 */
 	@Transactional
 	public Boolean checkmemberIdDuplicate(String username)throws Exception{
-		return repository.existsByUsername(username);
+		
+		Boolean result = repository.existsByUseremail(username);
+		
+		return result;
+	}
+	
+	/*
+	 * 회원이메일 중복 확인 
+	 * @Param username
+	 * @Exception: 이메일이 중복이되면 USEREMAIL_DUPLICATE
+	 * 회원가입 페이지에서 이메일 중복확인
+	 */
+	@Transactional
+	public Boolean checkmemberEmailDuplicate(String useremail)throws Exception{
+		
+		Boolean result = repository.existsByUseremail(useremail);
+		
+		return result;
 	}
 	
 	/*
 	 * 회원아이디 찾기
 	 * @Param membername
 	 * @Param useremail
+	 * @Exception: 회원아이디가 없는 경우
 	 * 로그인 페이지에서 회원이름및 이메일을 입력을 하면 회원아이디를 찾는 기능
 	 */
 	@Transactional
-	public MemberDto.MemeberResponseDto findByUserId(@Param("name")String membername,@Param("email")String useremail)throws Exception{
-		Member member = repository.findByUserId(membername, useremail);
+	public String findByMembernameAndUseremail(String membername, String useremail)throws Exception{
+		Optional<Member> member = repository.findByUseremail(useremail);
 		
-		return MemberDto.MemeberResponseDto
-				.builder()
-				.membername(member.getMembername())
-				.build();
+		Member detail = member.get();
+		
+		String userid = detail.getUsername();
+		
+		return userid;
 	}
 	
 	//Dto에서 Entity 로 변환
@@ -199,7 +219,7 @@ public class MemberService {
 				.password(dto.getPassword())
 				.membername(dto.getMembername())
 				.useremail(dto.getUseremail())
-				.role(Role.ADMIN)
+				.role(Role.USER)
 				.createdAt(LocalDateTime.now())
 				.build();
 		

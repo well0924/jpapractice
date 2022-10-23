@@ -99,4 +99,21 @@ public class LoginController {
 		
 		return mv;
 	}
+	
+	@GetMapping("/finduserid")
+	public ModelAndView findUserIdPage()throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		mv.setViewName("/login/userfindid");
+		
+		return mv;
+	}
+	
+	@GetMapping("/finduserpw")
+	public ModelAndView finduserpw()throws Exception{
+		ModelAndView mv = new ModelAndView();
+		
+		mv.setViewName("/login/userfindpw");
+		return mv;
+	}
 }

@@ -36,24 +36,21 @@ public class BoardService {
 		List<BoardDto.ResponseDto> list = new ArrayList<>();
 		
 		for(Board article : articlelist) {
-			
 			BoardDto.ResponseDto boardDto = BoardDto.ResponseDto
 												.builder()
 												.board(article)
-												.build();
-			
+												.build();	
 			list.add(boardDto);
-		}
-		
+		}	
 		return list;
 	}
 	
 	
-	/*
-	 * 글목록 전체 조회(페이징)
-	 * @Param Pageable
-	 * 
-	 */
+    /*
+	* 글목록 전체 조회(페이징)
+	* @Param Pageable
+	* 
+	*/
 	@Transactional
 	public Page<BoardDto.ResponseDto> findAll(Pageable pageable) throws Exception{
 		
@@ -79,11 +76,12 @@ public class BoardService {
  		return list;
 	}
 	
-   /*
+    /*
 	* 글 등록 
 	* @Param BoardRequestDto 
 	* @Param Member
 	* 시큐리티 로그인 후 이용
+	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
 	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member)throws Exception{
@@ -102,7 +100,7 @@ public class BoardService {
 		return board.getId();
 	}
 	
-   /*
+    /*
     * 글 목록 단일 조횐 
     * @Param boardId
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
@@ -124,10 +122,12 @@ public class BoardService {
 			   .build();
 	}
 	
-   /*
+    /*
 	* 게시글 삭제
 	* @Param boardId
-	* 게시글 삭제기능
+	* @Param Member
+	* @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
+	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
 	public void deleteBoard(Integer boardId , Member member)throws Exception{
@@ -145,11 +145,13 @@ public class BoardService {
 		repos.deleteById(board.get().getId());
 	}
 	
-   /*
+    /*
 	* 글 수정 기능 
 	* @Param BoardRequestDto 
 	* @Param boardId
-	* @Exception : 게시글이 존재하지 않습니다.
+	* @Param Member
+	* @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL 
+	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
 	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto,Member member)throws Exception{
@@ -159,7 +161,6 @@ public class BoardService {
 		String boardAuthor = articlelist.get().getBoardAuthor();
 		String loginUser = member.getUsername();
 		
-		//글 작성자와 로그인한 유저의 아이디가 동일하지 않으면 Exception
 		if(!boardAuthor.equals(loginUser)) {
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}

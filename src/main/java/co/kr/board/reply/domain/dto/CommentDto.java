@@ -6,12 +6,10 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import co.kr.board.board.domain.Board;
-import co.kr.board.login.domain.Member;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -20,34 +18,26 @@ public class CommentDto {
 	@Getter
 	@Setter
 	@ToString
-	@Builder
 	@NoArgsConstructor
-	@AllArgsConstructor
 	public static class CommentRequestDto {
-		
-		private Integer replyId;
-		
-		private Integer boardId;
-				
+								
 		@NotBlank(message = "내용을 입력해 주세요.")
 		private String replyContents;
-		
-		@NotBlank(message = "작성자를 입력해 주세요")
-		private String replyWriter;
-		
-		private Board board;
-		
-		private Member member;
-		
+						
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
+		@Builder
+		public CommentRequestDto(String replyContents,LocalDateTime createdAt){
+			this.replyContents = replyContents;
+			this.createdAt = createdAt;
+		}
 	}
 	
 	@Getter
 	@Builder
 	@ToString
-	@AllArgsConstructor
+	@RequiredArgsConstructor
 	public static class CommentResponseDto{
 		
 		private Integer replyId;
@@ -60,5 +50,14 @@ public class CommentDto {
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
+		
+		@Builder
+		public CommentResponseDto(Integer replyId,Integer boardId,String replyWriter,String replyContents,LocalDateTime createdAt){
+			this.replyId = replyId;
+			this.boardId = boardId;
+			this.replyWriter = replyWriter;
+			this.replyContents = replyContents;
+			this.createdAt = createdAt;
+		}
 	}
 }

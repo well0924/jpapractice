@@ -122,20 +122,18 @@ public class JUnitTest {
 	
 	@Test
 	@DisplayName("회원 아이디 찾기")
-	public MemberDto.MemeberResponseDto finduserid() {
+	public void finduserid() {
 		
 		String membername="admin";
 		String useremail = "well414965@gmail.com";
 		
-		Member member = null;
+		//Optional<Member>detail = Optional.ofNullable(memberrepos.findByMembernameAndUseremail(membername, useremail));
 		
-		member = memberrepos.findByUserId(membername, useremail);
+		//Member member = detail.get();
+		//String userid = (String)member.getUsername();
 		
-		MemberDto.MemeberResponseDto response = MemberDto.MemeberResponseDto.builder().username(member.getUsername()).build();
+		//assertEquals("well4149",userid);
 		
-		assertEquals("well4149",member.getUsername());
-		
-		return response;
 	}
 	
 	@Test
@@ -187,7 +185,7 @@ public class JUnitTest {
 		board.setReadCount(0);
 		board.setCreatedAt(LocalDateTime.now());
 		board.setWriter(member1);
-		board.changeUser(member1);
+		//board.changeUser(member1);
 		System.out.println("들어감?"+board.getWriter());
 	//	reposi.save(board);
 	}
@@ -203,4 +201,24 @@ public class JUnitTest {
 	public void boarddelete() {
 	//	reposi.deleteById(1);
 	}
+	
+	@Test
+	@DisplayName("댓글 목록")
+	public void replylist() {
+		
+	}
+	
+	@Test
+	@DisplayName("댓글 작성")
+	public void replywrite() {
+		
+	}
+	
+	@Test
+	@DisplayName("댓글 삭제")
+	public void replydelete() {
+		
+	}
+	
+	
 }

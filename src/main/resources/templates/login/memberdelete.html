@@ -7,14 +7,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
 <title>로그인</title>
-<!-- bootstrap5 -->
-<!-- CSS only -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<!-- JavaScript Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<!-- jquery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<th:block th:replace="/layout/script ::scriptfragment"></th:block>
 </head>
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
@@ -30,26 +23,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <button class="btn btn-primary" onclick="memberdelete()">회원탈퇴</button>
   </div>
 </div>
-<script type="text/javascript">
-function memberdelete(){
-	
-	let id = $('#deleteid').val();
-	
-	const isconfirm = confirm('탈퇴하시겠습니까?');
-	
-	if(isconfirm){
-		$.ajax({
-			url:'/api/login/memberdelete/'+id+'/member',
-			type:'delete',
-			data:null,
-			contentType:'application/json; charset= utf-8'
-		}).done(function(resp){
-			alert('탈퇴되었습니다.');
-			location.href='/page/board/list';
-		});	
-	}
-}
-</script>   
+<script type="text/javascript" th:src="@{/js/member/memberdelete.js}"></script>   
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

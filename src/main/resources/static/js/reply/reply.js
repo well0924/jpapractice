@@ -39,10 +39,11 @@ function getCommentlist(){
                 	html += "<input type='hidden' id='commentId_"+ resp.data[i].replyId +"' value='" + resp.data[i].replyId + "'>"
                 	html += "<span style='float:right;' align='right' id='commentDate_"+ resp.data[i].replyId +"'> " + resp.data[i].createdAt + " </span>";
                 	html += "<div class='mb-1 comment_container' >"
+                		html += "<h5 id='commentText_" + resp.data[i].replyId + "' style='display: inline'>" + resp.data[i].replyWriter +"</h5>";
                 		html += "<h5 id='commentText_" + resp.data[i].replyId + "' style='display: inline'>" + resp.data[i].replyContents +"</h5>";
                 	html += "</div>"
-                	html += "<span style='cursor: pointer; color: blue' class='reCommentBtn' id='reCommentBtn_"+ resp.data[i].replyId +"'>댓글 수정 </span>";
-                	html +='<button type="button" class="btn btn-primary" onClick="replyDelete('+resp.data[i].replyId+'\)">'+'삭제'+'</button>'
+                	html +='<button type="button" class="btn btn-primary" onClick="replyUpdate('+resp.data[i].replyId+'\)">'+'수정'+'</button>';
+                	html +='<button type="button" class="btn btn-primary" onClick="replyDelete('+resp.data[i].replyId+'\)">'+'삭제'+'</button>';
                 	html += "<hr>";
                 html += "</div>"
 			}	
@@ -62,12 +63,10 @@ function getCommentlist(){
 //댓글 작성 o.k
 function replyInsert(){
 	
-	//let writer=$('#replywriter').val();
 	let content=$('#replycontents').val();
 	let boardid=$('#boardid').val();
 
 	let data = {			
-	//	replyWriter : writer,
 		replyContents : content,
 		boardId : boardid
 	}

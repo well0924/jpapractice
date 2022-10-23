@@ -91,9 +91,9 @@ public class Board extends BaseTime{
 	}
 	
 	//회원 정보 
-	public void changeUser(Member member) {
-		this.writer = member;
-	}
+//	public void changeUser(Member member) {
+//		this.writer = member;
+//	}
 	
 	//게시글 조회수 증가
 	public void countUp() {
