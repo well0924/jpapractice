@@ -98,9 +98,42 @@ public class CommentService {
 	 * @Param replyId
 	 */
 	@Transactional
-	public void replydelete(Integer replyId)throws Exception{	
+	public void replydelete(Integer replyId,Member principal)throws Exception{	
+		
+		if(principal == null) {
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
 		
 		repository.deleteById(replyId);
 	}
 	
+	/*
+	 * 댓글 수정 기능
+	 * @Param CommentRequestDto 
+	 * @Param Member
+	 * @Param replyId
+	 * 
+	 * @Exception:로그인을 안한 경우 ONLY_USER
+	 * @Exception:수정시 로그인한 아이디와 댓글 작성자가 일치하지 않은 경우 COMMENT_EDITE_DENINED
+	 */
+	@Transactional
+	public Integer replyUpdate(CommentDto.CommentRequestDto dto,Member principal,Integer replyId)throws Exception{
+		
+		if(principal == null) {
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
+		
+		Comment comment = repository.findById(replyId).orElse(null);
+		
+		String userid= principal.getUsername();
+		String replywriter= comment.getReplyWriter();
+		
+		if(!userid.equals(replywriter)) {
+			throw new CustomExceptionHandler(ErrorCode.COMMENT_EDITE_DENINED);
+		}
+		
+		comment.contentsChange(dto.getReplyContents());
+		
+		return comment.getId();
+	}
 }

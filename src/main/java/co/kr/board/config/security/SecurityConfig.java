@@ -1,5 +1,7 @@
 package co.kr.board.config.security;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import co.kr.board.config.security.handler.LoginFailuererHandler;
@@ -20,8 +24,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	private final CustomUserDetailService service;
 	
-	public SecurityConfig(CustomUserDetailService service) {
+	private final DataSource dataSource;
+	
+	public SecurityConfig(CustomUserDetailService service,DataSource dataSource) {
 		this.service = service;
+		this.dataSource = dataSource;
 	}
 	
 	//비밀번호 암호화
@@ -61,6 +68,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.failureHandler(new LoginFailuererHandler())//로그인에 실패를 하면 fail handler
 		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
 		.and()
+		.rememberMe()
+		.key("key")
+		.rememberMeParameter("rememberme")
+		.tokenValiditySeconds(3600*24*365)
+		.userDetailsService(service)
+		.tokenRepository(tokenRepository())
+		.authenticationSuccessHandler(new LoginSuccessHandler())
+		.and()
 		.logout()
 		.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
 		.invalidateHttpSession(true)
@@ -69,7 +84,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.sessionManagement()
         .maximumSessions(1) //세션 최대 허용 수 
         .maxSessionsPreventsLogin(true);//중복아이디 세션 차단 
+		
 	}
 	
-	
+	@Bean
+    public PersistentTokenRepository tokenRepository() {
+      // JDBC 기반의 tokenRepository 구현체
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource); // dataSource 주입
+        return jdbcTokenRepository;
+    }
 }

@@ -134,3 +134,10 @@ function replyDelete(replyId){
 		});
 	}
 }
+
+//댓글 수정 
+function replyUpdate(replyId){
+	let html = '';
+	
+	
+}

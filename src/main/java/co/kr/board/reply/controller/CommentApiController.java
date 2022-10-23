@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,10 +57,25 @@ public class CommentApiController {
 	}
 	
 	@DeleteMapping("/delete/{replyid}")
-	public Response<?>replydelete(@PathVariable(value="replyid",required = true)Integer replyId)throws Exception{
+	public Response<?>replydelete(
+			@PathVariable(value="replyid",required = true)Integer replyId,
+			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
-		service.replydelete(replyId);
+		service.replydelete(replyId,user.getMember());
 		
 		return new Response<String>(HttpStatus.OK.value(),"o.k");
+	}
+	
+	@PutMapping("/update/{replyid}")
+	public Response<?>replyupdate(
+			@PathVariable(value="replyid",required = true)Integer replyId,
+			CommentDto.CommentRequestDto dto,
+			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+		
+		int updateresult = 0;
+		
+		updateresult = service.replyUpdate(dto,user.getMember(), replyId);
+		
+		return new Response<Integer>(HttpStatus.OK.value(),updateresult);
 	}
 }

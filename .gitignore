@@ -15,6 +15,7 @@ build/
 .sts4-cache
 bin/
 application-oauth2.properties
+application.properties
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 

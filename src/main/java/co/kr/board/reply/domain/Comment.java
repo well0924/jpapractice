@@ -61,4 +61,9 @@ public class Comment{
 		this.replyWriter = member.getUsername();
 		this.createdAt = LocalDateTime.now();
 	}
+	
+	//댓글 수정
+	public void contentsChange(String replyContents) {
+		this.replyContents = replyContents;
+	}
 }
