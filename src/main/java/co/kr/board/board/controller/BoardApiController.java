@@ -1,5 +1,6 @@
 package co.kr.board.board.controller;
 
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
@@ -61,7 +64,7 @@ public class BoardApiController {
 	//작성
 	@PostMapping("/write")
 	public Response<Integer>writeproc(
-			@Valid @RequestBody BoardDto.BoardRequestDto dto,
+			@Valid @RequestPart(name="jsonData") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
@@ -94,11 +97,17 @@ public class BoardApiController {
 	
 	//수정
 	@PutMapping("/update/{id}")
-	public Response<Integer>updatearticle(@PathVariable(value="id",required = true)Integer boardId, @Valid @RequestBody BoardDto.BoardRequestDto dto,BindingResult bindingresult,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+	public Response<Integer>updatearticle(
+			@PathVariable(value="id",required = true)Integer boardId, 
+			@Valid BoardDto.BoardRequestDto dto,
+			BindingResult bindingresult,
+			@AuthenticationPrincipal CustomUserDetails user,
+			@RequestPart(value="updatefilelist") List<MultipartFile>filelist,
+			@RequestPart(value="removefilelist") List<String>removefilelist)throws Exception{
 		
 		int result = 0;
 					
-		result = service.updateBoard(boardId, dto,user.getMember());
+		result = service.updateBoard(boardId, dto,user.getMember(),filelist,removefilelist);
 				
 		return new Response<Integer>(HttpStatus.OK.value(),result);
 	}

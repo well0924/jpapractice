@@ -69,9 +69,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
 		.and()
 		.rememberMe()
-		.key("key")
-		.rememberMeParameter("rememberme")
-		.tokenValiditySeconds(3600*24*365)
+		.key("key")//리멤비미 인증을 위해서 발행되는 토큰을 구별하는 키 이름을 지정
+		.rememberMeParameter("rememberme")//로그인 페이지에서 html 자동 파라미터 이름
+		.tokenValiditySeconds(3600*24*365)//기본 토큰 유효기간 설정-1년간 유효
 		.userDetailsService(service)
 		.tokenRepository(tokenRepository())
 		.authenticationSuccessHandler(new LoginSuccessHandler())
@@ -89,7 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Bean
     public PersistentTokenRepository tokenRepository() {
-      // JDBC 기반의 tokenRepository 구현체
+		// JDBC 기반의 tokenRepository 구현체
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
         jdbcTokenRepository.setDataSource(dataSource); // dataSource 주입
         return jdbcTokenRepository;

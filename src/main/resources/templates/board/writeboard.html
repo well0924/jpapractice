@@ -11,7 +11,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 </head>
 <body>
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
-<form id="boardfrom" method="post">
+<form id="boardfrom" method="post" enctype="multipart/form-data">
   <fieldset>
     <legend>글 작성</legend>
     <div class="form-group">
@@ -24,6 +24,10 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
       <textarea class="form-control" id="boardcontents" rows="3" name="boardContents"></textarea>
     </div>
     <div id="valid_boardContents"></div>
+    <div class="form-group">
+    	<label fot="attachfiles" class="form-label mt-4">파일첨부</label>
+    	<input type="file" name="filelist" id="attachfiles" multiple="multiple" value="파일을 첨부해 주세요.">
+    </div>
     <button type="button" class="btn btn-primary" onclick="savepost()" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_USER')">글작성</button>
     <button type="button" class="btn btn-primary" onclick="main()">목록</button>
   </fieldset>

@@ -71,7 +71,7 @@ public class Board extends BaseTime{
 	private List<Comment>commentlist;
 	
 	//첨부파일
-	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
 	private List<Files>filelist;
 	
 	@Builder
@@ -89,11 +89,6 @@ public class Board extends BaseTime{
 	public void writeCommnet(Comment comment) {
 		this.commentlist.add(comment);
 	}
-	
-	//회원 정보 
-//	public void changeUser(Member member) {
-//		this.writer = member;
-//	}
 	
 	//게시글 조회수 증가
 	public void countUp() {

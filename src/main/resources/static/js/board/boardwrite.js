@@ -7,25 +7,55 @@ function main(){
 	location.href="/page/board/list";
 }
 
+//파일첨부유효성검사
+function fileCheck(){
+	var filecount = 4;
+
+	var inputFiles = $("input[name='filelist']");
+	var files = inputFiles[0].files;
+	
+	console.log(inputFiles);
+	console.log(files);
+	
+	if(files.length>filecount){
+		alert('파일은 4개까지 입니다.');
+		return false;
+	}
+	
+	if(inputFiles != null){
+		for(var i =0; i<files.lenght;i++){
+			
+			console.log(files[i]);
+			
+			formdate.append("filelist",files[i]);
+		}
+	}
+	return true;
+}
+
 //글 작성기능 o.k
 function savepost(){
 	
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
 	
-	let date= {
-			boardTitle : title,
-			boardContents : contents
-	};
-		
-		$.ajax({
-		
+	let date = {
+		"boardTitle":title,
+		"boardContents":contents};
+	
+	var formdate = new FormData();
+	
+	formdate.append("jsonData",new Blob([JSON.stringify(date)],{type:"application/json"}));
+	
+	if(fileCheck()){
+		$.ajax({		
 			url:'/api/board/write',
 			type:'post',
-			data:JSON.stringify(date),
-			dataType:'json',
-			contentType:'application/json; charset=utf-8'
-		
+			data:formdate,
+			processData: false,
+			contentType : false,
+			cache:false,
+			enctype: 'multipart/form-data',
 		}).done(function(resp){
 			console.log(resp);
 			console.log(resp.status);
@@ -53,4 +83,5 @@ function savepost(){
 			}
 		
 		});	
+	}	
 }

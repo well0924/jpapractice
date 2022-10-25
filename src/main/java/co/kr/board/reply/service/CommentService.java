@@ -126,6 +126,7 @@ public class CommentService {
 		Comment comment = repository.findById(replyId).orElse(null);
 		
 		String userid= principal.getUsername();
+		
 		String replywriter= comment.getReplyWriter();
 		
 		if(!userid.equals(replywriter)) {

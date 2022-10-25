@@ -1,12 +1,14 @@
 package co.kr.board.board.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.Board;
+import co.kr.board.file.domain.dto.FileDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,15 +61,19 @@ public class BoardDto {
 		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
-				
+		
+		private List<FileDto.FileResponse>files;
+		
 		@Builder
 		public ResponseDto(Board board) {
+			
 			this.boardId = board.getId();
 			this.boardTitle = board.getBoardTitle();
 			this.boardAuthor = board.getWriter().getUsername();
 			this.boardContents = board.getBoardContents();
 			this.readCount = board.getReadCount();
 			this.createdAt = board.getCreatedAt();
+			
 		}		
 	}
 }

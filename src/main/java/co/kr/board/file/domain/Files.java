@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.Board;
+import groovy.transform.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "files")
 @Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class Files {
@@ -47,33 +49,11 @@ public class Files {
 	private LocalDateTime createdat;
 	
 	@Builder
-	public Files(Board board,String fileName,String storedFileName) {
+	public Files(Board board,String fileName,String storedFileName,LocalDateTime createdAt) {
+		this.board = board;
 		this.fileName = fileName;
-		this.storedFileName = storedNameCreate(extractExtension(fileName));
+		this.storedFileName = storedFileName;
+		this.createdat = createdAt;
 	}
 	
-	public void initBoard(Board board) {
-		if(board == null) {
-			this.board = board;
-		}
-	}
-	
-	
-	//파일 저장시 확장자만들기.
-	public String storedNameCreate(String extension) {
-		
-		return UUID.randomUUID().toString()+"."+extension;
-	}
-	
-	private String extractExtension(String fileName) {
-		
-		String ext = "";
-		
-		try {
-			ext = fileName.substring(fileName.lastIndexOf(".")+1);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return ext;
-	}
 }
