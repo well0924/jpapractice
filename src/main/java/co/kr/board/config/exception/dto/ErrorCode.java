@@ -9,7 +9,7 @@ public enum ErrorCode {
 	
 	//common error
     INVALID_PARAMETER(400, "파라미터 값을 확인해주세요."),
-    DISPLAY_NOT_FOUND(404, "존재하않습니다."),
+    NOT_FOUND(404, "존재하않습니다."),
     INTERNAL_SERVER_ERROR(500, "서버 에러입니다. 서버 팀에 연락주세요!"),
     DB_ERROR(400,"데이터베이스에 문제가 발생했습니다."),
 	ONLY_USER(403,"회원만 이용이 가능합니다."),
@@ -25,6 +25,8 @@ public enum ErrorCode {
     
 	//comment error
 	COMMENT_EDITE_DENINED(400,"수정할 권한이 없습니다.");
+	
+	
 	
 	private final int status;
 

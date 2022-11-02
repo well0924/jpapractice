@@ -1,33 +1,41 @@
 /**
- * 
+ * 글 수정 페이지 js
  */
- //글 수정기능
+//글 수정기능
 function modifypost(){
 	
 	let id = $('#boardid').val();
 	let title = $('#boardtitle').val();
-	let author = $('#boardauthor').val();
 	let contents = $('#boardcontents').val();
 	
+	let formdate = new FormData();
+	
 	let date= {
-			
 			boardTitle : title,
-			boardAuthor : author,
 			boardContents : contents
 	};
+	
+	formdate.append("boardupdate",new Blob[JSON.stringify(date)],{type:"application/json"})
 	
 	$.ajax({
 		
 		url:'/api/board/update/'+id,
-		type:'put',
-		data:JSON.stringify(date),
-		dataType:'json',
-		contentType:'application/json; charset=utf-8'
-	
+		type:'patch',
+		data:formdate,
+		contentType: false,  
+        processData: false,
+        cache: false,
+ 		enctype: 'multipart/form-data',    
+        dataType: "json",
 	}).done(function(resp){
 		console.log(resp);
 		console.log(resp.status);
 		console.log(resp.data);
+		
+		if(resp.status == 200){
+			alert('글이 수정되었습니다.');
+ 			location.href='/page/board/list';	
+		}
 		
 		if(resp.status== 400){
 			
@@ -37,12 +45,6 @@ function modifypost(){
 			}else{
 				$('#valid_boardTitle').text('');
 			}
-			if(resp.data.hasOwnProperty('valid_boardAuthor')){
-				$('#valid_boardAuthor').text(resp.data.valid_boardAuthor);
-				$('#valid_boardAuthor').css('color','red');
-			}else{
-				$('#valid_boardAuthor').text('');
-			}
 			if(resp.data.hasOwnProperty('valid_boardContents')){
 				$('#valid_boardContents').text(resp.data.valid_boardContents);
 				$('#valid_boardContents').css('color','red');
@@ -50,16 +52,11 @@ function modifypost(){
 				$('#valid_boardContents').text('');
 			}
 		}
-		
-		if(resp.status == 200){
-			alert('글이 수정되었습니다.');
- 			location.href='/page/board/list';	
-		}
 	
 	});
 }
 
-//글삭제
+//글삭제o.k
 function deletepost(){
 	
 	let id = $('#boardid').val();

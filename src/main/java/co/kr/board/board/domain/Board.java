@@ -2,6 +2,7 @@ package co.kr.board.board.domain;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -16,6 +17,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -71,7 +74,7 @@ public class Board extends BaseTime{
 	private List<Comment>commentlist;
 	
 	//첨부파일
-	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Files>filelist;
 	
 	@Builder
@@ -102,4 +105,31 @@ public class Board extends BaseTime{
 		this.createdAt = LocalDateTime.now();
 	}
 
+	//파일추가.
+	private void addFiles(List<Files>files) {
+		files.stream().forEach(i -> {
+			files.add(i);
+			i.initBoard(this);
+		});
+	}
+	
+	//파일삭제
+	private void deletedFile(List<Files>deleted) {
+		deleted
+		.stream()
+		.forEach(di -> this.filelist.remove(di));
+	}
+	
+	public FileUpdateResult update() {
+		return null;
+	}
+	
+	@Getter
+	@AllArgsConstructor
+	public static class FileUpdateResult{
+		
+		private List<MultipartFile>addedFiles;
+		private List<Files> addedFile;
+		private List<Files> deletedFile;
+	}
 }

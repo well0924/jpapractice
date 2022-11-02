@@ -18,11 +18,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import co.kr.board.board.domain.Board;
 import groovy.transform.ToString;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Table(name = "files")
 @Entity
 @ToString
@@ -35,10 +36,13 @@ public class Files {
 	@Column(name="file_id")
 	private Integer id;
 	
-	@Column(name = "file_name",columnDefinition = "원본파일명")
+	@Column(name="file_path")
+	private String filePath;
+	
+	@Column(name = "file_name")
 	private String fileName;
 	
-	@Column(name="stored_name",columnDefinition = "저장파일명")
+	@Column(name="stored_name")
 	private String storedFileName;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -48,12 +52,24 @@ public class Files {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdat;
 	
-	@Builder
-	public Files(Board board,String fileName,String storedFileName,LocalDateTime createdAt) {
-		this.board = board;
+	public Files(String fileName) {
 		this.fileName = fileName;
-		this.storedFileName = storedFileName;
-		this.createdat = createdAt;
+		this.storedFileName = generateStoredName(extractExtension(fileName));
 	}
 	
+	public void initBoard(Board board) {
+		if(this.board == null) {
+			this.board = board;
+		}
+	}
+	
+	private String generateStoredName(String extension) {
+		return UUID.randomUUID().toString()+"."+extension;
+	}
+	
+	private String extractExtension(String fileName) {
+		String ext = "";
+		ext = fileName.substring(fileName.lastIndexOf(".")+1);			
+		return ext;
+	}
 }

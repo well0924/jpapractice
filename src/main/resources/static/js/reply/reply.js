@@ -42,10 +42,12 @@ function getCommentlist(){
 				 	html +='<div class="commentInfo'+resp.data[i].replyId+'">';
 				 	html +='댓글번호:'+resp.data[i].replyId+'/작성자:'+resp.data[i].replyWriter;
 				 	html +='</br>';
-	             	html +='<div class="commentContent'+resp.data[i].replyId+'">'; 
+	             	html +='<div class="commentcontent'+resp.data[i].replyId+'">'; 
 	             	html += '<p>내용:'+resp.data[i].replyContents+'</p>';
-	             		html +='<button type="button" class="btn btn-primary" onClick=commentUpdate('+resp.data[i].replyId+',\''+resp.data[i].replyContents+'\');>'+'수정'+'</button>';                
-	             		html +='<button type="button" class="btn btn-primary" onClick="commentDelete('+resp.data[i].replyId+'\)";>'+'삭제'+'</button>'; 
+	             		html +='<div>';
+	             			html +='<button type="button" class="btn btn-primary" onclick="commentUpdate('+resp.data[i].replyId+',\''+resp.data[i].replyContents+'\')";>'+'수정'+'</button>';	
+	             			html +='<button type="button" class="btn btn-primary" onclick="commentDelete('+resp.data[i].replyId+')">'+'삭제'+'</button>';                
+	             		html +='</div>';
 	             	html +='</div>';               
 	             	html +='</div>';
 	             html +='</div>';
@@ -110,7 +112,6 @@ function replyInsert(){
 		}
 	});
 }
-
 //댓글 삭제o.k
 function commentDelete(replyId){
 	
@@ -142,20 +143,18 @@ function commentDelete(replyId){
 
 //댓글 내용 변경
 function commentUpdate(replyId,replyContents){
+	console.log("????????");
 	var html = '';
-
-//  html += '<div class="input-group">';    
-//	html += '<input type="text" class="form-control" name="content_'+replyId+'" value="'+replyContents+'"/>';    
-//	html += '<span class="input-group-btn"><button class="btn btn-default" type="button" onclick="commentUpdateProc('+reply+');">수정</button> </span>';  
-//	html += '</div>';
 	
-	html +='<div class="commentContent'+replyId+'">'; 
-    	html +='<p>내용:'+replyContents+'</p>';
-			html +='<a onClick=commentUpdateProc('+replyId+');>'+'수정하기'+'</a>';                
-	        html +='<a onClick="commentDelete('+replyId+'\)";>'+'삭제'+'</a>'; 
-	html +='</div>'; 
+	html +='<div class="commentcontent'+replyId+'">'; 
+     	html += '<input type="text" name="replyContents" id="contents"></input>';
+ 		html +='<div>';
+ 			html +='<button type="button" class="btn btn-primary" onclick="commentUpdate('+replyId+',\''+replyContents+'\')";>'+'수정'+'</button>';	                
+ 		html +='</div>';
+	html +='</div>';               
+	             	
 
-	$('commentConetent'+replyId).html(html);	
+	$('.commentconetent'+replyId).html(html);	
 }
 //댓글 수정기능
 function commentUpdateProc(replyId){

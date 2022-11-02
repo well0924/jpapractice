@@ -7,12 +7,12 @@ function validation(){
 	let name = $('#username').val();
 	let email = $('#user_email').val();
 	
-	if(name.trim()==null){
+	if(name.trim().length == 0){
 		alert('이름을 입력해주세요.');
 		return false;
 	}
 	
-	if(email.trim()==null){
+	if(email.trim().lenght == 0){
 		alert('이메일을 입력해주세요.');
 		return false;
 	}

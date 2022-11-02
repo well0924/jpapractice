@@ -123,7 +123,7 @@ public class CommentService {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
 		
-		Comment comment = repository.findById(replyId).orElse(null);
+		Comment comment = repository.findById(replyId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 		
 		String userid= principal.getUsername();
 		

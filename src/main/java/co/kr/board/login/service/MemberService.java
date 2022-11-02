@@ -206,6 +206,13 @@ public class MemberService {
 		return userid;
 	}
 	
+	/*
+	 * 회원 비밀번호 재수정 
+	 * 
+	 * 
+	 */
+	
+	
 	//Dto에서 Entity 로 변환
 	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
 		

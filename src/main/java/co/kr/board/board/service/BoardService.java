@@ -9,14 +9,12 @@ import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.repsoitory.BoardRepository;
 import co.kr.board.config.exception.dto.ErrorCode;
 import co.kr.board.config.exception.handler.CustomExceptionHandler;
-import co.kr.board.file.service.FileService;
 import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 
@@ -26,7 +24,6 @@ public class BoardService {
 	
 	private final BoardRepository repos;		
 	
-	private final FileService fileservice;
 	
 	/*
 	 * 글 목록 전체 조횐 
@@ -88,7 +85,7 @@ public class BoardService {
 	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member,List<MultipartFile>multiparts)throws Exception{
+	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member)throws Exception{
 		
 		Board board = Board
 				.builder()
@@ -101,7 +98,7 @@ public class BoardService {
 				.build();
 		
 		repos.save(board);
-		
+				
 		return board.getId();
 	}
 	
@@ -159,12 +156,10 @@ public class BoardService {
 	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
-	public Integer updateBoard(
-			Integer boardId, 
-			BoardDto.BoardRequestDto dto,
-			Member member)throws Exception{
+	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto, Member member)throws Exception{
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+		
 		Board result = articlelist.get();
 		
 		String boardAuthor = result.getBoardAuthor();
@@ -174,24 +169,8 @@ public class BoardService {
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}
 		
-		articlelist.ifPresent(t -> {
-			
-			if(dto.getBoardTitle() != null) {
-				t.setBoardTitle(dto.getBoardTitle());
-			}
-			if(dto.getBoardContents() != null) {
-				t.setBoardContents(dto.getBoardContents());
-			}
-			if(dto.getReadCount() !=null) {
-				t.setReadCount(dto.getReadCount());
-			}
-			if(dto.getCreatedAt() != null) {
-				t.setCreatedAt(dto.getCreatedAt());
-			}
-			
-			this.repos.save(t);
-		});
-		
+		result.updateBoard(dto);
+
 		return boardId;
 	}
 }

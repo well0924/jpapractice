@@ -26,6 +26,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 	
 	private RequestCache requestCache = new HttpSessionRequestCache();
 	private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
+
 	private static final String DEFAULT_URL= "/page/main/mainpage";
 	private static final String ADMIN_URL="/page/login/adminlist";
 	
@@ -35,8 +36,10 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 		log.info("successhandler.");
 		
 		try {
-		
+			loginPrevPage(request,response,authentication);
+			
 			redirectStrategy(request, response, authentication);
+			
 			clearAuthenticationAttributes(request);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -71,5 +74,17 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 			
 		}
 		
+	}
+	
+	private void loginPrevPage(HttpServletRequest request,HttpServletResponse response,Authentication authentication)throws Exception{
+		SavedRequest savedRequest = requestCache.getRequest(request, response);
+		
+		log.info(savedRequest);
+		
+		String prevPage = (String) request.getSession().getAttribute("prevPage");
+        
+		if (prevPage != null) {
+            request.getSession().removeAttribute("prevPage");
+        }
 	}
 }

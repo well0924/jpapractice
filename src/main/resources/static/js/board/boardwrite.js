@@ -6,13 +6,14 @@
 function main(){
 	location.href="/page/board/list";
 }
-
-//파일첨부유효성검사
-function fileCheck(){
-	var filecount = 4;
-
-	var inputFiles = $("input[name='filelist']");
+//file check
+function filecheck(){
+	
+	var inputFiles = $('#attachfiles');
+	
 	var files = inputFiles[0].files;
+	
+	let filecount = 4;
 	
 	console.log(inputFiles);
 	console.log(files);
@@ -23,14 +24,12 @@ function fileCheck(){
 	}
 	
 	if(inputFiles != null){
-		for(var i =0; i<files.lenght;i++){
-			
+		for(var i =0; i<files.lenght;i++){		
 			console.log(files[i]);
-			
 			formdate.append("filelist",files[i]);
 		}
 	}
-	return true;
+	
 }
 
 //글 작성기능 o.k
@@ -39,49 +38,45 @@ function savepost(){
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
 	
-	let date = {
-		"boardTitle":title,
-		"boardContents":contents};
+	let formdate = new FormData();
 	
-	var formdate = new FormData();
+	let date = {boardTitle :title,boardContents : contents};
 	
-	formdate.append("jsonData",new Blob([JSON.stringify(date)],{type:"application/json"}));
-	
-	if(fileCheck()){
+	formdate.append("boardsave",new Blob([JSON.stringify(date)], {type: "application/json"}));	
+		
 		$.ajax({		
 			url:'/api/board/write',
 			type:'post',
-			data:formdate,
-			processData: false,
-			contentType : false,
-			cache:false,
-			enctype: 'multipart/form-data',
+			data: formdate,
+			contentType: false,  
+            processData: false,
+            cache: false,
+     		enctype: 'multipart/form-data',    
+            dataType: "json",
 		}).done(function(resp){
-			console.log(resp);
-			console.log(resp.status);
-			console.log(resp.data);
-
-			if(resp.status== 400){
+				console.log(resp);
+				console.log(formdate);
 				
-				if(resp.data.hasOwnProperty('valid_boardTitle')){
-					$('#valid_boardTitle').text(resp.data.valid_boardTitle);
-					$('#valid_boardTitle').css('color','red');
-				}else{
-					$('#valid_boardTitle').text('');
+				if(resp.status== 400){
+					
+					if(resp.data.hasOwnProperty('valid_boardTitle')){
+						$('#valid_boardTitle').text(resp.data.valid_boardTitle);
+						$('#valid_boardTitle').css('color','red');
+					}else{
+						$('#valid_boardTitle').text('');
+					}
+					if(resp.data.hasOwnProperty('valid_boardContents')){
+						$('#valid_boardContents').text(resp.data.valid_boardContents);
+						$('#valid_boardContents').css('color','red');
+					}else{
+						$('#valid_boardContents').text('');
+					}
 				}
-				if(resp.data.hasOwnProperty('valid_boardContents')){
-					$('#valid_boardContents').text(resp.data.valid_boardContents);
-					$('#valid_boardContents').css('color','red');
-				}else{
-					$('#valid_boardContents').text('');
+				
+				if(resp.status == 200){
+					alert('글이 작성되었습니다.');
+		 			location.href='/page/board/list';	
 				}
-			}
 			
-			if(resp.status == 200){
-				alert('글이 작성되었습니다.');
-	 			location.href='/page/board/list';	
-			}
-		
-		});	
-	}	
-}
+		});
+}	

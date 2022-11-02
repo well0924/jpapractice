@@ -1,7 +1,5 @@
 package co.kr.board.board.controller;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,15 +20,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
 import co.kr.board.config.exception.dto.Response;
 import co.kr.board.config.security.vo.CustomUserDetails;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/board/*")
@@ -38,6 +40,7 @@ public class BoardApiController {
 		
 	//페이징
 	@GetMapping("/list")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.ResponseDto>>articlelist(
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 				
@@ -50,6 +53,7 @@ public class BoardApiController {
 	
 	//페이징+검색.
 	@GetMapping("/list/search")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.ResponseDto>>searchlist(
 			@RequestParam(required = false) String keyword,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
@@ -63,20 +67,22 @@ public class BoardApiController {
 	
 	//작성
 	@PostMapping("/write")
+	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeproc(
-			@Valid @RequestPart(name="jsonData") BoardDto.BoardRequestDto dto,
+			@Valid @RequestPart("boardsave") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
-		
+		log.info(user.getMember());
 		int result = 0;
-
+	
 		result = service.boardsave(dto,user.getMember());				
-
+		log.info(result);
 		return new Response<Integer>(HttpStatus.OK.value(),result);
 	}
 	
 	//단일 조회
 	@GetMapping("/detail/{id}")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<BoardDto.ResponseDto> detailarticle(@PathVariable(value="id",required = true)Integer boardId)throws Exception{
 				
 		BoardDto.ResponseDto detail = null;
@@ -88,6 +94,7 @@ public class BoardApiController {
 	
 	//삭제
 	@DeleteMapping("/delete/{id}")
+	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>deletearticle(@PathVariable(value="id",required = true)Integer boardId,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
 		service.deleteBoard(boardId,user.getMember());
@@ -96,19 +103,18 @@ public class BoardApiController {
 	}
 	
 	//수정
-	@PutMapping("/update/{id}")
-	public Response<Integer>updatearticle(
-			@PathVariable(value="id",required = true)Integer boardId, 
-			@Valid BoardDto.BoardRequestDto dto,
+	@PatchMapping("/update/{id}")
+	@ResponseStatus(code = HttpStatus.OK)
+	public Response<?>updatearticle(
+			@PathVariable(value="id")Integer boardId,
+			@Valid @RequestBody BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
-			@AuthenticationPrincipal CustomUserDetails user,
-			@RequestPart(value="updatefilelist") List<MultipartFile>filelist,
-			@RequestPart(value="removefilelist") List<String>removefilelist)throws Exception{
+			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
 		int result = 0;
 					
-		result = service.updateBoard(boardId, dto,user.getMember(),filelist,removefilelist);
-				
-		return new Response<Integer>(HttpStatus.OK.value(),result);
+		result = service.updateBoard(boardId, dto,user.getMember());
+		log.info(result);		
+		return new Response<>(HttpStatus.OK.value(),result);
 	}
 }
