@@ -18,28 +18,21 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.file.domain.Files;
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
-import groovy.transform.ToString;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 
-@Setter
 @Getter
 @Entity
-@ToString
-@Builder
+@ToString(callSuper = true)
 @Table(name="board")
-@AllArgsConstructor
 @RequiredArgsConstructor
 public class Board extends BaseTime{
 	
@@ -55,7 +48,7 @@ public class Board extends BaseTime{
 	private String boardContents;
 	
 	//회원
-	@ManyToOne(fetch =FetchType.LAZY)
+	@ManyToOne(fetch =FetchType.EAGER)
 	@JoinColumn(name="useridx")
 	private Member writer;
 	
@@ -69,17 +62,19 @@ public class Board extends BaseTime{
 	private LocalDateTime createdAt;
 	
 	//댓글
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@ToString.Exclude
+	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
 	@OrderBy(value="reply_id")
 	private List<Comment>commentlist;
 	
 	//첨부파일
+	@ToString.Exclude
 	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Files>filelist;
+	private List<Files>filelist = new ArrayList<>();;
 	
 	@Builder
-	public Board(String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
-		
+	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
+		this.id = boardId;
 		this.boardTitle = boardTitle;
 		this.boardContents = boardContents;
 		this.boardAuthor = member.getUsername();
@@ -104,32 +99,16 @@ public class Board extends BaseTime{
 		this.boardContents =dto.getBoardContents();
 		this.createdAt = LocalDateTime.now();
 	}
-
-	//파일추가.
-	private void addFiles(List<Files>files) {
-		files.stream().forEach(i -> {
-			files.add(i);
-			i.initBoard(this);
-		});
-	}
 	
-	//파일삭제
-	private void deletedFile(List<Files>deleted) {
-		deleted
-		.stream()
-		.forEach(di -> this.filelist.remove(di));
-	}
+	//파일 첨부
+	public void addFile(Files files) {
 	
-	public FileUpdateResult update() {
-		return null;
-	}
-	
-	@Getter
-	@AllArgsConstructor
-	public static class FileUpdateResult{
+		this.filelist.add(files);
 		
-		private List<MultipartFile>addedFiles;
-		private List<Files> addedFile;
-		private List<Files> deletedFile;
+		//파일이 있는경우
+		if(files.getBoard() != this) {
+			//파일 저장
+			files.setBoard(this);
+		}
 	}
 }

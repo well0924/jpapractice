@@ -234,20 +234,20 @@ public class MemberService {
 	}
 	
 	//Entity 에서 Dto로 변환
-	public MemberDto.MemeberResponseDto entityToDto(Member member){
-		
-		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
-												.builder()
-												.useridx(member.getId())
-												.username(member.getUsername())
-												.password(member.getPassword())
-												.membername(member.getMembername())
-												.useremail(member.getUseremail())
-												.role(member.getRole())
-												.createdAt(LocalDateTime.now())
-												.build();
-		
-		return memberlist;
-	}
+//	public MemberDto.MemeberResponseDto entityToDto(Member member){
+//		
+//		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
+//												.builder()
+//												.useridx(member.getId())
+//												.username(member.getUsername())
+//												.password(member.getPassword())
+//												.membername(member.getMembername())
+//												.useremail(member.getUseremail())
+//												.role(member.getRole())
+//												.createdAt(LocalDateTime.now())
+//												.build();
+//		
+//		return memberlist;
+//	}
 	
 }

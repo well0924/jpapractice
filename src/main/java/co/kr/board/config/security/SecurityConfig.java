@@ -4,32 +4,37 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import co.kr.board.config.security.handler.LoginFailuererHandler;
 import co.kr.board.config.security.handler.LoginSuccessHandler;
+import co.kr.board.config.security.jwt.JwtAuthenticationFilter;
+import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.config.security.service.CustomUserDetailService;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	private final CustomUserDetailService service;
 	
 	private final DataSource dataSource;
 	
-	public SecurityConfig(CustomUserDetailService service,DataSource dataSource) {
-		this.service = service;
-		this.dataSource = dataSource;
-	}
+	private final JwtTokenProvider jwtTokenProvider;
 	
 	//비밀번호 암호화
 	@Bean
@@ -41,7 +46,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(service).passwordEncoder(encoder());
 	}
-
+	
+	@Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+	
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web
@@ -55,6 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		http
 		.csrf().disable()
 		.httpBasic().disable()
+		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
 		.authorizeRequests()
 		.antMatchers("/page/admin/list").hasRole("ADMIN")
 		.antMatchers("/page/board/list","/api/board/**","/api/reply/**").hasAnyRole("ADMIN","USER")
@@ -62,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.anyRequest()
 		.authenticated()
 		.and()
+		.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 		.formLogin()
 		.loginPage("/page/login/loginpage")//시큐리티에 적용되는 로그인페이지가 아닌 커스텀페이지로 이동
 		.loginProcessingUrl("/loginProc").permitAll()//로그인은 전부 허용
@@ -83,7 +96,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.and()
 		.sessionManagement()
         .maximumSessions(1) //세션 최대 허용 수 
-        .maxSessionsPreventsLogin(true);//중복아이디 세션 차단 
+        .maxSessionsPreventsLogin(true);//중복아이디 세션 차단
 		
 	}
 	

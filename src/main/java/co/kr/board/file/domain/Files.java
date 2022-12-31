@@ -1,7 +1,6 @@
 package co.kr.board.file.domain;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,12 +35,15 @@ public class Files {
 	@Column(name="file_id")
 	private Integer id;
 	
+	//파일 경로
 	@Column(name="file_path")
 	private String filePath;
 	
+	//파일명
 	@Column(name = "file_name")
 	private String fileName;
 	
+	//저장된 파일명
 	@Column(name="stored_name")
 	private String storedFileName;
 	
@@ -52,24 +54,11 @@ public class Files {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdat;
 	
-	public Files(String fileName) {
-		this.fileName = fileName;
-		this.storedFileName = generateStoredName(extractExtension(fileName));
-	}
-	
-	public void initBoard(Board board) {
-		if(this.board == null) {
-			this.board = board;
+	public void setBoard(Board board) {
+		this.board = board;
+		//파일이 있는 경우
+		if(board.getFilelist().contains(this)) {
+			board.getFilelist().add(this);
 		}
-	}
-	
-	private String generateStoredName(String extension) {
-		return UUID.randomUUID().toString()+"."+extension;
-	}
-	
-	private String extractExtension(String fileName) {
-		String ext = "";
-		ext = fileName.substring(fileName.lastIndexOf(".")+1);			
-		return ext;
 	}
 }

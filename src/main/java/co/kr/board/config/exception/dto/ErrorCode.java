@@ -22,12 +22,15 @@ public enum ErrorCode {
 	
 	//board error
 	NOT_BOARDDETAIL(404,"작성한글을 찾을 수 없습니다."),
-    
+	BOARD_POST_DENIED(400,"작성할 권한이 없습니다."),
+	BOARD_DELETE_DENIED(400,"삭제할 권한이 없습니다."),
+	BOARD_EDITE_DENIED(400,"수정할 권한이 없습니다."),
+	
 	//comment error
-	COMMENT_EDITE_DENINED(400,"수정할 권한이 없습니다.");
-	
-	
-	
+	COMMENT_POST_DENINED(400,"작성할 권한이 없습니다."),
+	COMMENT_EDITE_DENINED(400,"수정할 권한이 없습니다."),
+	COMMENT_DELETE_DENIED(400,"삭제할 권한이 없습니다.");
+		
 	private final int status;
 
     private final String message;

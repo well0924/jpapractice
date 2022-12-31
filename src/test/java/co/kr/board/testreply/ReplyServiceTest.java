@@ -1,5 +1,6 @@
 package co.kr.board.testreply;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
 import co.kr.board.board.service.BoardService;
+import co.kr.board.config.exception.dto.ErrorCode;
 import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
@@ -79,18 +81,69 @@ public class ReplyServiceTest {
 		commentservice.replysave(dto,member,board.getId());
 		//then
 		assertEquals("댓글작성!",dto.getReplyContents());
-		assertEquals("well4149", member.getUsername());
+	}
+	
+	@Test
+	@DisplayName("댓글 작성실패 - 회원이 아닌경우")
+	public void replywritefail3() throws Exception {
+		//given
+		CommentDto.CommentRequestDto dto = CommentDto
+				.CommentRequestDto
+				.builder()
+				.replyContents("eot")
+				.createdAt(LocalDateTime.now()).build();
+		member = null;
+		//when
+		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
+			commentservice.replysave(dto,member,board.getId());
+		});
+		//then
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.ONLY_USER);
 	}
 	
 	@Test
 	@DisplayName("댓글 삭제")
 	public void replydelete() throws Exception {
+		//given
+		Long count = commentrepository.count();
+		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
+		Integer result = commentservice.replysave(dto, member, board.getId());
 		//when
-		commentservice.replydelete(21, member);
+		commentservice.replydelete(result, member);
 		//then
-		assertThrows(CustomExceptionHandler.class,()->{
-			commentservice.replydelete(21, member);
+		assertThat(count).isEqualTo(count);
+		
+	}
+	
+	@Test
+	@DisplayName("댓글 삭제실패 - 회원이 아닌경우")
+	public void replydeleteFail1()throws Exception{
+		//given
+		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
+		Integer result = commentservice.replysave(dto, member, board.getId());
+		member = null;
+		//when(회원이 아닌 경우)
+		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
+			commentservice.replydelete(result, member);
 		});
+		//then
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.ONLY_USER);
+	}
+	
+	@Test
+	@DisplayName("댓글 삭제실패 - 회원이 다른 회원인 경우")
+	public void replydeleteFail2()throws Exception{
+		//given
+		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
+		Integer result = commentservice.replysave(dto, member, board.getId());
+		member = memberrepos.findById(2).orElseThrow();
+		//when(회원이 아닌 경우)
+		
+		//then
+		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
+			commentservice.replydelete(result, member);
+		});
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.COMMENT_DELETE_DENIED);
 	}
 	
 	@Test
@@ -111,5 +164,48 @@ public class ReplyServiceTest {
 		//then
 		assertEquals(dto.getReplyContents(), getcomment.getReplyContents());
 	}
+	
+	@Test
+	@DisplayName("댓글 수정실패 - 회원이 아닌경우")
+	public void replyUpdateFail1() throws Exception {
+		//given
+		Optional<Comment>commentdetail = commentrepository.findById(2);
+		
+		Comment getcomment = commentdetail.get();
+		
+		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("update!!").build();
+		
+		getcomment.contentsChange(dto.getReplyContents());
+		member = null;
+		//when
+		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
+			commentservice.replyUpdate(dto, member, getcomment.getId());
+		});
+		
+		//then
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.ONLY_USER);
+	}
+	
+	@Test
+	@DisplayName("댓글 수정실패 - 회원이 다른 경우")
+	public void replyUpdateFail2() throws Exception {
+		//given
+		Optional<Comment>commentdetail = commentrepository.findById(2);
+		
+		Comment getcomment = commentdetail.get();
+		
+		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("update!!").build();
+		
+		getcomment.contentsChange(dto.getReplyContents());
+		
+		member = memberrepos.findById(2).orElseThrow();
+		
+		//when
+		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
+			commentservice.replyUpdate(dto, member, getcomment.getId());
+		});
 
+		//then
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.COMMENT_EDITE_DENINED);
+	}
 }

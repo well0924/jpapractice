@@ -11,12 +11,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -41,24 +38,24 @@ public class BoardApiController {
 	//페이징
 	@GetMapping("/list")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.ResponseDto>>articlelist(
+	public Response<Page<BoardDto.BoardResponseDto>>articlelist(
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 				
-		Page<BoardDto.ResponseDto>list =null;
+		Page<BoardDto.BoardResponseDto>list =null;
 				
-		list = service.findAll(pageable);
+		list = service.findAllPage(pageable);
 		
-		return new Response<Page<BoardDto.ResponseDto>>(HttpStatus.OK.value(),list);
+		return new Response<Page<BoardDto.BoardResponseDto>>(HttpStatus.OK.value(),list);
 	}
 	
 	//페이징+검색.
 	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.ResponseDto>>searchlist(
+	public Response<Page<BoardDto.BoardResponseDto>>searchlist(
 			@RequestParam(required = false) String keyword,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
 		
-		Page<BoardDto.ResponseDto>list = null;
+		Page<BoardDto.BoardResponseDto>list = null;
 		
 		list = service.findAllSearch(keyword, pageable);
 			
@@ -71,25 +68,26 @@ public class BoardApiController {
 	public Response<Integer>writeproc(
 			@Valid @RequestPart("boardsave") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
+			
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
-		log.info(user.getMember());
+
 		int result = 0;
 	
 		result = service.boardsave(dto,user.getMember());				
-		log.info(result);
+		
 		return new Response<Integer>(HttpStatus.OK.value(),result);
 	}
 	
 	//단일 조회
 	@GetMapping("/detail/{id}")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<BoardDto.ResponseDto> detailarticle(@PathVariable(value="id",required = true)Integer boardId)throws Exception{
+	public Response<BoardDto.BoardResponseDto> detailarticle(@PathVariable(value="id",required = true)Integer boardId)throws Exception{
 				
-		BoardDto.ResponseDto detail = null;
+		BoardDto.BoardResponseDto detail = null;
 		   
 		detail = service.getBoard(boardId);
 					
-		return new Response<BoardDto.ResponseDto>(HttpStatus.OK.value(),detail);
+		return new Response<BoardDto.BoardResponseDto>(HttpStatus.OK.value(),detail);
 	}
 	
 	//삭제
@@ -107,7 +105,7 @@ public class BoardApiController {
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>updatearticle(
 			@PathVariable(value="id")Integer boardId,
-			@Valid @RequestBody BoardDto.BoardRequestDto dto,
+			@Valid @RequestPart("boardupdate") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
@@ -117,4 +115,6 @@ public class BoardApiController {
 		log.info(result);		
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
+	
+	
 }

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import co.kr.board.config.exception.dto.ErrorCode;
-import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.domain.dto.MemberDto;
@@ -62,10 +59,16 @@ public class MemberServiceTest {
 				.build();
 		//when
 		Integer result = memberservice.memberjoin(dto);
-		
+		System.out.println(result);
 		//then
-		Member membername = memberrepos.findByUseremail(dto.getUseremail()).orElse(null);
+		Member membername = memberrepos.findById(result).orElseThrow();
 		assertThat(membername.getUsername()).isEqualTo("sleep");
+		
+	}
+	
+	@DisplayName("회원가입 테스트 실패")
+	@Test
+	public void memberjoinfailTest()throws Exception{
 		
 	}
 	
@@ -75,34 +78,26 @@ public class MemberServiceTest {
 		//given
 		Member member = memberrepos.findById(1).orElseThrow();
 		String userid = member.getUsername();
-		
-		Member member1 = new Member();
-
-		member1.setUsername("well");
-		member1.setPassword(encode.encode("qwer4149@"));
-		member1.setRole(Role.USER);
-		member1.setMembername("user3");
-		member1.setUseremail("springboot0924@gmail.com");
-		member1.setCreatedAt(LocalDateTime.now());
-		
-		MemberDto.MemberRequestDto dto = MemberRequestDto
-				.builder()
-				.username(member1.getUsername())
-				.password(member1.getPassword())
-				.role(member1.getRole())
-				.membername(member1.getMembername())
-				.useremail(member1.getUseremail())
-				.createdAt(member1.getCreatedAt())
-				.build();
-		//when
-		Integer result = memberservice.memberjoin(dto);
 
 		//when
 		Boolean duplicatedresult = memberservice.checkmemberIdDuplicate(userid);
 		
+		//then
 		assertThat(duplicatedresult);
-		assertEquals(dto.getUsername(), member.getUsername());
 	}
+	
+	@Test
+	@DisplayName("이메일 중복체크")
+	public void emailduplicatedTest()throws Exception{
+		//given
+		Member member = memberrepos.findById(1).orElseThrow();
+		String userEmail = member.getUseremail();
+		//when
+		Boolean duplicatedresult = memberservice.checkmemberEmailDuplicate(userEmail);
+		//then
+		assertThat(duplicatedresult);
+	}
+	
 	
 	@Test
 	@DisplayName("회원 조회")
@@ -136,7 +131,8 @@ public class MemberServiceTest {
 		//then
 		System.out.println("paging content:"+content);
 		System.out.println("paging total:"+total);
-		assertThat(result);
+		
+		assertThat(result).isNotNull();
 	}
 	
 	@Test
@@ -222,13 +218,7 @@ public class MemberServiceTest {
 		
 		//then
 		String userid = (String)member.getUsername();
-		assertEquals("well",userid);
-		
-	}
-	
-	@Test
-	@DisplayName("비밀번호 재설정")
-	public void passwordreset() {
+		assertEquals("well123",userid);
 		
 	}
 	

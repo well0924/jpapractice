@@ -1,15 +1,8 @@
 package co.kr.board.board.domain.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.validation.constraints.NotBlank;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import co.kr.board.board.domain.Board;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,14 +14,13 @@ import lombok.ToString;
 
 public class BoardDto {
 	
+	//게시물 작성 dto
 	@Getter
 	@Setter
-	@ToString
 	@Builder
 	@AllArgsConstructor
-	@NoArgsConstructor
 	public static class BoardRequestDto{
-				
+		
 		@NotBlank(message ="제목을 입력해주세요.")
 		private String boardTitle;
 		
@@ -36,15 +28,17 @@ public class BoardDto {
 		private String boardContents;
 		
 		private Integer readCount;
-				
+		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 	}
 	
+	
+	//파일 첨부용 dto
+	
+	//게시물 응답 dto
 	@Getter
-	@ToString
-	@RequiredArgsConstructor
-	public static class ResponseDto{
+	public static class BoardResponseDto{
 		
 		private Integer boardId;
 				
@@ -60,7 +54,7 @@ public class BoardDto {
 		private LocalDateTime createdAt;
 				
 		@Builder
-		public ResponseDto(Board board) {			
+		public BoardResponseDto(Board board) {			
 			this.boardId = board.getId();
 			this.boardTitle = board.getBoardTitle();
 			this.boardAuthor = board.getWriter().getUsername();
@@ -69,4 +63,6 @@ public class BoardDto {
 			this.createdAt = board.getCreatedAt();
 		}		
 	}
+	
+	
 }

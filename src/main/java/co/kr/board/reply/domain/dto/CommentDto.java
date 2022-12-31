@@ -17,7 +17,6 @@ public class CommentDto {
 	
 	@Getter
 	@Setter
-	@ToString
 	@NoArgsConstructor
 	public static class CommentRequestDto {
 								

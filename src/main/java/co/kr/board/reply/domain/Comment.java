@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @Table(name="reply")
 @RequiredArgsConstructor
 @AllArgsConstructor

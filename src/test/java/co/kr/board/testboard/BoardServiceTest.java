@@ -1,5 +1,6 @@
 package co.kr.board.testboard;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.repsoitory.BoardRepository;
 import co.kr.board.board.service.BoardService;
+import co.kr.board.config.exception.dto.ErrorCode;
 import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
@@ -42,7 +44,7 @@ class BoardServiceTest {
 		Optional<Member>detail = memberrepos.findById(1);
 		
 		member1 = detail.get();
-		
+		assertThat(member1.getMembername()).isEqualTo("updateuser1");
 	}
 	
 	@Test
@@ -54,26 +56,18 @@ class BoardServiceTest {
 		Board detail = board.get();
 		
 		//when
-		BoardDto.ResponseDto result = boardservice.getBoard(detail.getId());
+		BoardDto.BoardResponseDto result = boardservice.getBoard(detail.getId());
 		
 		//then		
-		assertEquals(result.getBoardAuthor(), detail.getBoardAuthor());
+		assertEquals(result.getBoardAuthor(), "well");
 	}
 	
 	@Test
 	@DisplayName("글 조회 실패")
 	public void boarddetailfail()throws Exception{
-		//given
-		Optional<Board>board = reposi.findById(3);
-		Board detail = board.get();
 		
-		//when
-		BoardDto.ResponseDto result = boardservice.getBoard(detail.getId());
-		
-		//then
-		org.junit.jupiter.api.Assertions.assertThrows(CustomExceptionHandler.class,()->{
-			boardservice.getBoard(result.getBoardId());
-		});
+		org.junit.jupiter.api.Assertions.assertThrows(Exception.class,()->{
+			Optional<Board>board = Optional.ofNullable(reposi.findById(3).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));});
 	}
 	
 	@Test
@@ -81,7 +75,7 @@ class BoardServiceTest {
 	public void boardwrite() throws Exception {
 		
 		//given
-		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto.builder().boardTitle("제목테스트??").boardContents("내용2").createdAt(LocalDateTime.now()).build();
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto.builder().boardTitle("제목테스트??").boardContents("내용3").createdAt(LocalDateTime.now()).build();
 		
 		//when
 		Integer result = boardservice.boardsave(dto, member1);
@@ -92,17 +86,33 @@ class BoardServiceTest {
 	}
 	
 	@Test
+	@DisplayName("글 작성실패 - 다른 회원인 경우")
+	public void boardwriteFail() throws Exception {
+		
+		//given
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto.builder().boardTitle("제목테스트??").boardContents("내용3").createdAt(LocalDateTime.now()).build();
+		
+		//when
+		//Integer result = boardservice.boardsave(dto, member1);
+		
+		//then
+		//Board board = reposi.findById(result).orElseThrow();
+		//assertEquals(member1.getUsername(),board.getBoardAuthor());
+	}
+	
+	@Test
 	@DisplayName("글 수정")
 	public void boardupdate() throws Exception {
-	
+		
 		//given
+		before();
 		Board board = new Board();
 		
 		board = reposi.findById(41).orElseThrow();
 		
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 										.builder()
-										.boardContents("수정내용")
+										.boardContents("수정내용Q")
 										.boardTitle("수정제목")
 										.createdAt(LocalDateTime.now())
 										.build();
@@ -122,26 +132,54 @@ class BoardServiceTest {
 	@Test
 	@DisplayName("글 삭제")
 	public void boarddelete() throws Exception {
+		long count = reposi.count();
 		//given
-		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto.builder().boardTitle("제목테스트??").boardContents("내용2").createdAt(LocalDateTime.now()).build();
-		
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
+				.builder()
+				.boardTitle("제목테스트>??")
+				.boardContents("내용24")
+				.createdAt(LocalDateTime.now())
+				.build();
+		//글 저장
 		Integer result = boardservice.boardsave(dto, member1);
 		
 		//when
 		boardservice.deleteBoard(result, member1);
 		
 		//then
-		org.junit.jupiter.api.Assertions.assertThrows(CustomExceptionHandler.class,()->{
-			boardservice.deleteBoard(result, member1);
-		});
+		assertThat(count).isEqualTo(count);
+	}
+	
+	@Test
+	@DisplayName("글 삭제 실패- 다른 회원인 경우")
+	public void boarddeleteFail() throws Exception {
+		long count = reposi.count();
+		//given
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
+				.builder()
+				.boardTitle("제목테스트>??")
+				.boardContents("내용24")
+				.createdAt(LocalDateTime.now())
+				.build();
+		
 	}
 	
 	@Test
 	@DisplayName("글 목록")
-	public void boardlist() {
+	public void boardlist() throws Exception {
 		
 		List<Board>boardlist = reposi.findAll();
 		
+		List<BoardDto.BoardResponseDto>listresult = boardservice.findAll();
+		
+		assertThat(boardlist).isNotNull();
+		assertThat(listresult).isNotNull();
+		assertThat(listresult.get(0).getBoardId()).isEqualTo(boardlist.get(0).getId());
+	}
+	
+	@Test
+	@DisplayName("게시글 목록 페이징")
+	public void boardlistPageingTest() throws Exception {
 		Pageable pageable = Pageable.ofSize(5);
 
 		Page<Board>list = reposi.findAll(pageable);
@@ -153,9 +191,17 @@ class BoardServiceTest {
 		for(int i=0; i<content.size();i++) {
 			System.out.println("boardpaging content:"+content.get(i).getClass());
 		}
+		Page<BoardDto.BoardResponseDto>pageResult = boardservice.findAllPage(pageable);
 		
-		System.out.println(total);
-		System.out.println(boardlist);
+		assertThat(pageResult).isNotNull();
+		assertThat(list).info.description();
 	}
-
+	
+	@Test
+	@DisplayName("게시글 검색 테스트")
+	public void boardlistSearchTest() {
+		
+	}
+	
+	
 }

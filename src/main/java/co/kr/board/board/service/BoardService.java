@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
@@ -29,16 +28,16 @@ public class BoardService {
 	 * 글 목록 전체 조횐 
 	 * 
 	 */
-	@Transactional
-	public List<BoardDto.ResponseDto>findAll() throws Exception{
+	@Transactional(readOnly = true)
+	public List<BoardDto.BoardResponseDto>findAll() throws Exception{
 	
 		List<Board> articlelist= (List<Board>)repos.findAll();
 		
-		List<BoardDto.ResponseDto> list = new ArrayList<>();
+		List<BoardDto.BoardResponseDto> list = new ArrayList<>();
 		
 		for(Board article : articlelist) {
-			BoardDto.ResponseDto boardDto = BoardDto.ResponseDto
-												.builder()
+			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
+												.builder()											
 												.board(article)
 												.build();	
 			list.add(boardDto);
@@ -52,12 +51,12 @@ public class BoardService {
 	* @Param Pageable
 	* 
 	*/
-	@Transactional
-	public Page<BoardDto.ResponseDto> findAll(Pageable pageable) throws Exception{
+	@Transactional(readOnly = true)
+	public Page<BoardDto.BoardResponseDto> findAllPage(Pageable pageable) throws Exception{
 		
 		Page<Board> articlelist = repos.findAll(pageable);
 				
-		Page<BoardDto.ResponseDto> list = articlelist.map(board ->new BoardDto.ResponseDto(board));
+		Page<BoardDto.BoardResponseDto> list = articlelist.map(board ->new BoardDto.BoardResponseDto(board));
 		
 		return list;
 	}
@@ -67,13 +66,13 @@ public class BoardService {
 	 * @Param keyword
 	 * @Param pageable
 	 */
-	@Transactional
-	public Page<BoardDto.ResponseDto>findAllSearch(String keyword,Pageable pageable)throws Exception{
+	@Transactional(readOnly = true)
+	public Page<BoardDto.BoardResponseDto>findAllSearch(String keyword,Pageable pageable)throws Exception{
 		
 		Page<Board>allSearch = repos.findAllSearch(keyword, pageable);
 				
-		Page<BoardDto.ResponseDto>list = allSearch.map(
-					board -> new BoardDto.ResponseDto(board));
+		Page<BoardDto.BoardResponseDto>list = allSearch.map(
+					board -> new BoardDto.BoardResponseDto(board));
  		return list;
 	}
 	
@@ -108,7 +107,7 @@ public class BoardService {
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
 	@Transactional
-	public BoardDto.ResponseDto getBoard(Integer boardId)throws Exception{
+	public BoardDto.BoardResponseDto getBoard(Integer boardId)throws Exception{
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
@@ -118,7 +117,7 @@ public class BoardService {
 		//게시글 조회수 증가
 		board.countUp();		
 		
-		return BoardDto.ResponseDto
+		return BoardDto.BoardResponseDto
 			   .builder()
 			   .board(board)
 			   .build();

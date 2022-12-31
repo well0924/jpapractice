@@ -6,5 +6,4 @@ import co.kr.board.file.domain.Files;
 
 public interface FileRepository extends JpaRepository<Files, Integer>{
 	
-	public void deleteByFileName(String fileName);
 }

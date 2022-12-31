@@ -12,17 +12,13 @@ import co.kr.board.login.domain.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 public class MemberDto {
 	
 	@Getter
 	@Setter
 	@Builder
-	@ToString
-	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class MemberRequestDto{
 		
@@ -53,8 +49,6 @@ public class MemberDto {
 	
 	@Getter
 	@Builder
-	@ToString
-	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class MemeberResponseDto{
 		

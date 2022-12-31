@@ -15,7 +15,7 @@ function modifypost(){
 			boardContents : contents
 	};
 	
-	formdate.append("boardupdate",new Blob[JSON.stringify(date)],{type:"application/json"})
+	formdate.append("boardupdate",new Blob([JSON.stringify(date)],{type:"application/json"}));
 	
 	$.ajax({
 		

@@ -37,11 +37,11 @@ public class BoardController {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		Page<BoardDto.ResponseDto> list =null;
+		Page<BoardDto.BoardResponseDto> list =null;
 		
 		list =service.findAllSearch(keyword, pageable);
 			
-		list = service.findAll(pageable);
+		list = service.findAllPage(pageable);
 		log.info(list);
 		
 		mv.addObject("list", list);
@@ -56,7 +56,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.ResponseDto dto)throws Exception{
+	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto)throws Exception{
 	
 		ModelAndView mv = new ModelAndView();
 		
@@ -80,7 +80,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.ResponseDto dto)throws Exception{
+	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
 		
 		ModelAndView mv = new ModelAndView();
 		

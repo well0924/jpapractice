@@ -22,4 +22,9 @@ public class CustomExceptionHandler extends RuntimeException{
 		super(error.getMessage());
 		this.errorcode = error;
 	}
+	
+	 //테스트용
+    public ErrorCode getErrorCode() {
+        return errorcode;
+    }
 }

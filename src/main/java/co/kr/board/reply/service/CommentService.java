@@ -86,6 +86,9 @@ public class CommentService {
 				.createdAt(dto.getCreatedAt())
 				.build();
 		
+		String userid= principal.getUsername();
+		String replywriter= reply.getReplyWriter();
+		
 		repository.save(reply);
 		
 		board.getCommentlist().add(reply);
@@ -104,6 +107,14 @@ public class CommentService {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
 		
+		Comment comment = repository.findById(replyId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+		
+		String userid= principal.getUsername();
+		String replywriter= comment.getReplyWriter();
+	
+		if(!userid.equals(replywriter)) {
+			throw new CustomExceptionHandler(ErrorCode.COMMENT_DELETE_DENIED);
+		}
 		repository.deleteById(replyId);
 	}
 	
