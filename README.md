@@ -60,7 +60,7 @@
 				
 ### 개발 환경
 
-- Back-end: Java11 SpringBoot,Jpa
+- Back-end: Java11, SpringBoot, Jpa , Jwt, Redis
 
 
 - DB: MariaDB
@@ -97,7 +97,9 @@
 
 - [x] 댓글(목록,작성,삭제)
 
-- [x] 회원 가입
+- [x] 회원 가입(아이디중복,이메일중복)
+
+- [x] 아이디 찾기
 
 - [x] 로그인(시큐리티+jwt)
 

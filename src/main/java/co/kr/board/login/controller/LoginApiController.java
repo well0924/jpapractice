@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.kr.board.config.exception.dto.Response;
+import co.kr.board.config.security.jwt.JwtTokenProvider;
+import co.kr.board.login.domain.Member;
+import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
+import co.kr.board.login.domain.dto.AuthenticationDto;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,6 +35,8 @@ import lombok.extern.log4j.Log4j2;
 public class LoginApiController {
 	
 	private final MemberService service;
+	
+	private final JwtTokenProvider jwtTokenProvider;
 	
 	@GetMapping("/logincheck/{id}")
 	public Response<Boolean>idcheck(@PathVariable(value="id",required = true) String username)throws Exception{
@@ -43,7 +50,7 @@ public class LoginApiController {
 			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
 			
 		}else if(checkresult ==false) {//사용가능한 아이디
-			log.info("결과값:"+checkresult);
+			log.info("사용결과?:"+checkresult);
 			return	new Response<Boolean>(HttpStatus.OK.value(),true);
 			
 		}
@@ -128,4 +135,28 @@ public class LoginApiController {
 		
 		return new Response<>(HttpStatus.OK.value(),userid);
 	}
+	
+	
+//	@PostMapping("/signup")
+//	public ResponseEntity<String> userlogin(@RequestBody LoginDto logindto)throws Exception{
+//		
+//		Member member = service.findByUsername(logindto.getUsername());
+//		
+//		return new ResponseEntity<>(jwtTokenProvider.createToken(logindto.getUsername(),member.getRole()),HttpStatus.OK);
+////		return ResponseEntity.ok()
+////				.header("X-AUTH-TOKEN",jwtTokenProvider
+////						.createToken(logindto.getUsername(),member.getRole())).body(AuthenticationDto);
+//	}
+	
+	@PostMapping("/signup")
+	public ResponseEntity<AuthenticationDto> userlogin(@RequestBody LoginDto logindto)throws Exception{
+		
+		Member member = service.findByUsername(logindto.getUsername());
+		AuthenticationDto authen = service.loginService(logindto);
+		
+		return ResponseEntity.ok()
+				.header("X-AUTH-TOKEN",jwtTokenProvider
+						.createToken(logindto.getUsername(),member.getRole())).body(authen);
+	}
+
 }

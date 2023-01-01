@@ -18,6 +18,7 @@ public class BoardDto {
 	@Getter
 	@Setter
 	@Builder
+	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class BoardRequestDto{
 		
@@ -33,11 +34,10 @@ public class BoardDto {
 		private LocalDateTime createdAt;
 	}
 	
-	
-	//파일 첨부용 dto
-	
 	//게시물 응답 dto
 	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class BoardResponseDto{
 		
 		private Integer boardId;

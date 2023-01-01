@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	public void configure(WebSecurity web) throws Exception {
 		web
 		.ignoring()
+		.antMatchers("/**")
 		.antMatchers("/webjars/**", "/dist/**", "/plugins/**", "/css/**", "/user/**","/swagger-resources/**")
 		.antMatchers("/images/**", "/js/**", "/font/**", "/webfonts/**", "/main/**", "/swagger-ui/**", "/v2/**");
 	}
@@ -68,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
 		.authorizeRequests()
+		.antMatchers("/api/login/signup").permitAll()
 		.antMatchers("/page/admin/list").hasRole("ADMIN")
 		.antMatchers("/page/board/list","/api/board/**","/api/reply/**").hasAnyRole("ADMIN","USER")
 		.antMatchers("/page/main/mainpage","/page/login/loginpage","/page/login/memberjoin","/page/login/finduserid","/api/login/**").permitAll()
@@ -75,12 +77,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.authenticated()
 		.and()
 		.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-		.formLogin()
-		.loginPage("/page/login/loginpage")//시큐리티에 적용되는 로그인페이지가 아닌 커스텀페이지로 이동
-		.loginProcessingUrl("/loginProc").permitAll()//로그인은 전부 허용
-		.failureHandler(new LoginFailuererHandler())//로그인에 실패를 하면 fail handler
-		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
-		.and()
+		.formLogin().disable()
+		//.loginPage("/page/login/loginpage")//시큐리티에 적용되는 로그인페이지가 아닌 커스텀페이지로 이동
+		//.loginProcessingUrl("/loginProc").permitAll()//로그인은 전부 허용
+		//.failureHandler(new LoginFailuererHandler())//로그인에 실패를 하면 fail handler
+		//.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
 		.rememberMe()
 		.key("key")//리멤비미 인증을 위해서 발행되는 토큰을 구별하는 키 이름을 지정
 		.rememberMeParameter("rememberme")//로그인 페이지에서 html 자동 파라미터 이름

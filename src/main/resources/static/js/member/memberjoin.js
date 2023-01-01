@@ -13,19 +13,15 @@ function usernameCheck(){
 			contentType:'application/json; charset = utf-8'	
 		}).done(function(resp){
 			console.log(resp.data);
-			console.log(resp.data);
 			console.log(resp);
 			
 			if(resp.data == true){
 				$('#duplicatedid').text('사용가능!');
 				$('#duplicatedid').css('color','blue');
-			}
-			if(resp.data == false){
+			}else{
 				$('#duplicatedid').text('아이디 중복!');
-				$('#duplicatedid').css('color','red');				
-			}
-		}).fail(function(error){
-			console.log(error);
+				$('#duplicatedid').css('color','red');
+			}					
 		});	
 }
 
@@ -58,7 +54,6 @@ function useremailCheck(){
 		contentType:'application/json; charset = utf-8'
 	}).done(function(resp){
 		console.log(resp);
-		console.log(resp.code);
 		console.log(resp.data);
 		
 		if(resp.data == true){

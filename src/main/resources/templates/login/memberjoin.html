@@ -6,6 +6,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="UTF-8">
+<link rel="shortcut icon" href="#">
 <title>회원가입</title>
 <th:block th:replace="/layout/script ::scriptfragment"></th:block>
 </head>
@@ -58,7 +59,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         <a type="button" style="color:white" class="w-100 btn btn-lg btn-secondary" onclick="window.history.back();">취소</a>
     </div>
 </form>
-<script type="text/javascript" th:src="@{/js/member/memberjoin.js}"></script>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
+<script type="text/javascript" th:src="@{/js/member/memberjoin.js}"></script>
 </body>
 </html>

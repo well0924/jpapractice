@@ -16,6 +16,8 @@ import co.kr.board.config.exception.dto.ErrorCode;
 import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
+import co.kr.board.login.domain.dto.AuthenticationDto;
+import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.repository.MemberRepository;
@@ -28,6 +30,7 @@ public class MemberService {
 	private final MemberRepository  repository;
 	
 	private final BCryptPasswordEncoder encoder;
+	
 	
 	/*
 	 * 회원 목록 
@@ -98,6 +101,43 @@ public class MemberService {
 				.createdAt(member.getCreatedAt())
 				.build();
 	}
+	/*
+	 * 로그인 기능 v1
+	 * 
+	 */
+	@Transactional
+	public Member findByUsername(String username)throws Exception{
+		Optional<Member> member = repository.findByUsername(username);
+		
+		Member detail = member.get();
+		
+		return detail;
+	}
+	
+	/*
+	 * 로그인 기능 v2
+	 */
+	@Transactional
+	public AuthenticationDto loginService(LoginDto logindto)throws Exception{
+		Member loginEntity = logindto.toEntity();
+		
+		Member member = repository.findByUsername(logindto.getUsername()).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+		
+		if(!encoder.matches(loginEntity.getPassword(), member.getPassword())) {
+			throw new Exception("Passwords do not match");
+		}
+		
+		AuthenticationDto authen = new AuthenticationDto();
+		
+		authen.setId(member.getId());
+		authen.setMembername(member.getMembername());
+		authen.setPassword(member.getPassword());
+		authen.setUseremail(member.getUseremail());
+		authen.setUsername(member.getUsername());
+		
+		return authen;
+	}
+	
 	
 	/*
 	 * 회원가입 기능
@@ -169,7 +209,7 @@ public class MemberService {
 	@Transactional
 	public Boolean checkmemberIdDuplicate(String username)throws Exception{
 		
-		Boolean result = repository.existsByUseremail(username);
+		Boolean result = repository.existsByUsername(username);
 		
 		return result;
 	}
