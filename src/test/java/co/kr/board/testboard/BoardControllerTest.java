@@ -30,8 +30,10 @@ public class BoardControllerTest {
 	@DisplayName("게시판 목록 화면")
 	@Test
 	public void cotrollerViewTest()throws Exception{
+		
 		mockMvc
-		.perform(get("/page/board/list").contentType(MediaType.TEXT_HTML))
+		.perform(get("/page/board/list")
+		.contentType(MediaType.TEXT_HTML))
 		.andExpect(view().name("board/boardlist"))
 		.andExpect(status().isOk())
 		.andDo(print());
@@ -41,7 +43,9 @@ public class BoardControllerTest {
 	@DisplayName("게시글 조회 화면")
 	@Test
 	public void controllerDetailViewTest()throws Exception{
+		
 		Integer boardId = 10;
+		
 		mockMvc.perform(get("/page/board/detail/"+boardId))
 		.andExpect(status().isOk())
 		.andDo(print());
@@ -51,6 +55,7 @@ public class BoardControllerTest {
 	@DisplayName("게시글 작성화면")
 	@Test
 	public void controllerPostViewTest()throws Exception{
+		
 		mockMvc
 		.perform(get("/page/board/write"))
 		.andExpect(view().name("board/writeboard"))
@@ -58,5 +63,16 @@ public class BoardControllerTest {
 		.andDo(print());
 	}
 	
-	
+	@WithMockUser
+	@DisplayName("게시글 수정화면")
+	@Test
+	public void controllerPostEditeViewTest()throws Exception{
+		
+		Integer boardId =10;
+		
+		mockMvc
+		.perform(get("/page/board/modify/"+boardId))
+		.andExpect(status().isOk())
+		.andDo(print());
+	}
 }

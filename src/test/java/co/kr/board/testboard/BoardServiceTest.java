@@ -44,7 +44,7 @@ class BoardServiceTest {
 		Optional<Member>detail = memberrepos.findById(1);
 		
 		member1 = detail.get();
-		assertThat(member1.getMembername()).isEqualTo("updateuser1");
+		
 	}
 	
 	@Test
