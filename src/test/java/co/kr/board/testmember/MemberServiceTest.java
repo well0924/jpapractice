@@ -190,13 +190,13 @@ public class MemberServiceTest {
 	}
 	
 	@Test
-	@DisplayName("회원 삭제")
+	@DisplayName("회원 탈퇴")
 	public void memberdelete() throws Exception {
 		//given
-		Member detail = memberrepos.findById(1).orElseThrow();
+		memberjointest();
 		
 		//when
-		//memberservice.memberdelete(detail.getUsername());
+		memberservice.memberdelete(detail.getUsername());
 		
 		//then
 //		assertThrows(CustomExceptionHandler.class,()->{

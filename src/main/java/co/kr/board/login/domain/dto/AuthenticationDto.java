@@ -1,5 +1,6 @@
 package co.kr.board.login.domain.dto;
 
+import co.kr.board.login.domain.Role;
 import groovy.transform.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,5 +23,7 @@ public class AuthenticationDto {
 	private String membername;
 	
 	private String useremail;
+	
+	private Role role;
 	
 }

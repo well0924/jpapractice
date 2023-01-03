@@ -6,12 +6,14 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import co.kr.board.login.domain.Role;
+import co.kr.board.login.domain.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -22,10 +24,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 	
-	 private String secretKey = "test";
+	 @Value("${jwt.secret}")
+	 private String secretKey;
 
 	    // 토큰 유효시간 30분
 	    private long tokenValidTime = 30 * 60 * 1000L;
+	    
+	    private long refreshtokenValidTime = 1000 * 60 * 60 * 24 * 7;
 
 	    private final UserDetailsService userDetailsService;
 
@@ -33,8 +38,37 @@ public class JwtTokenProvider {
 	    protected void init() {
 	        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	    }
-
+	    
 	    // JWT 토큰 생성
+	    public TokenDto createTokenDto(String userPk,Role roles){
+	        Claims claims = Jwts.claims().setSubject(userPk);
+
+	        claims.put("roles",roles);
+	        long now = (new Date()).getTime();
+	        Date accessTime = new Date(now+tokenValidTime);
+
+	        //토큰 생성
+	        String accessToke = Jwts
+	                .builder()
+	                .setClaims(claims)
+	                .setExpiration(accessTime)
+	                .signWith(SignatureAlgorithm.HS256,secretKey)
+	                .compact();
+
+	        //refresh 토큰 생성
+	        String refreshToken = Jwts
+	                .builder()
+	                .setExpiration(new Date(now+refreshtokenValidTime))
+	                .signWith(SignatureAlgorithm.HS256,secretKey)
+	                .compact();
+
+	        return TokenDto.builder()
+	                .accessToken(accessToke)
+	                .refreshToken(refreshToken)
+	                .ExpirationTime(accessTime.getTime())
+	                .build();
+	    }
+
 	    public String createToken(String userPK, Role roles) {
 	        Claims claims = Jwts.claims().setSubject(userPK); // JWT payload에 저장되는 정보 단위
 	        claims.put("roles", roles); // 정보 저장 (key-value)
@@ -67,9 +101,13 @@ public class JwtTokenProvider {
 	    public boolean validateToken(String jwtToken) {
 	        try {
 	            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-	            return !claims.getBody().getExpiration().before(new Date());
+	            //return !claims.getBody().getExpiration().before(new Date());
+	            return true;
 	        } catch (Exception e) {
 	            return false;
 	        }
 	    }
+	    
+	    //토큰Refresh
+	    //토큰 삭제
 }

@@ -23,6 +23,8 @@ import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
+import co.kr.board.login.domain.dto.TokenRequest;
+import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.domain.dto.AuthenticationDto;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -46,12 +48,12 @@ public class LoginApiController {
 		checkresult = service.checkmemberIdDuplicate(username);
 			
 		if(checkresult == true) {//아이디 중복
-			log.info("결과값:"+checkresult);
+			log.info("결과값(중복!):"+checkresult);
 			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
 			
 		}else if(checkresult ==false) {//사용가능한 아이디
 			log.info("사용결과?:"+checkresult);
-			return	new Response<Boolean>(HttpStatus.OK.value(),true);
+			return	new Response<Boolean>(HttpStatus.OK.value(),false);
 			
 		}
 		
@@ -135,28 +137,17 @@ public class LoginApiController {
 		
 		return new Response<>(HttpStatus.OK.value(),userid);
 	}
-	
-	
-//	@PostMapping("/signup")
-//	public ResponseEntity<String> userlogin(@RequestBody LoginDto logindto)throws Exception{
-//		
-//		Member member = service.findByUsername(logindto.getUsername());
-//		
-//		return new ResponseEntity<>(jwtTokenProvider.createToken(logindto.getUsername(),member.getRole()),HttpStatus.OK);
-////		return ResponseEntity.ok()
-////				.header("X-AUTH-TOKEN",jwtTokenProvider
-////						.createToken(logindto.getUsername(),member.getRole())).body(AuthenticationDto);
-//	}
-	
-	@PostMapping("/signup")
-	public ResponseEntity<AuthenticationDto> userlogin(@RequestBody LoginDto logindto)throws Exception{
 		
-		Member member = service.findByUsername(logindto.getUsername());
-		AuthenticationDto authen = service.loginService(logindto);
-		
-		return ResponseEntity.ok()
-				.header("X-AUTH-TOKEN",jwtTokenProvider
-						.createToken(logindto.getUsername(),member.getRole())).body(authen);
-	}
-
+	@PostMapping("/login")
+    public ResponseEntity <TokenResponse> memberjwtlogin( @RequestBody LoginDto loginDto)throws Exception{
+        TokenResponse tokenResponse = service.signin(loginDto);
+        ResponseEntity<TokenResponse> tokenDtoResponseEntity = new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+        return tokenDtoResponseEntity;
+    }
+    //토큰 재발행
+    @PostMapping("/reissue")
+    public Response<TokenResponse>jwtreissue(@RequestBody TokenRequest tokenDto)throws Exception{
+        TokenResponse tokenRequest = service.reissue(tokenDto);
+        return new Response<TokenResponse>(HttpStatus.OK.value(),tokenRequest);
+    }
 }
