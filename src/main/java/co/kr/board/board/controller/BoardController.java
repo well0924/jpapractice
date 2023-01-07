@@ -39,11 +39,10 @@ public class BoardController {
 		
 		Page<BoardDto.BoardResponseDto> list =null;
 		
-		list =service.findAllSearch(keyword, pageable);
+		//list =service.findAllSearch(keyword, pageable);
 			
 		list = service.findAllPage(pageable);
-		log.info(list);
-		
+
 		mv.addObject("list", list);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());

@@ -7,7 +7,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,7 +26,7 @@ public class LoginController {
 	@GetMapping("/loginpage")
 	public ModelAndView loginpage(
 			@RequestParam(value="error",required = false) String error, 
-			@RequestParam(value="exception",required = false) String exception)throws Exception{
+			@RequestParam(value="exception",required = false) String exception){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -39,14 +38,8 @@ public class LoginController {
 		return mv;
 	}
 	
-//	@PostMapping("/signup")
-//	public ModelAndView loginPoc()throws Exception{
-//		return null;
-//	}
-	
-	
 	@GetMapping("/memberjoin")
-	public ModelAndView mebmerjoin()throws Exception{
+	public ModelAndView mebmerjoin(){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -56,7 +49,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/memberdelete")
-	public ModelAndView memberdelete()throws Exception{
+	public ModelAndView memberdelete(){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -66,7 +59,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/memberupdate/{id}")
-	public ModelAndView memberupdate(@PathVariable("id") Integer useridx, MemberDto.MemeberResponseDto dto)throws Exception{
+	public ModelAndView memberupdate(@PathVariable("id") Integer useridx, MemberDto.MemeberResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -79,13 +72,11 @@ public class LoginController {
 	}
 	
 	@GetMapping("/adminlist")
-	public ModelAndView adminlist(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+	public ModelAndView adminlist(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
 		
-		Page<Member>list= null;
-			
-		list = service.findAll(pageable);
+		Page<Member>list= service.findAll(pageable);
 				
 		mv.addObject("memberlist", list);
 		
@@ -95,7 +86,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView memberdetail(@PathVariable(value="id",required = true)Integer useridx, MemberDto.MemeberResponseDto dto)throws Exception{
+	public ModelAndView memberdetail(@PathVariable(value="id")Integer useridx, MemberDto.MemeberResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -108,7 +99,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/finduserid")
-	public ModelAndView findUserIdPage()throws Exception{
+	public ModelAndView findUserIdPage(){
 		ModelAndView mv = new ModelAndView();
 		
 		mv.setViewName("/login/userfindid");
@@ -117,7 +108,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/finduserpw")
-	public ModelAndView finduserpw()throws Exception{
+	public ModelAndView finduserpw(){
 		ModelAndView mv = new ModelAndView();
 		
 		mv.setViewName("/login/userfindpw");

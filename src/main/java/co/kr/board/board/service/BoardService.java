@@ -22,16 +22,15 @@ import lombok.AllArgsConstructor;
 public class BoardService {
 	
 	private final BoardRepository repos;		
-	
-	
+
 	/*
 	 * 글 목록 전체 조횐 
 	 * 
 	 */
 	@Transactional(readOnly = true)
-	public List<BoardDto.BoardResponseDto>findAll() throws Exception{
+	public List<BoardDto.BoardResponseDto>findAll(){
 	
-		List<Board> articlelist= (List<Board>)repos.findAll();
+		List<Board> articlelist= repos.findAll();
 		
 		List<BoardDto.BoardResponseDto> list = new ArrayList<>();
 		
@@ -52,13 +51,11 @@ public class BoardService {
 	* 
 	*/
 	@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto> findAllPage(Pageable pageable) throws Exception{
+	public Page<BoardDto.BoardResponseDto> findAllPage(Pageable pageable) {
 		
 		Page<Board> articlelist = repos.findAll(pageable);
 				
-		Page<BoardDto.BoardResponseDto> list = articlelist.map(board ->new BoardDto.BoardResponseDto(board));
-		
-		return list;
+		return articlelist.map(board ->new BoardDto.BoardResponseDto(board));
 	}
 	
 	/*
@@ -67,13 +64,11 @@ public class BoardService {
 	 * @Param pageable
 	 */
 	@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto>findAllSearch(String keyword,Pageable pageable)throws Exception{
+	public Page<BoardDto.BoardResponseDto>findAllSearch(String keyword,Pageable pageable){
 		
 		Page<Board>allSearch = repos.findAllSearch(keyword, pageable);
-				
-		Page<BoardDto.BoardResponseDto>list = allSearch.map(
-					board -> new BoardDto.BoardResponseDto(board));
- 		return list;
+
+ 		return allSearch.map(board -> new BoardDto.BoardResponseDto(board));
 	}
 	
     /*
@@ -84,7 +79,12 @@ public class BoardService {
 	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member)throws Exception{
+	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member){
+		
+		//회원이 아니면 사용불가
+		if(member == null) {
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
 		
 		Board board = Board
 				.builder()
@@ -97,7 +97,7 @@ public class BoardService {
 				.build();
 		
 		repos.save(board);
-				
+		
 		return board.getId();
 	}
 	
@@ -107,9 +107,12 @@ public class BoardService {
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
 	@Transactional
-	public BoardDto.BoardResponseDto getBoard(Integer boardId)throws Exception{
+	public BoardDto.BoardResponseDto getBoard(Integer boardId){
 		
-		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+		Optional<Board>articlelist = Optional
+				.ofNullable(
+						repos.findById(boardId)
+								.orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
 		//글 조회
 		Board board = articlelist.get();
@@ -131,7 +134,11 @@ public class BoardService {
 	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
-	public void deleteBoard(Integer boardId , Member member)throws Exception{
+	public void deleteBoard(Integer boardId , Member member){
+		
+		if(member == null) {
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
 		
 		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
@@ -140,7 +147,7 @@ public class BoardService {
 		
 		//글 작성자와 로그인한 유저의 아이디가 동일하지 않으면 Exception
 		if(!boardAuthor.equals(loginUser)) {
-			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
+			throw new CustomExceptionHandler(ErrorCode.BOARD_DELETE_DENIED);
 		}
 		
 		repos.deleteById(board.get().getId());
@@ -151,11 +158,16 @@ public class BoardService {
 	* @Param BoardRequestDto 
 	* @Param boardId
 	* @Param Member
+	* @Exception : 로그인을 하지 않은경우 ONLY_USER
 	* @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL 
-	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
+	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	*/
 	@Transactional
-	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto, Member member)throws Exception{
+	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto, Member member){
+		
+		if(member == null) {
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
@@ -164,12 +176,12 @@ public class BoardService {
 		String boardAuthor = result.getBoardAuthor();
 		String loginUser = member.getUsername();
 		
-		if(!boardAuthor.equals(loginUser)) {
-			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
-		}
-		
 		result.updateBoard(dto);
+		
+		if(!boardAuthor.equals(loginUser)) {
+			throw new CustomExceptionHandler(ErrorCode.BOARD_EDITE_DENIED);
+		}
 
-		return boardId;
+		return result.getId();
 	}
 }

@@ -8,24 +8,13 @@ import javax.validation.constraints.Email;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import co.kr.board.config.exception.dto.Response;
-import co.kr.board.config.security.jwt.JwtTokenProvider;
-import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.domain.dto.TokenRequest;
 import co.kr.board.login.domain.dto.TokenResponse;
-import co.kr.board.login.domain.dto.AuthenticationDto;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,116 +27,106 @@ public class LoginApiController {
 	
 	private final MemberService service;
 	
-	private final JwtTokenProvider jwtTokenProvider;
-	
+	//아이디 중복체크
 	@GetMapping("/logincheck/{id}")
-	public Response<Boolean>idcheck(@PathVariable(value="id",required = true) String username)throws Exception{
+	public Response<Boolean>idcheck(@PathVariable(value="id") String username){
 				
-		Boolean checkresult = null;
-				
-		checkresult = service.checkmemberIdDuplicate(username);
+		Boolean checkresult = service.checkmemberIdDuplicate(username);
 			
-		if(checkresult == true) {//아이디 중복
-			log.info("결과값(중복!):"+checkresult);
-			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
+		if(checkresult.equals(true)) {//아이디 중복
+			return new Response<>(HttpStatus.BAD_REQUEST.value(),true);
 			
-		}else if(checkresult ==false) {//사용가능한 아이디
-			log.info("사용결과?:"+checkresult);
-			return	new Response<Boolean>(HttpStatus.OK.value(),false);
-			
+		}else{//사용가능한 아이디
+			return	new Response<>(HttpStatus.OK.value(),false);
 		}
-		
-		return new Response<Boolean>(HttpStatus.OK.value(),true);
 	}
 	
+	//이메일 중복체크
 	@GetMapping("/emailcheck/{email}")
-	public Response<Boolean>emailcheck(@PathVariable(value="email",required = true)@Email String useremail)throws Exception{
-		Boolean checkresult = null;
+	public Response<Boolean>emailcheck(@PathVariable(value="email")@Email String useremail){
+		Boolean checkresult = service.checkmemberEmailDuplicate(useremail);
 		
-		checkresult = service.checkmemberEmailDuplicate(useremail);
-		
-		if(checkresult == true) {//아이디 중복
-			log.info("결과값:"+checkresult);
-			return new Response<Boolean>(HttpStatus.BAD_REQUEST.value(),false);
+		if(checkresult.equals(true)) {//아이디 중복
+			return new Response<>(HttpStatus.BAD_REQUEST.value(),false);
 			
-		}else if(checkresult ==false) {//사용가능한 아이디
-			log.info("결과값:"+checkresult);
-			return	new Response<Boolean>(HttpStatus.OK.value(),true);
-			
+		}else {//사용가능한 아이디
+			return	new Response<>(HttpStatus.OK.value(),true);
 		}
-		return new Response<Boolean>(HttpStatus.OK.value(),true);
 	}
 	
+	//회원목록
 	@GetMapping("/list")
-	public Response<List<MemberDto.MemeberResponseDto>>memberlist()throws Exception{
+	public Response<List<MemberDto.MemeberResponseDto>>memberlist(){
 		
-		List<MemberDto.MemeberResponseDto>list =null;
+		List<MemberDto.MemeberResponseDto>list = service.findAll();
 		
-		list = service.findAll();		
-		
-		return new Response<List<MemeberResponseDto>>(HttpStatus.OK.value(),list);
+		return new Response<>(HttpStatus.OK.value(),list);
 	}
 	
+	//회원 단일 조회
 	@GetMapping("/detailmember/{idx}/member")
-	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable(value="idx",required = true)Integer useridx)throws Exception{
+	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable(value="idx")Integer useridx){
 		
-		MemberDto.MemeberResponseDto dto = null;
-		
-		dto =service.getMember(useridx);
+		MemberDto.MemeberResponseDto dto = service.getMember(useridx);
 				
-		return new Response<MemberDto.MemeberResponseDto>(HttpStatus.OK.value(),dto);
+		return new Response<>(HttpStatus.OK.value(),dto);
 	}
-		
+	
+	//회원가입
 	@PostMapping("/memberjoin")
 	public Response<Integer>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 		
-		int joinresult = 0;
-		
-		joinresult = service.memberjoin(dto);
-					
-		return new Response<Integer>(HttpStatus.OK.value(),joinresult);
+		int joinresult = service.memberjoin(dto);
+
+		return new Response<>(HttpStatus.OK.value(),joinresult);
 	}
 	
+	//회원 삭제
 	@DeleteMapping("/memberdelete/{idx}/member")
-	public Response<String>memberdelete(@PathVariable(value="idx")String username)throws Exception{
+	public Response<String>memberdelete(@PathVariable(value="idx")String username){
 		
 		service.memberdelete(username);		
 		
 		return new Response<>(HttpStatus.OK.value(),"delete");
 	}
 	
+	//회원 수정
 	@PutMapping("/memberupdate/{idx}/member")
 	public Response<Integer>memberupdate(
 			@PathVariable(value="idx")Integer useridx,
-			@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
+			@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult){
 				
-		int updateresult = 0;
+		int updateresult = service.memberupdate(useridx, dto);
 		
-		updateresult = service.memberupdate(useridx, dto);
-		
-		return new Response<Integer>(HttpStatus.OK.value(),updateresult);
+		return new Response<>(HttpStatus.OK.value(),updateresult);
 	}
 	
+	//회원아이디 찾기
 	@PostMapping("/userfind/{name}/{email}")
 	public Response<?>userfindid(
-			@PathVariable(value="name",required = true)String membername,
-			@PathVariable(value="email",required = true)String useremail)throws Exception{
+			@PathVariable(value="name")String membername,
+			@PathVariable(value="email")String useremail){
 		
 		String userid = service.findByMembernameAndUseremail(membername, useremail);
 		
 		return new Response<>(HttpStatus.OK.value(),userid);
 	}
-		
-	@PostMapping("/login")
-    public ResponseEntity <TokenResponse> memberjwtlogin( @RequestBody LoginDto loginDto)throws Exception{
+	
+	//jwt 로그인 인증
+	@PostMapping("/signup")
+    public ResponseEntity <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
         ResponseEntity<TokenResponse> tokenDtoResponseEntity = new ResponseEntity<>(tokenResponse, HttpStatus.OK);
         return tokenDtoResponseEntity;
     }
-    //토큰 재발행
+    
+	//토큰 재발행
     @PostMapping("/reissue")
-    public Response<TokenResponse>jwtreissue(@RequestBody TokenRequest tokenDto)throws Exception{
-        TokenResponse tokenRequest = service.reissue(tokenDto);
-        return new Response<TokenResponse>(HttpStatus.OK.value(),tokenRequest);
+    public Response<TokenResponse>jwtreissue(@RequestBody TokenRequest tokenDto){
+        TokenResponse tokenResponse = service.reissue(tokenDto);
+        return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
+    
+    //로그아웃
+    
 }

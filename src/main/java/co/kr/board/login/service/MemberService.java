@@ -17,20 +17,18 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.config.exception.dto.ErrorCode;
 import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.redis.RedisService;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.RefreshToken;
 import co.kr.board.login.domain.Role;
-import co.kr.board.login.domain.dto.AuthenticationDto;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.MemberDto.MemberRequestDto;
 import co.kr.board.login.domain.dto.MemberDto.MemeberResponseDto;
 import co.kr.board.login.domain.dto.TokenDto;
 import co.kr.board.login.domain.dto.TokenRequest;
 import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.repository.MemberRepository;
-import co.kr.board.login.repository.RefreshTokenRepository;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -42,8 +40,8 @@ public class MemberService {
 	private final BCryptPasswordEncoder encoder;
 	
 	private final JwtTokenProvider jwtTokenProvider;
-	
-	private final RefreshTokenRepository refreshTokenRepository;
+
+	private final RedisService redisService;
 	
 	/*
 	 * 회원 목록 
@@ -51,7 +49,7 @@ public class MemberService {
 	 * 
 	 */
 	@Transactional
-	public List<MemberDto.MemeberResponseDto>findAll()throws Exception{
+	public List<MemberDto.MemeberResponseDto>findAll(){
 		
 		List<Member>memberlist = repository.findAll();
 
@@ -81,11 +79,8 @@ public class MemberService {
 	 */
 	@Transactional
 	public Page<Member>findAll(Pageable pageable){
-		
-		Page<Member>memberlist = repository.findAll(pageable);
-		
-		return memberlist;
-	};
+		return repository.findAll(pageable);
+	}
 	
 	/*
 	 * 회원 정보 단일 조회
@@ -94,13 +89,17 @@ public class MemberService {
 	 * @param Exception: 회원이 없는 경우 해당 회원이 없습니다.
 	 */
 	@Transactional
-	public MemberDto.MemeberResponseDto getMember(Integer useridx)throws Exception{
+	public MemberDto.MemeberResponseDto getMember(Integer useridx){
 		Optional<Member>memberdetail = Optional
 									.ofNullable(
 									repository
 									.findById(useridx)
 									.orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
-		
+
+		if(!memberdetail.isPresent()){
+			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
+		}
+
 		Member member = memberdetail.get();
 
 		return MemberDto.MemeberResponseDto
@@ -115,36 +114,19 @@ public class MemberService {
 				.build();
 	}
 	
-	/*
-	 * 로그인 기능 v2
-	 */
-//	@Transactional
-//	public AuthenticationDto loginService(LoginDto logindto)throws Exception{
-//		Member loginEntity = logindto.toEntity();
-//		
-//		Member member = repository.findByUsername(logindto.getUsername()).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-//		
-//		if(!encoder.matches(loginEntity.getPassword(), member.getPassword())) {
-//			throw new Exception("Passwords do not match");
-//		}
-//		
-//		AuthenticationDto authen = new AuthenticationDto();
-//		
-//		authen.setId(member.getId());
-//		authen.setMembername(member.getMembername());
-//		authen.setPassword(member.getPassword());
-//		authen.setUseremail(member.getUseremail());
-//		authen.setUsername(member.getUsername());
-//		authen.setRole(member.getRole());
-//		return authen;
-//	}
-	
+	//로그인 인증
     @Transactional
-    public TokenResponse signin(LoginDto dto)throws Exception{
+    public TokenResponse signin(LoginDto dto){
         //회원 정보 조회
         Optional<Member> memberAccount = repository.findByUsername(dto.getUsername());
+
+		if(memberAccount.isPresent()){
+			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
+		}
+
         Member memberdetail = memberAccount.get();
-        //비밀번호 유효성 검사
+
+		//비밀번호 유효성 검사
         passwordvalidation(memberdetail,dto);
         
         //token 발행
@@ -157,73 +139,48 @@ public class MemberService {
                 .value(tokenDto.getRefreshToken())
                 .build();
 
-        //refresh토큰 저장
-        refreshTokenRepository.save(refreshToken);
+        //redis로 refresh토큰 저장
+        redisService.setValues(memberdetail.getUsername(), refreshToken.getValue());
 
-        TokenResponse tokenResponse = TokenResponse
-                .builder()
-                .accessToken(tokenDto.getAccessToken())
-                .refreshToken(tokenDto.getRefreshToken())
-                .expirationTime(tokenDto.getExpirationTime())
-                .build();
-
-        return tokenResponse;
+        return TokenResponse
+				.builder()
+				.accessToken(tokenDto.getAccessToken())
+				.refreshToken(tokenDto.getRefreshToken())
+				.ExpirationTime(tokenDto.getExpirationTime())
+				.build();
     }
 
     //토큰 재발급
     @Transactional
-    public TokenResponse reissue(TokenRequest request)throws Exception{
-        //토큰 유효성 검사
-       if(jwtTokenProvider.validateToken(request.getRefreshToken())){
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
-        }
-        //발행 토큰에서 유저정보 가져오기
-        Authentication authentication = jwtTokenProvider.getAuthentication(request.getAccessToken());
-        RefreshToken refreshToken = refreshTokenRepository
-                .findByKey(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
+    public TokenResponse reissue(TokenRequest request){
+
+    	//발행 토큰에서 유저정보 가져오기
+        Authentication authentication = jwtTokenProvider.getAuthentication(request.getRefreshToken());
 
         //Refresh Token 일치하는지 검사
-        if (!refreshToken.getValue().equals(request.getRefreshToken())) {
+        if (!authentication.getName().equals(request.getRefreshToken())) {
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
         }
+        
         //권한 가져오기 및 토큰 생성
         String authority = authentication
                 .getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+       
+        //redis에 refresh 토큰저장
+        redisService.checkRefreshToken(authentication.getName(), request.getRefreshToken());
         
         TokenDto tokenDto = jwtTokenProvider.createTokenDto(authentication.getName(),Role.valueOf(authority));
-        //토큰 업데이트
-        RefreshToken  newrefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
-
-        //토큰 저장
-        refreshTokenRepository.save(newrefreshToken);
-        TokenResponse tokenResponse = new TokenResponse(tokenDto.getAccessToken(),tokenDto.getRefreshToken(), tokenDto.getExpirationTime());
-        return tokenResponse;
+        //토큰 발급
+        return TokenResponse
+				.builder()
+				.accessToken(tokenDto.getAccessToken())
+				.refreshToken(tokenDto.getRefreshToken())
+				.ExpirationTime(tokenDto.getExpirationTime())
+				.build();
     }
-
-    private void validatedSignUpInfo(MemberRequestDto dto){
-        //회원 가입시 이메일이 같으면 Exception
-        boolean idduplicate = repository.existsByUsername(dto.getUsername());
-        boolean emailduplicate = repository.existsByUseremail(dto.getUseremail());
-
-        if(idduplicate){
-            throw new CustomExceptionHandler(ErrorCode.USERID_DUPLICATE);
-        }
-        //회원 가입시 아이디가 같으면 Exception
-        if(emailduplicate){
-            throw new CustomExceptionHandler(ErrorCode.USEREMAIL_DUPLICATE);
-        }
-    }
-
-    private void passwordvalidation(Member memberAccount,LoginDto dto){
-        if(!encoder.matches(dto.getPassword(),memberAccount.getPassword())){
-            throw new CustomExceptionHandler(ErrorCode.NOT_PASSWORD_MATCH);
-        }
-    }
-
 	
 	/*
 	 * 회원가입 기능
@@ -238,15 +195,8 @@ public class MemberService {
 		
 		Member member = dtoToEntity(dto); 
 		repository.save(member);
-		
-		//아이디가 중복된 경우 
-		if(checkmemberIdDuplicate(dto.getUsername())) {
-			throw new CustomExceptionHandler(ErrorCode.USERID_DUPLICATE);
-		}
-		//이메일이 중복된 경우
-		if(checkmemberEmailDuplicate(dto.getUseremail())) {
-			throw new CustomExceptionHandler(ErrorCode.USEREMAIL_DUPLICATE);
-		}
+		//회원가입 유효성 검사(아이디 중복 & 이메일 중복)
+		//validatedSignUpInfo(dto);
 		
 		return member.getId();
 	}
@@ -257,7 +207,7 @@ public class MemberService {
 	 * 회원 삭제 
 	 */
 	@Transactional
-	public void memberdelete(String username)throws Exception{
+	public void memberdelete(String username){
 		 repository.deleteByUsername(username);
 	}
 	
@@ -268,7 +218,7 @@ public class MemberService {
 	 * 회원수정을 하는 기능 (시큐리티 로그인이 필요함)
 	 */
 	@Transactional
-	public Integer memberupdate(Integer useridx,MemberDto.MemberRequestDto dto)throws Exception{
+	public Integer memberupdate(Integer useridx,MemberDto.MemberRequestDto dto){
 		
 		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
 		
@@ -302,11 +252,8 @@ public class MemberService {
 	 * 회원가입 페이지에서 아이디 중복확인
 	 */
 	@Transactional
-	public Boolean checkmemberIdDuplicate(String username)throws Exception{
-		
-		Boolean result = repository.existsByUsername(username);
-		
-		return result;
+	public Boolean checkmemberIdDuplicate(String username){
+		return repository.existsByUsername(username);
 	}
 	
 	/*
@@ -316,11 +263,8 @@ public class MemberService {
 	 * 회원가입 페이지에서 이메일 중복확인
 	 */
 	@Transactional
-	public Boolean checkmemberEmailDuplicate(String useremail)throws Exception{
-		
-		Boolean result = repository.existsByUseremail(useremail);
-		
-		return result;
+	public Boolean checkmemberEmailDuplicate(String useremail){
+		return repository.existsByUseremail(useremail);
 	}
 	
 	/*
@@ -331,14 +275,12 @@ public class MemberService {
 	 * 로그인 페이지에서 회원이름및 이메일을 입력을 하면 회원아이디를 찾는 기능
 	 */
 	@Transactional
-	public String findByMembernameAndUseremail(String membername, String useremail)throws Exception{
-		Optional<Member> member = repository.findByUseremail(useremail);
+	public String findByMembernameAndUseremail(String membername, String useremail){
+		Optional<Member> member = repository.findByMembernameAndUseremail(membername, useremail);
 		
 		Member detail = member.get();
-		
-		String userid = detail.getUsername();
-		
-		return userid;
+
+		return detail.getUsername();
 	}
 	
 	/*
@@ -346,46 +288,40 @@ public class MemberService {
 	 * @param 
 	 * @param 
 	 */
-	public MemberDto.MemeberResponseDto passwordchange(Integer useridx,MemberDto.MemberRequestDto dto)throws Exception{
+	public MemberDto.MemeberResponseDto passwordchange(Integer useridx,MemberDto.MemberRequestDto dto){
+		//회원조회
 		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
-		return null;
+		memberdetail.ifPresent(member ->{
+			if(dto.getPassword()!= null) {
+				member.setPassword(dto.getPassword());
+			}
+			repository.save(member);
+		});
+		//Member result = memberdetail.get();
+
+		return MemberDto.MemeberResponseDto.builder().build();
 	}
 	
 	//Dto에서 Entity 로 변환
 	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
 		
-		dto.getCreatedAt();
-		dto.getRole();
-		
-		Member member = Member
+		return Member
 				.builder()
 				.id(dto.getUseridx())
 				.username(dto.getUsername())
 				.password(dto.getPassword())
 				.membername(dto.getMembername())
 				.useremail(dto.getUseremail())
-				.role(Role.USER)
+				.role(Role.ROLE_USER)
 				.createdAt(LocalDateTime.now())
 				.build();
-		
-		return member;
 	}
 	
-	//Entity 에서 Dto로 변환
-//	public MemberDto.MemeberResponseDto entityToDto(Member member){
-//		
-//		MemberDto.MemeberResponseDto memberlist = MemberDto.MemeberResponseDto
-//												.builder()
-//												.useridx(member.getId())
-//												.username(member.getUsername())
-//												.password(member.getPassword())
-//												.membername(member.getMembername())
-//												.useremail(member.getUseremail())
-//												.role(member.getRole())
-//												.createdAt(LocalDateTime.now())
-//												.build();
-//		
-//		return memberlist;
-//	}
-	
+	//비밀번호 유효성 검사
+    public void passwordvalidation(Member memberAccount,LoginDto dto){
+        if(!encoder.matches(dto.getPassword(),memberAccount.getPassword())){
+            throw new CustomExceptionHandler(ErrorCode.NOT_PASSWORD_MATCH);
+        }
+    }
+
 }

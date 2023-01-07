@@ -2,7 +2,6 @@ package co.kr.board.board.domain;
 
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -15,13 +14,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.dto.BoardDto;
-import co.kr.board.file.domain.Files;
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
 import lombok.Builder;
@@ -64,14 +61,8 @@ public class Board extends BaseTime{
 	//댓글
 	@ToString.Exclude
 	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
-	@OrderBy(value="reply_id")
 	private List<Comment>commentlist;
-	
-	//첨부파일
-	@ToString.Exclude
-	@OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Files>filelist = new ArrayList<>();;
-	
+
 	@Builder
 	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
 		this.id = boardId;
@@ -81,11 +72,6 @@ public class Board extends BaseTime{
 		this.readCount = readcount;
 		this.createdAt = LocalDateTime.now();
 		this.writer = member;
-	}
-	
-	//댓글 넣기
-	public void writeCommnet(Comment comment) {
-		this.commentlist.add(comment);
 	}
 	
 	//게시글 조회수 증가
@@ -98,17 +84,5 @@ public class Board extends BaseTime{
 		this.boardTitle = dto.getBoardTitle();
 		this.boardContents =dto.getBoardContents();
 		this.createdAt = LocalDateTime.now();
-	}
-	
-	//파일 첨부
-	public void addFile(Files files) {
-	
-		this.filelist.add(files);
-		
-		//파일이 있는경우
-		if(files.getBoard() != this) {
-			//파일 저장
-			files.setBoard(this);
-		}
 	}
 }
