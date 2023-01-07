@@ -41,9 +41,9 @@ public class JwtTokenProvider {
 	    
 	    // JWT 토큰 생성
 	    public TokenDto createTokenDto(String userPk,Role roles){
-	        Claims claims = Jwts.claims().setSubject(userPk);
+	        Claims claims = Jwts.claims().setSubject(userPk);// JWT payload에 저장되는 정보 단위
 
-	        claims.put("roles",roles);
+	        claims.put("roles",roles);// 정보 저장 (key-value)
 	        long now = (new Date()).getTime();
 	        Date accessTime = new Date(now+tokenValidTime);
 
@@ -51,13 +51,14 @@ public class JwtTokenProvider {
 	        String accessToke = Jwts
 	                .builder()
 	                .setClaims(claims)
-	                .setExpiration(accessTime)
-	                .signWith(SignatureAlgorithm.HS256,secretKey)
+	                .setExpiration(accessTime)// set Expire Time
+	                .signWith(SignatureAlgorithm.HS256,secretKey)// 사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
 	                .compact();
 
 	        //refresh 토큰 생성
 	        String refreshToken = Jwts
 	                .builder()
+	                .setClaims(claims)
 	                .setExpiration(new Date(now+refreshtokenValidTime))
 	                .signWith(SignatureAlgorithm.HS256,secretKey)
 	                .compact();
@@ -67,18 +68,6 @@ public class JwtTokenProvider {
 	                .refreshToken(refreshToken)
 	                .ExpirationTime(accessTime.getTime())
 	                .build();
-	    }
-
-	    public String createToken(String userPK, Role roles) {
-	        Claims claims = Jwts.claims().setSubject(userPK); // JWT payload에 저장되는 정보 단위
-	        claims.put("roles", roles); // 정보 저장 (key-value)
-	        Date now = new Date();
-	        return Jwts.builder()
-	                .setClaims(claims)
-	                .setIssuedAt(now)
-	                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
-	                .signWith(SignatureAlgorithm.HS256, secretKey) // 사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅
-	                .compact();
 	    }
 
 	    // JWT 토큰에서 인증 정보 조회
@@ -108,6 +97,4 @@ public class JwtTokenProvider {
 	        }
 	    }
 	    
-	    //토큰Refresh
-	    //토큰 삭제
 }

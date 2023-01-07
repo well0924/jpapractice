@@ -64,11 +64,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 			
 		Set<String>roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 			
-			if(roles.contains(Role.ADMIN.getValue())) {
+			if(roles.contains(Role.ROLE_ADMIN.getValue())) {
 				
 				redirectStratgy.sendRedirect(request, response,ADMIN_URL);
 			
-			}else if(roles.contains(Role.USER.getValue())) {
+			}else if(roles.contains(Role.ROLE_USER.getValue())) {
 				
 				redirectStratgy.sendRedirect(request, response,DEFAULT_URL);
 			

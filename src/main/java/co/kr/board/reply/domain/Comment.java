@@ -16,7 +16,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.login.domain.Member;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Table(name="reply")
 @RequiredArgsConstructor
-@AllArgsConstructor
 public class Comment{
 	
 	@Id

@@ -8,15 +8,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import co.kr.board.login.domain.Member;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Getter
+@ToString
 public class CustomUserDetails implements UserDetails{
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final String ROLE_PREFIX = "ROLE_";
+	//private static final String ROLE_PREFIX = "ROLE_";
 	
 	private Member member;
 	
@@ -28,8 +30,7 @@ public class CustomUserDetails implements UserDetails{
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collectors = new ArrayList<>();
 
-		collectors.add(()-> ROLE_PREFIX + member.getRole());
-		log.info("userdetail:"+collectors.toString());
+		collectors.add(()-> member.getRole().getValue());
 		return collectors;
 	}
 

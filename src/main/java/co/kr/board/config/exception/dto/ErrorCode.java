@@ -18,7 +18,7 @@ public enum ErrorCode {
 	USERID_DUPLICATE(400,"회원 아이디가 중복이 됩니다."),
 	USEREMAIL_DUPLICATE(400,"회원 이메일이 중복이 됩니다."),
 	NOT_FINDUSERID(404,"회원아이디를 찾을 수가 없습니다."),
-	NOT_USER(404,"회원이 존재하지 않습니다.")
+	NOT_USER(404,"회원이 존재하지 않습니다."),
 	NOT_PASSWORD_MATCH(400,"비밀번호가 일치하지 않습니다."),
 	
 	//board error

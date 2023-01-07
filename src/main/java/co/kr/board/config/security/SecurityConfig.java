@@ -73,27 +73,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.httpBasic().disable()
 		.authorizeRequests()
 		.antMatchers("/api/login/signup").permitAll()
-		.antMatchers("/page/admin/list").hasRole("ADMIN")
+		.antMatchers("/page/admin/list","/api/login/list").hasRole("ADMIN")
 		.antMatchers("/page/board/list","/api/board/**","/api/reply/**").hasAnyRole("ADMIN","USER")
 		.antMatchers("/page/main/mainpage","/page/login/loginpage","/page/login/memberjoin","/page/login/finduserid","/api/login/**").permitAll()
 		.anyRequest()
 		.authenticated()
 		.and()
-//		.formLogin()
-//		.loginPage("/page/login/loginpage")//시큐리티에 적용되는 로그인페이지가 아닌 커스텀페이지로 이동
-//		.defaultSuccessUrl("/page/board/list")
-//		.loginProcessingUrl("/loginProc").permitAll()//로그인은 전부 허용
-//		.failureHandler(new LoginFailuererHandler())//로그인에 실패를 하면 fail handler
-//		.successHandler(new LoginSuccessHandler())//로그인에 성공을 하면 success handler
-//		.and()
-//		.rememberMe()
-//		.key("key")//리멤비미 인증을 위해서 발행되는 토큰을 구별하는 키 이름을 지정
-//		.rememberMeParameter("rememberme")//로그인 페이지에서 html 자동 파라미터 이름
-//		.tokenValiditySeconds(3600*24*365)//기본 토큰 유효기간 설정-1년간 유효
-//		.userDetailsService(service)
-//		.tokenRepository(tokenRepository())
-//		.authenticationSuccessHandler(new LoginSuccessHandler())
-//		.and()
 		.logout()
 		.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
 		.invalidateHttpSession(true)
@@ -108,10 +93,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.exceptionHandling()
 		.authenticationEntryPoint(jwtAuthenticationEntryPoint)
 		.accessDeniedHandler(jwtAccessDeniedHandler);
-//		.sessionManagement()
-//        .maximumSessions(1) //세션 최대 허용 수 
-//        .maxSessionsPreventsLogin(true)//중복아이디 세션 차단
-//       
 	}
 	
 	@Bean
