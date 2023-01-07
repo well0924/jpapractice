@@ -2,6 +2,7 @@ package co.kr.board.testboard;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,7 +49,7 @@ class BoardServiceTest {
 	}
 	
 	@Test
-	@DisplayName("글 조회")
+	@DisplayName("글 단일조회")
 	public void boarddetail() throws Exception {
 		
 		//given
@@ -63,7 +64,7 @@ class BoardServiceTest {
 	}
 	
 	@Test
-	@DisplayName("글 조회 실패")
+	@DisplayName("글 단일조회 실패")
 	public void boarddetailfail()throws Exception{
 		
 		org.junit.jupiter.api.Assertions.assertThrows(Exception.class,()->{
@@ -75,7 +76,12 @@ class BoardServiceTest {
 	public void boardwrite() throws Exception {
 		
 		//given
-		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto.builder().boardTitle("제목테스트??").boardContents("내용3").createdAt(LocalDateTime.now()).build();
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
+				.builder()
+				.boardTitle("제목테스트??")
+				.boardContents("내용3")
+				.createdAt(LocalDateTime.now())
+				.build();
 		
 		//when
 		Integer result = boardservice.boardsave(dto, member1);
@@ -86,18 +92,22 @@ class BoardServiceTest {
 	}
 	
 	@Test
-	@DisplayName("글 작성실패 - 다른 회원인 경우")
-	public void boardwriteFail() throws Exception {
-		
+	@DisplayName("글작성실패 -회원이 아닌경우")
+	public void boardwritefail()throws Exception{
 		//given
-		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto.builder().boardTitle("제목테스트??").boardContents("내용3").createdAt(LocalDateTime.now()).build();
-		
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
+				.builder()
+				.boardTitle("제목테스트fail??")
+				.boardContents("내용3fail")
+				.createdAt(LocalDateTime.now())
+				.build();
+		member1 = null;
 		//when
-		//Integer result = boardservice.boardsave(dto, member1);
-		
+		CustomExceptionHandler customExceptionHandler = assertThrows(CustomExceptionHandler.class,()->{
+			boardservice.boardsave(dto, member1);
+		});
 		//then
-		//Board board = reposi.findById(result).orElseThrow();
-		//assertEquals(member1.getUsername(),board.getBoardAuthor());
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.ONLY_USER);
 	}
 	
 	@Test
@@ -108,7 +118,7 @@ class BoardServiceTest {
 		before();
 		Board board = new Board();
 		
-		board = reposi.findById(41).orElseThrow();
+		board = reposi.findById(4).orElseThrow();
 		
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 										.builder()
@@ -127,6 +137,58 @@ class BoardServiceTest {
 		assertEquals(dto.getBoardContents(), board.getBoardContents());
 		assertEquals(dto.getBoardTitle(),board.getBoardTitle());
 		assertEquals(member1.getUsername(), board.getBoardAuthor());
+	}
+	
+	@Test
+	@DisplayName("글 수정실패 - 회원이 아닌경우")
+	public void boardupdatefail1() {
+		Board board = new Board();
+		
+		board = reposi.findById(4).orElseThrow();
+		
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
+										.builder()
+										.boardContents("수정내용Q")
+										.boardTitle("수정제목")
+										.createdAt(LocalDateTime.now())
+										.build();
+		
+		//when
+		board.updateBoard(dto);
+		Integer boardid= board.getId();
+		member1 = null;
+		
+		CustomExceptionHandler customExceptionHandler = assertThrows(CustomExceptionHandler.class,()->{
+			boardservice.updateBoard(boardid, dto, member1);
+		});
+		
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.ONLY_USER);
+	}
+	
+	@Test
+	@DisplayName("글 수정실패-아이디와 작성자가 다른경우")
+	public void boardupdatefail2() {
+Board board = new Board();
+		
+		board = reposi.findById(4).orElseThrow();
+		
+		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
+										.builder()
+										.boardContents("수정내용Q")
+										.boardTitle("수정제목")
+										.createdAt(LocalDateTime.now())
+										.build();
+		
+		//when
+		board.updateBoard(dto);
+		Integer boardid= board.getId();
+		member1 = memberrepos.findById(2).orElseThrow();
+		
+		CustomExceptionHandler customExceptionHandler = assertThrows(CustomExceptionHandler.class,()->{
+			boardservice.updateBoard(boardid, dto, member1);
+		});
+		
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.BOARD_EDITE_DENIED);
 	}
 	
 	@Test
@@ -151,9 +213,11 @@ class BoardServiceTest {
 	}
 	
 	@Test
-	@DisplayName("글 삭제 실패- 다른 회원인 경우")
+	@DisplayName("글 삭제 실패- 회원이 아닌경우")
 	public void boarddeleteFail() throws Exception {
+		
 		long count = reposi.count();
+		
 		//given
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 				.builder()
@@ -162,6 +226,16 @@ class BoardServiceTest {
 				.createdAt(LocalDateTime.now())
 				.build();
 		
+		Integer result = boardservice.boardsave(dto, member1);
+		
+		member1 = null;
+		
+		//when
+		CustomExceptionHandler customExceptionHandler = assertThrows(CustomExceptionHandler.class,()->{
+			boardservice.deleteBoard(result, member1);
+		});
+		//then
+		assertEquals(customExceptionHandler.getErrorCode(),ErrorCode.ONLY_USER);
 	}
 	
 	@Test
@@ -196,12 +270,5 @@ class BoardServiceTest {
 		assertThat(pageResult).isNotNull();
 		assertThat(list).info.description();
 	}
-	
-	@Test
-	@DisplayName("게시글 검색 테스트")
-	public void boardlistSearchTest() {
-		
-	}
-	
 	
 }

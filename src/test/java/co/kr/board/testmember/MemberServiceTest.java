@@ -2,6 +2,7 @@ package co.kr.board.testmember;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDateTime;
@@ -16,10 +17,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
+import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.domain.dto.MemberDto.MemberRequestDto;
+import co.kr.board.login.domain.dto.TokenDto;
 import co.kr.board.login.repository.MemberRepository;
 import co.kr.board.login.service.MemberService;
 
@@ -35,6 +41,9 @@ public class MemberServiceTest {
 	@Autowired
 	BCryptPasswordEncoder encode;
 	
+	@Autowired
+	JwtTokenProvider jwtTokenProvider;
+	
 	@Test
 	@DisplayName("회원가입 테스트")
 	public void memberjointest() throws Exception {
@@ -43,7 +52,7 @@ public class MemberServiceTest {
 
 		member1.setUsername("sleep");
 		member1.setPassword(encode.encode("qwer4149@"));
-		member1.setRole(Role.USER);
+		member1.setRole(Role.ROLE_USER);
 		member1.setMembername("user2");
 		member1.setUseremail("springboot0924@gmail.com");
 		member1.setCreatedAt(LocalDateTime.now());
@@ -66,15 +75,9 @@ public class MemberServiceTest {
 		
 	}
 	
-	@DisplayName("회원가입 테스트 실패")
-	@Test
-	public void memberjoinfailTest()throws Exception{
-		
-	}
-	
 	@Test
 	@DisplayName("회원아이디 중복")
-	public void idcheck() throws Exception {
+	public void idcheck(){
 		//given
 		Member member = memberrepos.findById(1).orElseThrow();
 		String userid = member.getUsername();
@@ -83,30 +86,29 @@ public class MemberServiceTest {
 		Boolean duplicatedresult = memberservice.checkmemberIdDuplicate(userid);
 		
 		//then
-		assertThat(duplicatedresult);
+		assertEquals(duplicatedresult,true);
 	}
 	
 	@Test
 	@DisplayName("이메일 중복체크")
-	public void emailduplicatedTest()throws Exception{
+	public void emailduplicatedTest(){
 		//given
 		Member member = memberrepos.findById(1).orElseThrow();
 		String userEmail = member.getUseremail();
 		//when
 		Boolean duplicatedresult = memberservice.checkmemberEmailDuplicate(userEmail);
 		//then
-		assertThat(duplicatedresult);
+		assertEquals(duplicatedresult,true);
 	}
 	
 	
 	@Test
 	@DisplayName("회원 조회")
-	public void memberdetailtest() throws Exception {
+	public void memberdetailtest(){
 		//when
-		Member member1 = new Member();
 		Optional<Member>detail = memberrepos.findById(1);
-		member1 = detail.get();
-		
+		Member member1 = detail.get();
+
 		//when
 		MemberDto.MemeberResponseDto result = memberservice.getMember(member1.getId());
 		
@@ -116,7 +118,7 @@ public class MemberServiceTest {
 	
 	@Test
 	@DisplayName("회원목록")
-	public void memberlist() throws Exception {
+	public void memberlist(){
 
 		Pageable pageable = Pageable.ofSize(5);
 
@@ -124,7 +126,7 @@ public class MemberServiceTest {
 		
 		List<Member>content = list.getContent();
 		
-		Integer total = list.getTotalPages();
+		int total = list.getTotalPages();
 		
 		List<MemberDto.MemeberResponseDto>result=memberservice.findAll();
 		
@@ -137,15 +139,12 @@ public class MemberServiceTest {
 	
 	@Test
 	@DisplayName("회원 수정")
-	public void memberupdate() throws Exception {
+	public void memberupdate(){
 		//given
-		Member member1 = new Member();
+		Optional<Member>detail = memberrepos.findById(2);
+		Member member1 = detail.get();
 		
-		Optional<Member>detail = memberrepos.findById(1);
-		
-		member1 = detail.get();
-		
-		String username = "well";
+		String username = "well322";
 		String password = "qwer4149!";
 		String membername= "updateuser1";
 		String useremail = "well4149@naver.com";
@@ -193,33 +192,92 @@ public class MemberServiceTest {
 	@DisplayName("회원 탈퇴")
 	public void memberdelete() throws Exception {
 		//given
-		memberjointest();
+		MemberDto.MemberRequestDto dto = dto();
+		Integer result = memberservice.memberjoin(dto);
+		Optional<Member>member = memberrepos.findById(result);
+
+		Member detail = member.get();
+		String username = detail.getUsername();
 		
 		//when
-		memberservice.memberdelete(detail.getUsername());
-		
+		memberservice.memberdelete(username);
 		//then
-//		assertThrows(CustomExceptionHandler.class,()->{
-//			memberservice.memberdelete(detail.getUsername());
-//		});
+		assertThrows(CustomExceptionHandler.class,()->{
+			 Optional<Member>member1 = Optional
+					 .ofNullable(
+							 memberrepos
+									 .findById(result)
+									 .orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
+		});
 	}
 	
 	@Test
 	@DisplayName("회원 아이디 찾기")
-	public void finduserid() throws Exception {
+	public void finduserid(){
 		//given
-		String membername="user1";
-		String useremail = "rayman0924@naver.com";
-		Optional<Member>detail = Optional.ofNullable(memberrepos.findByMembernameAndUseremail(membername, useremail));
+		String membername="updateuser12";
+		String useremail = "well84149@naver.com";
+		Optional<Member>detail = memberrepos.findByMembernameAndUseremail(membername, useremail);
+
 		Member member = detail.get();
 		
 		//when
 		memberservice.findByMembernameAndUseremail(membername, useremail);
 		
 		//then
-		String userid = (String)member.getUsername();
-		assertEquals("well123",userid);
+		String userid = member.getUsername();
+		assertEquals("well",userid);
 		
 	}
+
+	@Test
+	@DisplayName("jwt 토큰 발급 테스트")
+	public void jwtTokenGenerateTest(){
+		
+		LoginDto dto = LoginDto
+				.builder()
+				.username("well")
+				.password("qwer4149!")
+				.build();
+		//회원조회
+		Optional<Member>memberAccount = memberrepos.findByUsername(dto.getUsername());
+
+		Member memberdetail = memberAccount.get();
+		//비밀번호 매칭
+		memberservice.passwordvalidation(memberdetail, dto);
+		//토믄을 발행
+		TokenDto tokenDto = jwtTokenProvider.createTokenDto(memberdetail.getUsername(), memberdetail.getRole());
+		//토큰값을 decode를 해서 name과 일치하는지 보기.
+		String userpk = jwtTokenProvider.getUserPK(tokenDto.getAccessToken());
+		
+		assertEquals(userpk, memberdetail.getUsername());
+	}
 	
+	@Test
+	@DisplayName("jwt 토큰 재발급 테스트")
+	public void jwtTokenReissueTest() {
+
+	}
+
+	private MemberDto.MemberRequestDto dto(){
+		Member detail =Member
+				.builder()
+				.membername("test member")
+				.password(encode.encode("1234"))
+				.username("test id")
+				.useremail("well4149@Test.com")
+				.role(Role.ROLE_USER)
+				.createdAt(LocalDateTime.now())
+				.build();
+
+		return MemberRequestDto
+				.builder()
+				.username(detail.getUsername())
+				.password(detail.getPassword())
+				.role(detail.getRole())
+				.membername(detail.getMembername())
+				.useremail(detail.getUseremail())
+				.createdAt(detail.getCreatedAt())
+				.build();
+	}
 }

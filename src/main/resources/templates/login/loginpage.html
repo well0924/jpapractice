@@ -27,7 +27,8 @@ layout:decorator="/layout/mainlayout">
 		  <div class="card-header">로그인</div>
 		  <div class="card-body">
 		    <h5 class="card-title">Log in</h5>
-		    <form id="loginform" th:action="@{/api/login/signup}" method="post">
+<!-- 		    <form id="loginform" th:action="@{/api/login/signup}" method="post"> -->
+		    <form id ="loginform">
 		    	<div th:if="${param.error}">
             		<div class="alert alert-danger">
                 		<a class="alert-link"  th:text="${exception}"></a>
@@ -46,7 +47,7 @@ layout:decorator="/layout/mainlayout">
 		    		<input type="checkbox" id="rememberme" class="form-check-input" name="rememberme"/> 
 		    	</div>
 		    	</br>
-		    	<button type="submit" class="btn btn-primary">로그인</button>
+		    	<button type="button" class="btn btn-primary" onclick="loginproc()">로그인</button>
 		    </form>
 		  </div>
 		  <div class="card-footer text-muted">
@@ -60,6 +61,40 @@ layout:decorator="/layout/mainlayout">
 	</div>
 	<div class="col-sm-3"></div>
 </div>
+<script type="text/javascript">
+	
+function loginproc(){
+	let userid = $('#user_id').val();
+	let userpw = $('#user_pw').val();
+	
+	let logindata = {
+			username : userid,
+			password : userpw
+	}
+	
+	$.ajax({
+		url:'/api/login/signup',
+		type:'POST',
+		data:JSON.stringify(logindata),
+		dataTye:"json",
+		contentType:'application/json; charset=utf-8'
+	}).done(function(data,status,xhr){
+        
+		xhr.setRequestHeader('X-AUTH-TOKEN',data.accessToken);
+        
+		//let jwtToken = xhr.getReponseHeader('X-AUTH-TOKEN');
+        
+		console.log(data.accessToken);
+        
+ 		localStorage.setItem("X-AUTH-TOKEN", data.accessToken);
+		localStorage.getItem("X-AUTH-TOKEN");
+		
+        //location.href = "/page/main/mainpage";
+    }).fail(function (error) {
+        alert("존재하지 않는 회원입니다.");
+    });	
+}
+</script>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

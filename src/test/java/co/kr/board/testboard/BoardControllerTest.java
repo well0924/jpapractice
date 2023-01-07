@@ -2,23 +2,30 @@ package co.kr.board.testboard;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
+import co.kr.board.board.domain.Board;
+import co.kr.board.board.domain.dto.BoardDto;
+import co.kr.board.board.service.BoardService;
+import co.kr.board.login.domain.Member;
+import co.kr.board.login.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import co.kr.board.config.security.SecurityConfig;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+
 import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @Import(SecurityConfig.class)
@@ -27,32 +34,38 @@ public class BoardControllerTest {
 	
 	@Autowired
 	MockMvc mockMvc;
-	private ObjectMapper objectMapper;
-	
-	//@WithMockUser
+	@MockBean
+	private BoardService boardService;
+	@MockBean
+	private MemberRepository memberRepository;
+
 	@DisplayName("게시판 목록 화면- 목록을 화면에 출력")
 	@Test
+	@WithMockUser
 	public void cotrollerViewTest()throws Exception{
-		given("").willReturn("");
+		//given
+		given(boardService.findAllPage(any(Pageable.class))).willReturn(Page.empty());
+		//when
 		mockMvc
 		.perform(get("/page/board/list")
-		.contentType(MediaType.TEXT_HTML)
-		.content(""))
-		.andExpect(view().name("board/boardlist"))
+		.contentType(MediaType.TEXT_HTML))
 		.andExpect(status().isOk())
+		.andExpect(view().name("board/boardlist"))
+		.andExpect(MockMvcResultMatchers.model().attributeExists("list"))
 		.andDo(print());
+
 	}
 	
-	@WithMockUser
-	@DisplayName("게시글 조회 화면-단일글을 출력한다.")
+	@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
+	@DisplayName("[api] 게시글 조회")
 	@Test
 	public void controllerDetailViewTest()throws Exception{
-		
-		Integer boardId = 4;
-		
-		mockMvc.perform(get("/page/board/detail/"+boardId))
+		int boardId = 4;
+		mockMvc.perform(get("/api/board/detail/{boardId}",boardId))
 		.andExpect(status().isOk())
 		.andDo(print());
+
+		verify(boardService).getBoard(boardId);
 	}
 	
 	@WithMockUser
@@ -84,7 +97,7 @@ public class BoardControllerTest {
 	@Test
 	public void controllerPostEditeViewTest()throws Exception{
 		
-		Integer boardId =4;
+		int boardId =4;
 		
 		mockMvc
 		.perform(get("/page/board/modify/"+boardId))
@@ -98,7 +111,7 @@ public class BoardControllerTest {
 	@Test
 	public void controllerPostEditeProcTest()throws Exception{
 
-		Integer boardId =4;
+		int boardId =4;
 
 		mockMvc
 				.perform(get("/page/board/modify/"+boardId))
@@ -106,14 +119,4 @@ public class BoardControllerTest {
 				.andDo(print());
 	}
 
-	@WithMockUser
-	@Test
-	@DisplayName("메인화면")
-	public void controllerMainPageViewTest()throws Exception{
-		mockMvc
-		.perform(get("/page/main/mainpage"))
-		.andExpect(view().name("main/mainpage"))
-		.andExpect(status().isOk())
-		.andDo(print());
-	}
 }
