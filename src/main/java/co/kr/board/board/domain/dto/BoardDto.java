@@ -4,11 +4,7 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import co.kr.board.board.domain.Board;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 public class BoardDto {
 	
@@ -34,6 +30,7 @@ public class BoardDto {
 	
 	//게시물 응답 dto
 	@Getter
+	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class BoardResponseDto{

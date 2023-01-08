@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails{
 	
 	//private static final String ROLE_PREFIX = "ROLE_";
 	
-	private Member member;
+	private final Member member;
 	
 	public CustomUserDetails(Member member) {
 		this.member = member;

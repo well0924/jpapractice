@@ -23,7 +23,7 @@ public class ValidationAspect {
 	
 	//@Around: 함수의 앞,뒤 모두 제어
 	//패키지 내에서 ApiController라는 이름의 클래스 내에 있는 모든 메서드에 적용
-	@Around("execution(* co.kr.board.**..*ApiController.*(..))")
+	@Around("execution(* co.kr.board.*..*ApiController.*(..))")
 	public Object apiAdvice(ProceedingJoinPoint proceedingjoinpoint)throws Throwable{
 		
 		String typeName = proceedingjoinpoint.getSignature().getDeclaringTypeName();

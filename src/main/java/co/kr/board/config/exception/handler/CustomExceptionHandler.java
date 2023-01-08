@@ -11,7 +11,7 @@ public class CustomExceptionHandler extends RuntimeException{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ErrorCode errorcode;
+	private final ErrorCode errorcode;
 	
 	public CustomExceptionHandler(String message,ErrorCode error) {
 		super(message);

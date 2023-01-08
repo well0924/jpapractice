@@ -24,8 +24,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class LoginSuccessHandler implements AuthenticationSuccessHandler{
 	
-	private RequestCache requestCache = new HttpSessionRequestCache();
-	private RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
+	private final RequestCache requestCache = new HttpSessionRequestCache();
+	private final RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
 
 	private static final String DEFAULT_URL= "/page/main/mainpage";
 	private static final String ADMIN_URL="/page/login/adminlist";

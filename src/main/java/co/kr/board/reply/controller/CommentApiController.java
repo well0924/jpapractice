@@ -33,49 +33,43 @@ public class CommentApiController {
 	private final CommentService service;
 	
 	@GetMapping("/list/{id}")
-	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id",required = true)Integer boardId)throws Exception{
+	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
 		
-		List<CommentDto.CommentResponseDto>list = null;
-
-		list= service.findCommentsBoardId(boardId);
+		List<CommentDto.CommentResponseDto>list = service.findCommentsBoardId(boardId);
 	
-		return new Response<List<CommentDto.CommentResponseDto>>(HttpStatus.OK.value(),list);
+		return new Response<>(HttpStatus.OK.value(),list);
 	}
 	
-	@PostMapping("/write/{boardid}")
-	public Response<?>replywrite( 
-			@PathVariable(value="boardid",required = true)Integer boardId,
+	@PostMapping("/write/{id}")
+	public Response<?>replyWrite(
+			@PathVariable(value="id")Integer boardId,
 			@Valid @RequestBody CommentDto.CommentRequestDto dto,
 			BindingResult bindingresult,
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
-		int insertresult = 0;
-				
-		insertresult = service.replysave(dto, user.getMember(), boardId);
+		int insertResult = service.replysave(dto, user.getMember(), boardId);
 		
-		return new Response<Integer>(HttpStatus.OK.value(),insertresult);
+		return new Response<>(HttpStatus.OK.value(),insertResult);
 	}
 	
-	@DeleteMapping("/delete/{replyid}")
-	public Response<?>replydelete(
-			@PathVariable(value="replyid",required = true)Integer replyId,
+	@DeleteMapping("/delete/{id}")
+	public Response<?>replyDelete(
+			@PathVariable(value="id")Integer replyId,
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
 		service.replydelete(replyId,user.getMember());
 		
-		return new Response<String>(HttpStatus.OK.value(),"o.k");
+		return new Response<>(HttpStatus.OK.value(),"o.k");
 	}
 	
-	@PutMapping("/update/{replyid}")
-	public Response<?>replyupdate(
-			@PathVariable(value="replyid",required = true)Integer replyId,
+	@PutMapping("/update/{id}")
+	public Response<?>replyUpdate(
+			@PathVariable(value="id")Integer replyId,
 			CommentDto.CommentRequestDto dto,
 			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
 		
-		int updateresult = 0;
+		int updateResult = service.replyUpdate(dto,user.getMember(), replyId);
 		
-		updateresult = service.replyUpdate(dto,user.getMember(), replyId);
-		
-		return new Response<Integer>(HttpStatus.OK.value(),updateresult);
+		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
 }

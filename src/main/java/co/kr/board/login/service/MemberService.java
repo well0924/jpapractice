@@ -34,7 +34,6 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class MemberService {
-	
 	private final MemberRepository  repository;
 	
 	private final BCryptPasswordEncoder encoder;
@@ -120,33 +119,32 @@ public class MemberService {
         //회원 정보 조회
         Optional<Member> memberAccount = repository.findByUsername(dto.getUsername());
 
-		if(memberAccount.isPresent()){
+		if(!memberAccount.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}
 
-        Member memberdetail = memberAccount.get();
+        Member memberDetail = memberAccount.get();
 
 		//비밀번호 유효성 검사
-        passwordvalidation(memberdetail,dto);
+        passwordvalidation(memberDetail,dto);
         
         //token 발행
-        TokenDto tokenDto=jwtTokenProvider.createTokenDto(memberdetail.getUsername(),memberdetail.getRole());
+        TokenDto tokenDto=jwtTokenProvider.createTokenDto(memberDetail.getUsername(),memberDetail.getRole());
         
         //refresh토큰 발행
         RefreshToken refreshToken = RefreshToken
                 .builder()
-                .key(memberdetail.getUsername())
+                .key(memberDetail.getUsername())
                 .value(tokenDto.getRefreshToken())
                 .build();
 
         //redis로 refresh토큰 저장
-        redisService.setValues(memberdetail.getUsername(), refreshToken.getValue());
+        redisService.setValues(memberDetail.getUsername(), refreshToken.getValue());
 
         return TokenResponse
 				.builder()
 				.accessToken(tokenDto.getAccessToken())
 				.refreshToken(tokenDto.getRefreshToken())
-				.ExpirationTime(tokenDto.getExpirationTime())
 				.build();
     }
 
@@ -168,17 +166,16 @@ public class MemberService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-       
+
         //redis에 refresh 토큰저장
         redisService.checkRefreshToken(authentication.getName(), request.getRefreshToken());
-        
+        //토큰 재생성
         TokenDto tokenDto = jwtTokenProvider.createTokenDto(authentication.getName(),Role.valueOf(authority));
         //토큰 발급
         return TokenResponse
 				.builder()
 				.accessToken(tokenDto.getAccessToken())
 				.refreshToken(tokenDto.getRefreshToken())
-				.ExpirationTime(tokenDto.getExpirationTime())
 				.build();
     }
 	
@@ -285,21 +282,23 @@ public class MemberService {
 	
 	/*
 	 * 회원 비밀번호 재수정 
-	 * @param 
-	 * @param 
+	 * @param useridx(회원번호)
+	 * @param MemberRequestDto
+	 * @Exception NOT_USER(회원이 존재하지 않습니다)
 	 */
 	public MemberDto.MemeberResponseDto passwordchange(Integer useridx,MemberDto.MemberRequestDto dto){
 		//회원조회
-		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
-		memberdetail.ifPresent(member ->{
+		Optional<Member>memberDetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
+		memberDetail.ifPresent(member ->{
 			if(dto.getPassword()!= null) {
-				member.setPassword(dto.getPassword());
+				member.setPassword(encoder.encode(dto.getPassword()));
 			}
 			repository.save(member);
 		});
-		//Member result = memberdetail.get();
 
-		return MemberDto.MemeberResponseDto.builder().build();
+		return MemberDto.MemeberResponseDto
+				.builder()
+				.build();
 	}
 	
 	//Dto에서 Entity 로 변환

@@ -60,8 +60,7 @@ public class BoardController {
 		ModelAndView mv = new ModelAndView();
 		
 		dto = service.getBoard(boardId);
-		log.info("result:"+dto);			
-		
+
 		mv.addObject("detail", dto);
 		mv.setViewName("board/detailpage");
 		
@@ -84,7 +83,7 @@ public class BoardController {
 		ModelAndView mv = new ModelAndView();
 		
 		dto = service.getBoard(boardId);
-		
+		log.info("결과"+dto);
 		mv.addObject("modify", dto);
 		mv.setViewName("board/modifyboard");
 		

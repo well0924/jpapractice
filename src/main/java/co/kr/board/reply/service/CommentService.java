@@ -57,7 +57,7 @@ public class CommentService {
 			list.add(dto);
 		}
 		return list;
-	};
+	}
 	
 	/*
 	 * 댓글 추가하기.
@@ -67,7 +67,7 @@ public class CommentService {
 	 * @Exception : 게시판글 조회시 글이 없는 경우에는 NOT_BOARDDETAIL 
 	 */
 	@Transactional
-	public Integer replysave(CommentDto.CommentRequestDto dto,Member principal,Integer boardId)throws Exception{
+	public Integer replysave(CommentDto.CommentRequestDto dto,Member principal,Integer boardId){
 		
 		//유저가 아니면 사용불가
 		if(principal == null) {
@@ -85,10 +85,7 @@ public class CommentService {
 				.replyContents(dto.getReplyContents())
 				.createdAt(dto.getCreatedAt())
 				.build();
-		
-		String userid= principal.getUsername();
-		String replywriter= reply.getReplyWriter();
-		
+
 		repository.save(reply);
 		
 		board.getCommentlist().add(reply);
@@ -101,7 +98,7 @@ public class CommentService {
 	 * @Param replyId
 	 */
 	@Transactional
-	public void replydelete(Integer replyId,Member principal)throws Exception{	
+	public void replydelete(Integer replyId,Member principal){
 		
 		if(principal == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
@@ -128,7 +125,7 @@ public class CommentService {
 	 * @Exception:수정시 로그인한 아이디와 댓글 작성자가 일치하지 않은 경우 COMMENT_EDITE_DENINED
 	 */
 	@Transactional
-	public Integer replyUpdate(CommentDto.CommentRequestDto dto,Member principal,Integer replyId)throws Exception{
+	public Integer replyUpdate(CommentDto.CommentRequestDto dto,Member principal,Integer replyId){
 		
 		if(principal == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);

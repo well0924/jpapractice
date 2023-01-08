@@ -7,10 +7,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/page/main/*")
-public class maincontroller {
+public class mainController {
 	
 	@GetMapping("/mainpage")
-	public ModelAndView mainpage()throws Exception{
+	public ModelAndView mainPage()throws Exception{
 		ModelAndView mv = new ModelAndView();
 		
 		mv.setViewName("main/mainpage");

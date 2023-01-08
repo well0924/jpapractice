@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +25,7 @@ public class LoginController {
 	private final MemberService service;
 	
 	@GetMapping("/loginpage")
-	public ModelAndView loginpage(
+	public ModelAndView loginPage(
 			@RequestParam(value="error",required = false) String error, 
 			@RequestParam(value="exception",required = false) String exception){
 		
@@ -39,7 +40,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/memberjoin")
-	public ModelAndView mebmerjoin(){
+	public ModelAndView mebmerJoin(){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -49,7 +50,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/memberdelete")
-	public ModelAndView memberdelete(){
+	public ModelAndView memberDelete(){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -59,11 +60,11 @@ public class LoginController {
 	}
 	
 	@GetMapping("/memberupdate/{id}")
-	public ModelAndView memberupdate(@PathVariable("id") Integer useridx, MemberDto.MemeberResponseDto dto){
+	public ModelAndView memberUpdate(@PathVariable("id") Integer userIdx, MemberDto.MemeberResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
 		
-		dto = service.getMember(useridx);
+		dto = service.getMember(userIdx);
 		
 		mv.addObject("detail", dto);
 		mv.setViewName("login/membermodify");
@@ -72,7 +73,7 @@ public class LoginController {
 	}
 	
 	@GetMapping("/adminlist")
-	public ModelAndView adminlist(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
+	public ModelAndView adminList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -86,14 +87,14 @@ public class LoginController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView memberdetail(@PathVariable(value="id")Integer useridx, MemberDto.MemeberResponseDto dto){
+	public ModelAndView memberDetail(@PathVariable(value="id")Integer userIdx, MemberDto.MemeberResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
 		
-		dto = service.getMember(useridx);
+		dto = service.getMember(userIdx);
 		
 		mv.addObject("detail", dto);
-		mv.setViewName("/login/membermodify");
+		mv.setViewName("login/membermodify");
 		
 		return mv;
 	}
@@ -102,16 +103,16 @@ public class LoginController {
 	public ModelAndView findUserIdPage(){
 		ModelAndView mv = new ModelAndView();
 		
-		mv.setViewName("/login/userfindid");
+		mv.setViewName("login/userfindid");
 		
 		return mv;
 	}
 	
 	@GetMapping("/finduserpw")
-	public ModelAndView finduserpw(){
+	public ModelAndView findUserPw(){
 		ModelAndView mv = new ModelAndView();
 		
-		mv.setViewName("/login/userfindpw");
+		mv.setViewName("login/userfindpw");
 		return mv;
 	}
 }

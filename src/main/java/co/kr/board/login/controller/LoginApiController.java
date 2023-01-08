@@ -114,10 +114,10 @@ public class LoginApiController {
 	
 	//jwt 로그인 인증
 	@PostMapping("/signup")
-    public ResponseEntity <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
+    public Response <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
-        ResponseEntity<TokenResponse> tokenDtoResponseEntity = new ResponseEntity<>(tokenResponse, HttpStatus.OK);
-        return tokenDtoResponseEntity;
+        //ResponseEntity<TokenResponse> tokenDtoResponseEntity = new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+        return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
     
 	//토큰 재발행
