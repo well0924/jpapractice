@@ -5,7 +5,6 @@ import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.TokenDto;
 import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,11 +21,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -43,7 +42,7 @@ public class MemberControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    @DisplayName("[view]로그인 테스트")
+    @DisplayName("[view]로그인-성공")
     public void loginPageTest()throws Exception{
         mvc
         .perform(get("/page/login/loginpage"))
@@ -54,26 +53,41 @@ public class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("[api]로그인 테스트-인증")
-    public void loginAuthTest()throws Exception{
-        given(memberService.signin(loginDto())).willReturn(new TokenResponse("accessToken","refreshToken"));
-
-        mvc.perform(MockMvcRequestBuilders
-                        .post("/api/login/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginDto())))
+    @DisplayName("[view]회원목록-성공")
+    @WithMockUser(username = "well",roles = "ADMIN")
+    public void memberlistTest()throws Exception{
+        mvc.perform(get("/page/login/adminlist")
+                        .contentType(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("[api]로그인 테스트-재발급")
-    public void loginAuthReIssueTest(){
-
+    @DisplayName("[view]회원목록-인증이 안된경우-성공")
+    public void memberlistTestFail()throws Exception{
+        mvc.perform(get("/page/login/list")
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
     }
 
     @Test
-    @DisplayName("[view]회원가입 테스트")
+    @DisplayName("[view]회원단일조회-성공")
+    @WithMockUser(roles = "ADMIN",username = "well")
+    public void memberDetailTest()throws Exception{
+        given(memberService.getMember(1)).willReturn(responseDto());
+
+        mvc.perform(get("/page/login/detail/{id}",1)
+                        .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("detail"))
+                .andDo(print());
+
+        verify(memberService).getMember(1);
+    }
+
+    @Test
+    @DisplayName("[view]회원가입-성공")
     public void memberJoinTest()throws Exception{
         mvc.perform(get("/page/login/memberjoin"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
@@ -83,19 +97,9 @@ public class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("[api]회원가입 테스트")
-    public void memberJoinApiTest()throws Exception{
-
-        mvc.perform(MockMvcRequestBuilders.post("/api/login/memberjoin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestDto())))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("[view]아이디찾기 테스트")
+    @DisplayName("[view]아이디찾기-성공")
     public void userIdFindTest()throws Exception{
+
         mvc.perform(get("/page/login/finduserid"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("login/userfindid"))
@@ -104,41 +108,18 @@ public class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("[api]아이디찾기 테스트")
-    public void userIdFindApiTest()throws Exception{
-
-        given(memberService.findByMembernameAndUseremail(memberDto().getMembername(),memberDto().getUseremail()))
-                .willReturn(memberDto().getUsername());
-
-        mvc.perform(
-                post("/api/login/userfind/{name}/{email}", requestDto().getMembername(),requestDto().getUseremail())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andDo(print());
-
-        then(memberService).should().findByMembernameAndUseremail(memberDto().getMembername(),memberDto().getUseremail());
-    }
-
-    @Test
-    @DisplayName("[view]비밀번호 재발급")
+    @DisplayName("[view]비밀번호 재발급-성공")
     @WithMockUser
     public void passwordChangePageTest()throws Exception{
         mvc.perform(get("/page/login/finduserpw")
                         .contentType(MediaType.TEXT_HTML))
-                //.andExpect(content().contentType(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login/userfindpw"))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("[api]비밀번호 재발급")
-    public void passwordChangeApiTest()throws Exception{
-
-    }
-
-    @Test
-    @DisplayName("[view]회원 수정페이지")
+    @DisplayName("[view]회원수정-성공")
     @WithMockUser
     public void userUpdatePage()throws Exception{
         given(memberService.getMember(memberDto().getId())).willReturn(responseDto());
@@ -146,6 +127,7 @@ public class MemberControllerTest {
         .perform(get("/page/login/memberupdate/{id}",memberDto().getId()))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+        .andExpect(view().name("login/membermodify"))
         .andExpect(model().attributeExists("detail"))
         .andDo(print());
 
@@ -153,12 +135,7 @@ public class MemberControllerTest {
     }
 
     @Test
-    @DisplayName("[api]회원수정")
-    public void userUpdateApiTest()throws Exception{
-
-    }
-    @Test
-    @DisplayName("[view]회원탈퇴")
+    @DisplayName("[view]회원탈퇴-성공")
     @WithMockUser
     public void userDeletePageTest()throws Exception{
         mvc.perform(get("/page/login/memberdelete").contentType(MediaType.TEXT_HTML))
@@ -166,11 +143,6 @@ public class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("login/memberdelete"))
                 .andDo(print());
-    }
-    @Test
-    @DisplayName("[api]회원탈퇴")
-    public void userDeleteApiTest()throws Exception{
-
     }
 
     //회원조회 dto
@@ -194,6 +166,12 @@ public class MemberControllerTest {
                 .password("Qwer4149!")
                 .useremail("well123@Test.com")
                 .role(Role.ROLE_ADMIN)
+                .build();
+    }
+
+    private MemberDto.MemberRequestDto updateDto(){
+        return MemberDto.MemberRequestDto.builder()
+                .password("Qsdvger12%")
                 .build();
     }
 

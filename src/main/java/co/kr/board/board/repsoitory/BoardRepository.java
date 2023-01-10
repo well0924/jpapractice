@@ -12,12 +12,12 @@ import co.kr.board.board.domain.Board;
 public interface BoardRepository extends JpaRepository<Board, Integer>{
 	
 	//게시글 목록(페이징)
-	public Page<Board> findAll(Pageable pageable);
+	Page<Board> findAll(Pageable pageable);
 	
 	//게시글 검색
 	@Query(
 		value="SELECT b FROM Board b WHERE b.boardTitle LIKE %:keyword% OR b.boardContents LIKE %:keyword%",
 		countQuery="SELECT COUNT(b.id) FROM Board b WHERE b.boardTitle LIKE %:keyword% OR b.boardContents LIKE %:keyword%"
 	)
-	public Page<Board> findAllSearch(@Param("keyword") String keyword, Pageable pageable);
+	Page<Board> findAllSearch(@Param("keyword") String keyword, Pageable pageable);
 }

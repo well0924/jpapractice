@@ -23,7 +23,7 @@ public class CommentDto {
 		@NotBlank(message = "내용을 입력해 주세요.")
 		private String replyContents;
 						
-		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+		//@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 		
 		@Builder
@@ -36,7 +36,6 @@ public class CommentDto {
 	@Getter
 	@Builder
 	@ToString
-	@RequiredArgsConstructor
 	public static class CommentResponseDto{
 		
 		private Integer replyId;

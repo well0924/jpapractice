@@ -45,7 +45,7 @@ public class CommentApiController {
 			@PathVariable(value="id")Integer boardId,
 			@Valid @RequestBody CommentDto.CommentRequestDto dto,
 			BindingResult bindingresult,
-			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+			@AuthenticationPrincipal CustomUserDetails user){
 		
 		int insertResult = service.replysave(dto, user.getMember(), boardId);
 		
@@ -55,7 +55,7 @@ public class CommentApiController {
 	@DeleteMapping("/delete/{id}")
 	public Response<?>replyDelete(
 			@PathVariable(value="id")Integer replyId,
-			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+			@AuthenticationPrincipal CustomUserDetails user){
 		
 		service.replydelete(replyId,user.getMember());
 		
@@ -66,7 +66,7 @@ public class CommentApiController {
 	public Response<?>replyUpdate(
 			@PathVariable(value="id")Integer replyId,
 			CommentDto.CommentRequestDto dto,
-			@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+			@AuthenticationPrincipal CustomUserDetails user){
 		
 		int updateResult = service.replyUpdate(dto,user.getMember(), replyId);
 		

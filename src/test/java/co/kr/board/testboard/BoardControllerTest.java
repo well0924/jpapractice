@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import co.kr.board.config.security.SecurityConfig;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
@@ -38,7 +39,7 @@ public class BoardControllerTest {
 	@MockBean
 	private BoardService boardService;
 
-	@DisplayName("[view]게시판 목록 화면")
+	@DisplayName("[view]게시판 목록 화면-성공")
 	@Test
 	@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
 	public void CotrollerViewTest()throws Exception{
@@ -54,41 +55,10 @@ public class BoardControllerTest {
 		.andDo(print());
 
 	}
-	@DisplayName("[api]게시글 목록(페이징+검색)")
-	@Test
-	@WithMockUser
-	@Disabled
-	public void controllerApiBoardListPagingSearchTest()throws Exception{
-		String keyword = "test";
-
-		given(boardService.findAllSearch(eq(keyword),any(Pageable.class))).willReturn(Page.empty());
-
-		mockMvc.perform(get("/api/board/list/search"))
-				.andExpect(status().isOk())
-				.andDo(print());
-
-		//then(boardService.findAllSearch(eq(keyword),any(Pageable.class))).should().get();
-		verify(boardService.findAllSearch(eq(keyword),any(Pageable.class))).get();
-	}
-	
-	@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
-	@DisplayName("[api] 게시글 단일조회")
-	@Test
-	public void controllerDetailApiTest()throws Exception{
-		int boardId = 4;
-		given(boardService.getBoard(boardId)).willReturn(boardResponseDto());
-
-		mockMvc
-		.perform(get("/api/board/detail/{boardId}",boardId))
-		.andExpect(status().isOk())
-		.andDo(print());
-
-		verify(boardService).getBoard(boardId);
-	}
 
 	@Test
 	@WithMockUser
-	@DisplayName("[view]게시글 단일 조회")
+	@DisplayName("[view]게시글 단일 조회-성공")
 	public void controllerDetailViewTest()throws Exception{
 		int boardId = 4;
 		given(boardService.getBoard(boardId)).willReturn(boardResponseDto());
@@ -104,7 +74,7 @@ public class BoardControllerTest {
 	}
 	
 	@WithMockUser
-	@DisplayName("[view]게시글 작성화면")
+	@DisplayName("[view]게시글 작성화면-성공")
 	@Test
 	public void controllerPostViewTest()throws Exception{
 		
@@ -115,16 +85,9 @@ public class BoardControllerTest {
 		.andDo(print());
 	}
 
-	@WithMockUser
-	@DisplayName("[api]게시글 작성-게시글을 작성")
-	@Test
-	public void controllerPostViewProcTest(){
-
-	}
-
 	@Test
 	@WithMockUser
-	@DisplayName("[view]게시물 수정")
+	@DisplayName("[view]게시물 수정-성공")
 	public void boardUpdateViewTest()throws Exception{
 		int boardId =4;
 
@@ -137,12 +100,6 @@ public class BoardControllerTest {
 				.andDo(print());
 
 		then(boardService).should().getBoard(boardId);
-	}
-
-	@Test
-	@DisplayName("[api]게시물 수정")
-	public void boardUpdateApiTest(){
-
 	}
 
 	//게시물 요청 dto

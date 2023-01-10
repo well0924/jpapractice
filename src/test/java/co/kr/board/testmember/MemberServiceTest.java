@@ -37,16 +37,12 @@ import co.kr.board.login.service.MemberService;
 
 @SpringBootTest
 public class MemberServiceTest {
-	
 	@Autowired
 	MemberRepository memberRepository;
-	
 	@Autowired
 	MemberService memberservice;
-	
 	@Autowired
 	BCryptPasswordEncoder encode;
-	
 	@Autowired
 	JwtTokenProvider jwtTokenProvider;
 	@Autowired
