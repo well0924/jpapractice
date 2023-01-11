@@ -78,18 +78,15 @@ function loginproc(){
 		data:JSON.stringify(logindata),
 		dataTye:"json",
 		contentType:'application/json; charset=utf-8'
-	}).done(function(data,status,xhr){
-        
-		xhr.setRequestHeader('X-AUTH-TOKEN',data.accessToken);
-        
-		//let jwtToken = xhr.getReponseHeader('X-AUTH-TOKEN');
-        
-		console.log(data.accessToken);
-        
- 		localStorage.setItem("X-AUTH-TOKEN", data.accessToken);
-		localStorage.getItem("X-AUTH-TOKEN");
-		
-        //location.href = "/page/main/mainpage";
+	}).done(function(data){
+		alert("인증??성공??");
+		console.log(data.data);
+		console.log(data.data.accessToken);
+		//인증 토큰을 받으면 localstorage에 저장하기.
+        if(data.data.accessToken){
+			localStorage.setItem("X-AUTH-TOKEN", data.data.accessToken);
+			location.href = "/page/main/mainpage";
+		}
     }).fail(function (error) {
         alert("존재하지 않는 회원입니다.");
     });	

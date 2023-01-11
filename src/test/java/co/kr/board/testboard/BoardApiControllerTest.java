@@ -1,11 +1,14 @@
 package co.kr.board.testboard;
 
+import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
+import co.kr.board.config.security.vo.CustomUserDetails;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.repository.MemberRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,14 +20,19 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,13 +43,25 @@ public class BoardApiControllerTest {
     MockMvc mockMvc;
     @MockBean
     private BoardService boardService;
-
+    @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
+    private WebApplicationContext context;
     @MockBean
     private MemberRepository memberRepository;
+    private CustomUserDetails customUserDetails;
+    private final TestCustomUserDetailsService testCustomUserDetailsService = new TestCustomUserDetailsService();
 
-    @AfterEach
-    public void afterEach(){
-        memberRepository.deleteAll();
+    @BeforeEach
+    public void setup(){
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+
+        memberRepository.save(memberDto());
+
+        customUserDetails = (CustomUserDetails)testCustomUserDetailsService.loadUserByUsername(memberDto().getUsername());
     }
 
     @DisplayName("[api]게시글 목록(페이징+검색)")
@@ -77,36 +97,49 @@ public class BoardApiControllerTest {
         verify(boardService).getBoard(boardId);
     }
 
-    @WithMockUser
-    @DisplayName("[api]게시글 작성-게시글을 작성")
+    @DisplayName("[api]게시글 작성-성공")
     @Test
-    public void controllerPostViewProcTest(){
-
+    public void controllerPostViewProcTest()throws Exception{
+        mockMvc.perform(post("/api/board/write")
+                        .with(user(customUserDetails))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(boardRequestDto())))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(print());
     }
 
     @Test
     @DisplayName("[api]게시물 수정")
     public void boardUpdateApiTest()throws Exception{
-
+        mockMvc.perform(patch("/api/board/update/{id}",1)
+                .with(user(customUserDetails))
+                .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8).content(objectMapper.writeValueAsString(boardRequestDto())))
+                .andExpect(status().is2xxSuccessful())
+                .andDo(print());
     }
 
     @Test
-    @DisplayName("[api]게시물 삭제-시큐리티 추가하기.")
-    @WithMockUser
+    @DisplayName("[api]게시물 삭제-성공")
     public void boardDeleteApiTest()throws Exception{
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/board/delete/{id}",1)
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/board/delete/{id}",1)
+                        .with(user(customUserDetails))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
-
-        //verify(boardService).deleteBoard(1,memberDto());
     }
 
     //게시물 요청 dto
     private BoardDto.BoardRequestDto boardRequestDto(){
         return BoardDto.BoardRequestDto
                 .builder()
+                .boardTitle("테스트")
+                .boardContents("sosdddfdfd")
+                .createdAt(LocalDateTime.now())
+                .readCount(1)
                 .build();
     }
     //게시물 응답 dto
@@ -130,9 +163,9 @@ public class BoardApiControllerTest {
     private Member memberDto(){
         return Member.builder()
                 .id(1)
-                .username("well")
+                .username("well4149")
                 .membername("tester1")
-                .password("$2a$10$NtPkdBqddj6ZYmbUpTS9Ve9T2WU4EUVUhN3uAFxzKUzecFxmGLy4W")
+                .password("qwer4149!!!")
                 .useremail("well123@Test.com")
                 .role(Role.ROLE_ADMIN)
                 .createdAt(LocalDateTime.now())

@@ -34,7 +34,7 @@ public class CommentService {
 	 * 게시글 조회화면에서 댓글 목록 출력 
 	 */
 	@Transactional
-	public List<CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
+	public List<CommentDto.CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
 		
 		Optional<Board> detail = boardrepository.findById(id);
 		

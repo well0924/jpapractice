@@ -37,13 +37,13 @@ public class ReplyServiceTest {
 	CommentService commentservice;
 	
 	@Autowired
-	BoardRepository reposi;
+	BoardRepository repository;
 	
 	@Autowired
 	BoardService boardservice;
 	
 	@Autowired
-	MemberRepository memberrepos;
+	MemberRepository memberRepository;
 	
 	@Autowired
 	MemberService memberservice;
@@ -54,18 +54,18 @@ public class ReplyServiceTest {
 	
 	@BeforeEach
 	public void before() {
-		Optional<Member>memberdetail = memberrepos.findById(1);
+		Optional<Member> memberDetail = memberRepository.findById(1);
 		
-		member = memberdetail.get();
+		member = memberDetail.get();
 		
-		Optional<Board>detail = reposi.findById(5);
+		Optional<Board>detail = repository.findById(5);
 		
 		board = detail.get();
 	}
 	
 	@Test
 	@DisplayName("댓글 목록")
-	public void replylist() throws Exception {
+	public void replyList() throws Exception {
 		//when
 		List<CommentDto.CommentResponseDto>replylist = commentservice.findCommentsBoardId(5);
 		//then
@@ -74,7 +74,7 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 작성")
-	public void replywrite() throws Exception {
+	public void replyWrite(){
 		//given
 		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("댓글작성!").createdAt(LocalDateTime.now()).build();
 		//when
@@ -85,7 +85,7 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 작성실패 - 회원이 아닌경우")
-	public void replywritefail3() throws Exception {
+	public void replyWriteFail3(){
 		//given
 		CommentDto.CommentRequestDto dto = CommentDto
 				.CommentRequestDto
@@ -103,10 +103,13 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 삭제")
-	public void replydelete() throws Exception {
+	public void replyDelete(){
 		//given
 		Long count = commentrepository.count();
-		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
+		CommentDto.CommentRequestDto dto = CommentDto
+				.CommentRequestDto.builder()
+				.replyContents("deleteTest!")
+				.createdAt(LocalDateTime.now()).build();
 		Integer result = commentservice.replysave(dto, member, board.getId());
 		//when
 		commentservice.replydelete(result, member);
@@ -117,7 +120,7 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 삭제실패 - 회원이 아닌경우")
-	public void replydeleteFail1()throws Exception{
+	public void replyDeleteFail1(){
 		//given
 		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
 		Integer result = commentservice.replysave(dto, member, board.getId());
@@ -132,11 +135,11 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 삭제실패 - 회원이 다른 회원인 경우")
-	public void replydeleteFail2()throws Exception{
+	public void replyDeleteFail2(){
 		//given
 		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
 		Integer result = commentservice.replysave(dto, member, board.getId());
-		member = memberrepos.findById(2).orElseThrow();
+		member = memberRepository.findById(2).orElseThrow();
 		//when(회원이 아닌 경우)
 		
 		//then
@@ -148,14 +151,20 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 수정")
-	public void replyUpdate() throws Exception {
+	public void replyUpdate(){
 		//given
-		Optional<Comment>commentdetail = commentrepository.findById(2);
-		
-		Comment getcomment = commentdetail.get();
-		
-		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("update!!").build();
-		
+		Long count = commentrepository.count();
+		CommentDto.CommentRequestDto dto = CommentDto
+				.CommentRequestDto.builder()
+				.replyContents("deleteTest!")
+				.createdAt(LocalDateTime.now()).build();
+		Integer result = commentservice.replysave(dto, member, board.getId());
+
+		Optional<Comment> commentDetail = commentrepository.findById(result);
+		Comment getcomment = commentDetail.get();
+
+		dto = CommentDto.CommentRequestDto.builder().replyContents("update!!").build();
+
 		getcomment.contentsChange(dto.getReplyContents());
 		
 		//when
@@ -167,11 +176,11 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 수정실패 - 회원이 아닌경우")
-	public void replyUpdateFail1() throws Exception {
+	public void replyUpdateFail1(){
 		//given
-		Optional<Comment>commentdetail = commentrepository.findById(2);
+		Optional<Comment> commentDetail = commentrepository.findById(2);
 		
-		Comment getcomment = commentdetail.get();
+		Comment getcomment = commentDetail.get();
 		
 		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("update!!").build();
 		
@@ -188,17 +197,17 @@ public class ReplyServiceTest {
 	
 	@Test
 	@DisplayName("댓글 수정실패 - 회원이 다른 경우")
-	public void replyUpdateFail2() throws Exception {
+	public void replyUpdateFail2(){
 		//given
-		Optional<Comment>commentdetail = commentrepository.findById(2);
+		Optional<Comment> commentDetail = commentrepository.findById(2);
 		
-		Comment getcomment = commentdetail.get();
+		Comment getcomment = commentDetail.get();
 		
 		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("update!!").build();
 		
 		getcomment.contentsChange(dto.getReplyContents());
 		
-		member = memberrepos.findById(2).orElseThrow();
+		member = memberRepository.findById(2).orElseThrow();
 		
 		//when
 		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{

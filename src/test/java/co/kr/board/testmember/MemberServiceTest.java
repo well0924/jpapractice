@@ -221,8 +221,8 @@ public class MemberServiceTest {
 	@DisplayName("회원 아이디 찾기")
 	public void finduserid(){
 		//given
-		String membername="updateuser12";
-		String useremail = "well84149@naver.com";
+		String membername="updateuser1";
+		String useremail = "well4149@naver.com";
 		Optional<Member>detail = memberRepository.findByMembernameAndUseremail(membername, useremail);
 
 		Member member = detail.get();
@@ -232,7 +232,7 @@ public class MemberServiceTest {
 		
 		//then
 		String userid = member.getUsername();
-		assertEquals("well",userid);
+		assertEquals("well322",userid);
 		
 	}
 
@@ -333,7 +333,7 @@ public class MemberServiceTest {
 	private LoginDto loginDto(){
 		return LoginDto
 				.builder()
-				.username("well")
+				.username("well322")
 				.password("qwer4149!")
 				.build();
 	}

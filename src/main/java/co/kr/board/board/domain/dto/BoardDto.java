@@ -12,18 +12,14 @@ public class BoardDto {
 	@Getter
 	@Setter
 	@Builder
-	@NoArgsConstructor
+	@RequiredArgsConstructor
 	@AllArgsConstructor
 	public static class BoardRequestDto{
-		
 		@NotBlank(message ="제목을 입력해주세요.")
 		private String boardTitle;
-		
 		@NotBlank(message ="내용을 입력해주세요.")
 		private String boardContents;
-		
 		private Integer readCount;
-		
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 	}
@@ -58,6 +54,4 @@ public class BoardDto {
 			this.createdAt = board.getCreatedAt();
 		}		
 	}
-	
-	
 }

@@ -10,15 +10,15 @@ import co.kr.board.login.domain.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Integer>{
 	//시큐리티 회원 조회 o.k
-	public Optional<Member>findByUsername(String username);
+	Optional<Member>findByUsername(String username);
 	//아이디 중복여부 o.k
- 	public Boolean existsByUsername(String userename);
+ 	Boolean existsByUsername(String userename);
  	//이메일 중복여부 o.k
- 	public Boolean existsByUseremail(String useremail);
+ 	Boolean existsByUseremail(String useremail);
 	//회원 아이디 찾기 o.k
-	public Optional<Member> findByMembernameAndUseremail(String membername,String useremail);
+	Optional<Member> findByMembernameAndUseremail(String membername,String useremail);
 	//회원 삭제 o.k
-	public void deleteByUsername(String username);
+	void deleteByUsername(String username);
 	//회원목록(페이징) o.k
-	public Page<Member>findAll(Pageable pageable);
+	Page<Member>findAll(Pageable pageable);
 }

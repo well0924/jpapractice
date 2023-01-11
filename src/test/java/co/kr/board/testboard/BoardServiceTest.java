@@ -47,22 +47,20 @@ class BoardServiceTest {
 		member1 = detail.get();
 		
 	}
-	
 	@Test
 	@DisplayName("글 단일조회")
 	public void boarddetail() throws Exception {
-		
+
 		//given
 		Optional<Board> board = reposi.findById(4);
 		Board detail = board.get();
-		
+
 		//when
 		BoardDto.BoardResponseDto result = boardservice.getBoard(detail.getId());
-		
-		//then		
-		assertEquals(result.getBoardAuthor(), "well");
+
+		//then
+		assertEquals(result.getBoardAuthor(), "well4149");
 	}
-	
 	@Test
 	@DisplayName("글 단일조회 실패")
 	public void boarddetailfail()throws Exception{

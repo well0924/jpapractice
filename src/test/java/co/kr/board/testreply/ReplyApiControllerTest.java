@@ -1,7 +1,9 @@
 package co.kr.board.testreply;
 
+import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
 import co.kr.board.board.domain.Board;
 import co.kr.board.config.security.SecurityConfig;
+import co.kr.board.config.security.vo.CustomUserDetails;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.repository.MemberRepository;
@@ -10,6 +12,7 @@ import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.repository.CommentRepository;
 import co.kr.board.reply.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +22,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -29,6 +33,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -42,6 +48,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ReplyApiControllerTest {
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private WebApplicationContext context;
     @MockBean
     CommentService commentService;
     @MockBean
@@ -49,6 +57,20 @@ public class ReplyApiControllerTest {
     ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private MemberRepository memberRepository;
+    private CustomUserDetails customUserDetails;
+    private final TestCustomUserDetailsService testCustomUserDetailsService = new TestCustomUserDetailsService();
+
+    @BeforeEach
+    public void setup(){
+        mvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
+
+        memberRepository.save(memberDto());
+
+        customUserDetails = (CustomUserDetails)testCustomUserDetailsService.loadUserByUsername(memberDto().getUsername());
+    }
 
     @Test
     @DisplayName("[api]댓글목록-성공")
@@ -68,20 +90,15 @@ public class ReplyApiControllerTest {
 
     @Test
     @DisplayName("[api]댓글작성-성공")
-    @WithMockUser(username = "well",roles = {"ADMIN","USER"})
     public void replyWriteTest()throws Exception{
-
-        //given(commentService.replysave(any(),any(),any())).willReturn(1);
-
         mvc.perform(MockMvcRequestBuilders
                 .post("/api/reply/write/{id}",comment().getBoard().getId())
+                        .with(user(customUserDetails))
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8)
                 .content(objectMapper.writeValueAsString(requestDto())))
                 .andExpect(status().isOk())
                 .andDo(print());
-
-        //verify(commentService).replysave(any(),any(),any());
     }
 
     @Test
@@ -95,29 +112,42 @@ public class ReplyApiControllerTest {
     }
 
     @Test
-    @DisplayName("[api]댓글수정- 응답500: user가 인증이 안된경우??")
-    @WithMockUser
+    @DisplayName("[api]댓글수정- 성공")
     public void replyUpdateTest()throws Exception{
+        given(commentRepository.findById(1)).willReturn(Optional.of(comment()));
+
+        mvc.perform(MockMvcRequestBuilders.put("/api/reply/update/{id}",1)
+                        .with(user(customUserDetails))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestDto())))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+
+    @Test
+    @DisplayName("[api]댓글수정- 응답40xs: user가 인증이 안된경우")
+    //@WithMockUser
+    public void replyUpdateTestFail()throws Exception{
         given(commentRepository.findById(1)).willReturn(Optional.of(comment()));
 
         mvc.perform(MockMvcRequestBuilders.put("/api/reply/update/{id}",1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto())))
-                .andExpect(status().isOk())
+                .andExpect(status().is4xxClientError())
                 .andDo(print());
-        //verify(commentService).replyUpdate(requestDto(),memberDto(),responseDto().getReplyId());
-        //then(commentService).should().replyUpdate(requestDto(),memberDto(), responseDto().getReplyId());
     }
 
     @Test
-    @DisplayName("[api]댓글삭제")
-    @WithMockUser(username = "well",roles = "ADMIN")
+    @DisplayName("[api]댓글삭제-성공")
     public void replyDeleteTest()throws Exception{
         int replyId = 1;
 
         given(commentRepository.findById(eq(replyId))).willReturn(Optional.of(comment()));
 
-        mvc.perform(MockMvcRequestBuilders.delete("/api/reply/delete/{id}",replyId))
+        mvc.perform(MockMvcRequestBuilders
+                        .delete("/api/reply/delete/{id}",replyId)
+                        .with(user(customUserDetails)))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -153,9 +183,10 @@ public class ReplyApiControllerTest {
     private static Member memberDto(){
         return Member.builder()
                 .id(1)
-                .username("well")
+                .username("well4149")
                 .membername("tester1")
-                .password("$2a$10$NtPkdBqddj6ZYmbUpTS9Ve9T2WU4EUVUhN3uAFxzKUzecFxmGLy4W")
+                .password("qwer4149!!!")
+                //.password("$2a$10$NtPkdBqddj6ZYmbUpTS9Ve9T2WU4EUVUhN3uAFxzKUzecFxmGLy4W")
                 .useremail("well123@Test.com")
                 .role(Role.ROLE_ADMIN)
                 .createdAt(LocalDateTime.now())
