@@ -20,7 +20,8 @@ public class TestCustomUserDetailsService implements UserDetailsService {
                 .id(1)
                 .username("well4149")
                 .membername("tester123")
-                .password("qwer4149!!")
+                .password("$2a$12$XcIiB0doaPMx0AoRv0G0f.enty5bjsZADwrmw7SmgNZuI4yQVmRSu")
+                //qwer4149!!
                 .useremail("well4149@Test.com")
                 .role(Role.ROLE_ADMIN)
                 .createdAt(LocalDateTime.now())

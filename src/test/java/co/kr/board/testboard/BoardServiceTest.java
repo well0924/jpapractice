@@ -49,7 +49,7 @@ class BoardServiceTest {
 	}
 	@Test
 	@DisplayName("글 단일조회")
-	public void boarddetail() throws Exception {
+	public void boarddetail(){
 
 		//given
 		Optional<Board> board = reposi.findById(4);
@@ -63,7 +63,7 @@ class BoardServiceTest {
 	}
 	@Test
 	@DisplayName("글 단일조회 실패")
-	public void boarddetailfail()throws Exception{
+	public void boarddetailfail(){
 		
 		org.junit.jupiter.api.Assertions.assertThrows(Exception.class,()->{
 			Optional<Board>board = Optional.ofNullable(reposi.findById(3).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));});
@@ -71,7 +71,7 @@ class BoardServiceTest {
 	
 	@Test
 	@DisplayName("글 작성")
-	public void boardwrite() throws Exception {
+	public void boardwrite(){
 		
 		//given
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
@@ -91,7 +91,7 @@ class BoardServiceTest {
 	
 	@Test
 	@DisplayName("글작성실패 -회원이 아닌경우")
-	public void boardwritefail()throws Exception{
+	public void boardwritefail(){
 		//given
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 				.builder()
@@ -110,13 +110,11 @@ class BoardServiceTest {
 	
 	@Test
 	@DisplayName("글 수정")
-	public void boardupdate() throws Exception {
+	public void boardupdate(){
 		
 		//given
 		before();
-		Board board = new Board();
-		
-		board = reposi.findById(4).orElseThrow();
+		Board board = reposi.findById(4).orElseThrow();
 		
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 										.builder()
@@ -140,9 +138,7 @@ class BoardServiceTest {
 	@Test
 	@DisplayName("글 수정실패 - 회원이 아닌경우")
 	public void boardupdatefail1() {
-		Board board = new Board();
-		
-		board = reposi.findById(4).orElseThrow();
+		Board board = reposi.findById(4).orElseThrow();
 		
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 										.builder()
@@ -166,9 +162,7 @@ class BoardServiceTest {
 	@Test
 	@DisplayName("글 수정실패-아이디와 작성자가 다른경우")
 	public void boardupdatefail2() {
-Board board = new Board();
-		
-		board = reposi.findById(4).orElseThrow();
+		Board board = reposi.findById(4).orElseThrow();
 		
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 										.builder()
@@ -191,7 +185,7 @@ Board board = new Board();
 	
 	@Test
 	@DisplayName("글 삭제")
-	public void boarddelete() throws Exception {
+	public void boarddelete() {
 		long count = reposi.count();
 		//given
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
@@ -212,10 +206,7 @@ Board board = new Board();
 	
 	@Test
 	@DisplayName("글 삭제 실패- 회원이 아닌경우")
-	public void boarddeleteFail() throws Exception {
-		
-		long count = reposi.count();
-		
+	public void boarddeleteFail() {
 		//given
 		BoardDto.BoardRequestDto dto = BoardDto.BoardRequestDto
 				.builder()
@@ -238,7 +229,7 @@ Board board = new Board();
 	
 	@Test
 	@DisplayName("글 목록")
-	public void boardlist() throws Exception {
+	public void boardlist() {
 		
 		List<Board>boardlist = reposi.findAll();
 		
@@ -251,7 +242,7 @@ Board board = new Board();
 	
 	@Test
 	@DisplayName("게시글 목록 페이징")
-	public void boardlistPageingTest() throws Exception {
+	public void boardlistPageingTest() {
 		Pageable pageable = Pageable.ofSize(5);
 
 		Page<Board>list = reposi.findAll(pageable);

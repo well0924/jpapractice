@@ -153,7 +153,6 @@ public class ReplyServiceTest {
 	@DisplayName("댓글 수정")
 	public void replyUpdate(){
 		//given
-		Long count = commentrepository.count();
 		CommentDto.CommentRequestDto dto = CommentDto
 				.CommentRequestDto.builder()
 				.replyContents("deleteTest!")

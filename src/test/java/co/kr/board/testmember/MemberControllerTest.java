@@ -5,10 +5,8 @@ import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 import static org.mockito.BDDMockito.*;
@@ -99,7 +94,6 @@ public class MemberControllerTest {
     @Test
     @DisplayName("[view]아이디찾기-성공")
     public void userIdFindTest()throws Exception{
-
         mvc.perform(get("/page/login/finduserid"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(view().name("login/userfindid"))
@@ -123,6 +117,7 @@ public class MemberControllerTest {
     @WithMockUser
     public void userUpdatePage()throws Exception{
         given(memberService.getMember(memberDto().getId())).willReturn(responseDto());
+
         mvc
         .perform(get("/page/login/memberupdate/{id}",memberDto().getId()))
         .andExpect(status().isOk())
@@ -139,7 +134,7 @@ public class MemberControllerTest {
     @WithMockUser
     public void userDeletePageTest()throws Exception{
         mvc.perform(get("/page/login/memberdelete").contentType(MediaType.TEXT_HTML))
-                //.andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
                 .andExpect(status().isOk())
                 .andExpect(view().name("login/memberdelete"))
                 .andDo(print());

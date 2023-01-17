@@ -3,12 +3,9 @@ package co.kr.board.testmember;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
-import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +50,7 @@ public class MemberApiControllerTest {
     @Test
     @DisplayName("[api]회원목록-성공")
     @WithMockUser(username = "well",roles = "ADMIN")
-    public void memberlistApiTest()throws Exception{
+    public void memberListApiTest()throws Exception{
         List<MemberDto.MemeberResponseDto> list = Arrays.asList(responseDto());
 
         when(memberService.findAll()).thenReturn(list);
@@ -68,7 +65,7 @@ public class MemberApiControllerTest {
     @Test
     @DisplayName("[api]회원조회-성공")
     @WithMockUser
-    public void memberdetailTest()throws Exception{
+    public void memberDetailTest()throws Exception{
         given(memberService.getMember(any())).willReturn(responseDto());
 
         mvc.perform(get("/api/login/detailmember/{id}/member",requestDto().getUseridx())
@@ -214,35 +211,6 @@ public class MemberApiControllerTest {
         verify(memberService).memberdelete(any());
     }
 
-    @Test
-    @Disabled
-    @DisplayName("[api]로그인 인증")
-    public void loginAuthTest()throws Exception{
-        when(memberService.signin(loginDto())).thenReturn(new TokenResponse("accessToken","refreshToken"));
-
-        mvc.perform(MockMvcRequestBuilders
-                        .post("/api/login/signup")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(objectMapper.writeValueAsString(loginDto())))
-                .andExpect(status().isOk())
-                .andDo(print());
-
-        verify(memberService).signin(loginDto());
-    }
-
-    @Test
-    @DisplayName("[api]로그인 테스트-재발급")
-    public void loginAuthReIssueTest(){
-
-    }
-
-    @Test
-    @DisplayName("토큰 유효성 검사")
-    public void TokenValidationTest()throws Exception{
-
-    }
-
     //회원조회 dto
     private Member memberDto(){
         return Member.builder()
@@ -287,12 +255,4 @@ public class MemberApiControllerTest {
                 .build();
     }
 
-    //로그인Dto
-    private LoginDto loginDto(){
-        return LoginDto
-                .builder()
-                .username("well")
-                .password("qwer4149!")
-                .build();
-    }
 }

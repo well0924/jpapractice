@@ -4,7 +4,9 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
+import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.dto.TokenRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,8 @@ import lombok.extern.log4j.Log4j2;
 public class LoginApiController {
 	
 	private final MemberService service;
+
+	private final JwtTokenProvider jwtTokenProvider;
 
 	@GetMapping("/logincheck/{id}")
 	public Response<Boolean>idcheck(@PathVariable(value="id") String username){
@@ -111,16 +115,26 @@ public class LoginApiController {
 	@PostMapping("/signup")
     public Response <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("X-AUTH-TOKEN",tokenResponse.getAccessToken());
+
 		log.info("accessToken:"+tokenResponse.getAccessToken());
 		log.info("refreshToken:"+tokenResponse.getRefreshToken());
-        return new Response<>(HttpStatus.OK.value(),tokenResponse);
+		log.info(httpHeaders.get("X-AUTH-TOKEN"));
+
+		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
     
 	//토큰 재발행
     @PostMapping("/reissue")
-    public Response<TokenResponse>jwtreissue(@RequestBody TokenRequest tokenDto){
+    public Response<TokenResponse>jwtreissue(@Valid @RequestBody TokenRequest tokenDto){
         TokenResponse tokenResponse = service.reissue(tokenDto);
-        return new Response<>(HttpStatus.OK.value(),tokenResponse);
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("X-AUTH-TOKEN",tokenResponse.getAccessToken());
+
+		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
     
     //로그아웃
