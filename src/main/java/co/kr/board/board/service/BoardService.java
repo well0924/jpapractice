@@ -19,9 +19,9 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class BoardService {
+public class BoardService{
 	
-	private final BoardRepository repos;		
+	private final BoardRepository repos;
 
 	/*
 	 * 글 목록 전체 조횐 
@@ -63,15 +63,19 @@ public class BoardService {
 	 * @Param keyword
 	 * @Param pageable
 	 */
-	@Transactional(readOnly = true)
+	/*@Transactional(readOnly = true)
 	public Page<BoardDto.BoardResponseDto>findAllSearch(String keyword,Pageable pageable){
 		
 		Page<Board>allSearch = repos.findAllSearch(keyword, pageable);
 
  		return allSearch.map(board -> new BoardDto.BoardResponseDto(board));
+	}*/
+	@Transactional(readOnly = true)
+	public Page<BoardDto.BoardResponseDto>findAllSearch(){
+		return null;
 	}
-	
-    /*
+
+	/*
 	* 글 등록 
 	* @Param BoardRequestDto 
 	* @Param Member

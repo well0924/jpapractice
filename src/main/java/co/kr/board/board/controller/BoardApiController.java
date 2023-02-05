@@ -43,14 +43,14 @@ public class BoardApiController {
 	}
 	
 	//페이징+검색.
-	@GetMapping("/list/search")
+/*	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>searchList(@RequestParam(required = false) String keyword, @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(keyword, pageable);
 			
 		return new Response<>(HttpStatus.OK.value(),list);	
-	}
+	}*/
 	
 	//작성
 	@PostMapping("/write")

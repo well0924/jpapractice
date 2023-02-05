@@ -33,7 +33,7 @@ public class BoardController {
 	@GetMapping("/list")
 	public ModelAndView pagelist(
 			@RequestParam(required = false,defaultValue = "") String keyword,
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
 		
@@ -55,7 +55,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto)throws Exception{
+	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto){
 	
 		ModelAndView mv = new ModelAndView();
 		
@@ -68,7 +68,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/write")
-	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user)throws Exception{
+	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user){
 	
 		ModelAndView mv = new ModelAndView();	
 		
@@ -78,12 +78,11 @@ public class BoardController {
 	}
 	
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
+	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
 		
 		dto = service.getBoard(boardId);
-		log.info("결과"+dto);
 		mv.addObject("modify", dto);
 		mv.setViewName("board/modifyboard");
 		
