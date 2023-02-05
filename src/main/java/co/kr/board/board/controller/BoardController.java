@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
-import co.kr.board.config.security.vo.CustomUserDetails;
+import co.kr.board.config.security.auth.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 

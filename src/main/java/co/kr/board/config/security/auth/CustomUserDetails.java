@@ -1,4 +1,4 @@
-package co.kr.board.config.security.vo;
+package co.kr.board.config.security.auth;
 
 import java.util.ArrayList;
 import java.util.Collection;

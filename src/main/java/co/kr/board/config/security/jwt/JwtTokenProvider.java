@@ -27,7 +27,7 @@ public class JwtTokenProvider {
 	 	private String secretKey;
 
 	    // 토큰 유효시간 30분
-	    private long tokenValidTime = 30 * 60 * 1000L;
+	    private long tokenValidTime = 100 * 60 * 1000L;
 	    
 	    private long refreshtokenValidTime = 1000 * 60 * 60 * 24 * 7;
 
@@ -72,7 +72,7 @@ public class JwtTokenProvider {
 	    // JWT 토큰에서 인증 정보 조회
 	    public Authentication getAuthentication(String token) {
 	        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPK(token));
-	        return new UsernamePasswordAuthenticationToken(token,"",userDetails.getAuthorities());
+	        return new UsernamePasswordAuthenticationToken(userDetails.getUsername(),"",userDetails.getAuthorities());
 	    }
 
 	    // 토큰에서 회원 정보 추출
@@ -89,8 +89,7 @@ public class JwtTokenProvider {
 	    public boolean validateToken(String jwtToken) {
 	        try {
 	            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-	            //return !claims.getBody().getExpiration().before(new Date());
-	            return true;
+	            return !claims.getBody().getExpiration().before(new Date());
 	        } catch (MalformedJwtException e) {
 				log.info("잘못된 JWT 서명입니다.");
 			} catch (ExpiredJwtException e) {

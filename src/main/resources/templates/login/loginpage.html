@@ -66,7 +66,8 @@ layout:decorator="/layout/mainlayout">
 function loginproc(){
 	let userid = $('#user_id').val();
 	let userpw = $('#user_pw').val();
-	
+	const myHeaders = new Headers();
+
 	let logindata = {
 			username : userid,
 			password : userpw
@@ -80,11 +81,16 @@ function loginproc(){
 		contentType:'application/json; charset=utf-8'
 	}).done(function(data){
 		alert("인증??성공??");
-		console.log(data.data);
-		console.log(data.data.accessToken);
 		//인증 토큰을 받으면 localstorage에 저장하기.
-        if(data.data.accessToken){
-			localStorage.setItem("X-AUTH-TOKEN", data.data.accessToken);
+        if(data.accessToken){
+			localStorage.setItem("X-AUTH-TOKEN", data.accessToken);
+
+			let tokenValue = localStorage.getItem("X-AUTH-TOKEN");
+			const myHeaders = new XMLHttpRequest();
+			console.log(tokenValue);
+			myHeaders.open("POST","/api/login/signup");
+			myHeaders.setRequestHeader("x-auth-token",tokenValue);
+			myHeaders.send();
 			location.href = "/page/main/mainpage";
 		}
     }).fail(function (error) {

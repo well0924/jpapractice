@@ -1,19 +1,24 @@
 package co.kr.board.login.controller;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
+import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
+import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.TokenRequest;
-import org.springframework.http.HttpHeaders;
+import co.kr.board.login.domain.dto.TokenResponse;
+import co.kr.board.reply.repository.CommentRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import co.kr.board.config.exception.dto.Response;
-import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,11 +28,9 @@ import lombok.extern.log4j.Log4j2;
 @AllArgsConstructor
 @RequestMapping("/api/login/*")
 public class LoginApiController {
-	
+	private final CommentRepository commentRepository;
 	private final MemberService service;
-
 	private final JwtTokenProvider jwtTokenProvider;
-
 	@GetMapping("/logincheck/{id}")
 	public Response<Boolean>idcheck(@PathVariable(value="id") String username){
 				
@@ -115,28 +118,24 @@ public class LoginApiController {
 	@PostMapping("/signup")
     public Response <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
-
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add("X-AUTH-TOKEN",tokenResponse.getAccessToken());
-
 		log.info("accessToken:"+tokenResponse.getAccessToken());
 		log.info("refreshToken:"+tokenResponse.getRefreshToken());
-		log.info(httpHeaders.get("X-AUTH-TOKEN"));
-
+		Authentication authentication = jwtTokenProvider.getAuthentication(tokenResponse.getAccessToken());
+		String username = jwtTokenProvider.getUserPK(tokenResponse.getAccessToken());
+		log.info(authentication.getName());
+		log.info(username);
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
-    
 	//토큰 재발행
     @PostMapping("/reissue")
     public Response<TokenResponse>jwtreissue(@Valid @RequestBody TokenRequest tokenDto){
         TokenResponse tokenResponse = service.reissue(tokenDto);
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.add("X-AUTH-TOKEN",tokenResponse.getAccessToken());
+		//HttpHeaders httpHeaders = new HttpHeaders();
+		//httpHeaders.add("X-AUTH-TOKEN",tokenResponse.getAccessToken());
 
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
-    
     //로그아웃
 
 }

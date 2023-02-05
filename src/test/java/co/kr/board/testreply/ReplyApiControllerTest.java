@@ -3,7 +3,7 @@ package co.kr.board.testreply;
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
 import co.kr.board.board.domain.Board;
 import co.kr.board.config.security.SecurityConfig;
-import co.kr.board.config.security.vo.CustomUserDetails;
+import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;
 import co.kr.board.login.repository.MemberRepository;

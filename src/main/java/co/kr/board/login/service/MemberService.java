@@ -127,7 +127,7 @@ public class MemberService {
 
 		//비밀번호 유효성 검사
         passwordvalidation(memberDetail,dto);
-        
+
         //token 발행
         TokenDto tokenDto=jwtTokenProvider.createTokenDto(memberDetail.getUsername(),memberDetail.getRole());
         
@@ -159,26 +159,37 @@ public class MemberService {
         if (!authentication.getName().equals(request.getRefreshToken())) {
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
         }
-        
+
         //권한 가져오기 및 토큰 생성
         String authority = authentication
                 .getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+		String userpk = jwtTokenProvider.getUserPK(request.getRefreshToken());
+		System.out.println(userpk);
 
-        //redis에 refresh 토큰저장
+		//redis에 refresh 토큰검사
         redisService.checkRefreshToken(authentication.getName(), request.getRefreshToken());
         //토큰 재생성
-        TokenDto tokenDto = jwtTokenProvider.createTokenDto(authentication.getName(),Role.valueOf(authority));
-        //토큰 발급
+        TokenDto tokenDto = jwtTokenProvider.createTokenDto(userpk,Role.valueOf(authority));
+
+		RefreshToken refreshToken = RefreshToken
+				.builder()
+				.key(authentication.getName())
+				.value(tokenDto.getRefreshToken())
+				.build();
+
+		//redis에 refresh 토큰 갱신
+		redisService.setValues(userpk,refreshToken.getValue());
+		//토큰 발급
         return TokenResponse
 				.builder()
 				.accessToken(tokenDto.getAccessToken())
 				.refreshToken(tokenDto.getRefreshToken())
 				.build();
     }
-	
+
 	/*
 	 * 회원가입 기능
 	 * @Param MemberDto.MemberRequestDto
@@ -189,61 +200,61 @@ public class MemberService {
 	public Integer memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
 		//비밀번호 암호화
 		dto.setPassword(encoder.encode(dto.getPassword()));
-		
-		Member member = dtoToEntity(dto); 
+
+		Member member = dtoToEntity(dto);
 		repository.save(member);
 		//회원가입 유효성 검사(아이디 중복 & 이메일 중복)
 		//validatedSignUpInfo(dto);
-		
+
 		return member.getId();
 	}
-	
+
 	/*
 	 * 회원삭제(탈퇴)
-	 * @Param username 
-	 * 회원 삭제 
+	 * @Param username
+	 * 회원 삭제
 	 */
 	@Transactional
 	public void memberdelete(String username){
 		 repository.deleteByUsername(username);
 	}
-	
+
 	/*
-	 * 회원수정 
+	 * 회원수정
 	 * @Param useridx
 	 * @Param MemberDto.MemberRequestDto
 	 * 회원수정을 하는 기능 (시큐리티 로그인이 필요함)
 	 */
 	@Transactional
 	public Integer memberupdate(Integer useridx,MemberDto.MemberRequestDto dto){
-		
+
 		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
-		
+
 		memberdetail.ifPresent(member -> {
-			
+
 			if(dto.getUsername() !=null) {
 				member.setUsername(dto.getUsername());
 			}
-			
+
 			if(dto.getMembername() !=null) {
 				member.setMembername(dto.getMembername());
 			}
-			
+
 			if(dto.getPassword()!=null) {
 				member.setPassword(encoder.encode(dto.getPassword()));
 			}
 			if(dto.getUseremail()!=null) {
 				member.setUseremail(dto.getUseremail());
 			}
-			
+
 			this.repository.save(member);
 		});
-		
+
 		return useridx;
 	}
-	
+
 	/*
-	 * 회원아이디 중복 확인 
+	 * 회원아이디 중복 확인
 	 * @Param username
 	 * @Exception: 아이디가 중복이 되면 USERID_DUPLICATE
 	 * 회원가입 페이지에서 아이디 중복확인
@@ -252,9 +263,9 @@ public class MemberService {
 	public Boolean checkmemberIdDuplicate(String username){
 		return repository.existsByUsername(username);
 	}
-	
+
 	/*
-	 * 회원이메일 중복 확인 
+	 * 회원이메일 중복 확인
 	 * @Param username
 	 * @Exception: 이메일이 중복이되면 USEREMAIL_DUPLICATE
 	 * 회원가입 페이지에서 이메일 중복확인
@@ -263,7 +274,7 @@ public class MemberService {
 	public Boolean checkmemberEmailDuplicate(String useremail){
 		return repository.existsByUseremail(useremail);
 	}
-	
+
 	/*
 	 * 회원아이디 찾기
 	 * @Param membername
@@ -274,14 +285,14 @@ public class MemberService {
 	@Transactional
 	public String findByMembernameAndUseremail(String membername, String useremail){
 		Optional<Member> member = repository.findByMembernameAndUseremail(membername, useremail);
-		
+
 		Member detail = member.get();
 
 		return detail.getUsername();
 	}
-	
+
 	/*
-	 * 회원 비밀번호 재수정 
+	 * 회원 비밀번호 재수정
 	 * @param useridx(회원번호)
 	 * @param MemberRequestDto
 	 * @Exception NOT_USER(회원이 존재하지 않습니다)
@@ -298,10 +309,10 @@ public class MemberService {
 
 		return useridx;
 	}
-	
+
 	//Dto에서 Entity 로 변환
 	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
-		
+
 		return Member
 				.builder()
 				.id(dto.getUseridx())
@@ -313,7 +324,7 @@ public class MemberService {
 				.createdAt(LocalDateTime.now())
 				.build();
 	}
-	
+
 	//비밀번호 유효성 검사
     public void passwordvalidation(Member memberAccount,LoginDto dto){
         if(!encoder.matches(dto.getPassword(),memberAccount.getPassword())){

@@ -2,6 +2,8 @@ package co.kr.board.config.security;
 
 import javax.sql.DataSource;
 
+import co.kr.board.config.security.jwt.*;
+import co.kr.board.login.repository.MemberRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,28 +20,20 @@ import org.springframework.security.web.authentication.rememberme.JdbcTokenRepos
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import co.kr.board.config.security.jwt.JwtAccessDeniedHandler;
-import co.kr.board.config.security.jwt.JwtAuthenticationEntryPoint;
-import co.kr.board.config.security.jwt.JwtAuthenticationFilter;
-import co.kr.board.config.security.jwt.JwtTokenProvider;
-import co.kr.board.config.security.service.CustomUserDetailService;
+import co.kr.board.config.security.auth.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	
-	private final CustomUserDetailService service;
-	
-	private final DataSource dataSource;
-	
+	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
-	
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-	
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-	
+	private final CustomUserDetailService service;
+	private final DataSource dataSource;
+	private final CorsConfig corsConfig;
 	//비밀번호 암호화
 	@Bean
 	public BCryptPasswordEncoder encoder() {
@@ -70,8 +64,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		
 		http
 		.csrf().disable()
-		.httpBasic().disable()
+		.httpBasic().disable()// httpBasic 방식은 Authorization에 ID,PW를 들고 다니는 방식이다. <-> Bearer 방식 (토큰을 들고다니는 방식)
+		.headers()
+		.frameOptions()
+		.sameOrigin()
+		.and()
+		.sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		.and()
 		.authorizeRequests()
+		.antMatchers("/favicon.ico").permitAll()
 		.antMatchers("/api/login/signup").permitAll()
 		.antMatchers("/page/admin/list","/api/login/list").hasRole("ADMIN")
 		.antMatchers("/page/board/list","/api/board/**","/api/reply/**").hasAnyRole("ADMIN","USER")
@@ -79,22 +81,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.anyRequest()
 		.authenticated()
 		.and()
-		.logout()
-		.logoutRequestMatcher(new AntPathRequestMatcher("/logout")).permitAll()
-		.invalidateHttpSession(true)
-		.clearAuthentication(true)
-		.and()
-		.exceptionHandling()
-		.and()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
-		http
-		.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
 		.exceptionHandling()
 		.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-		.accessDeniedHandler(jwtAccessDeniedHandler);
+		.accessDeniedHandler(jwtAccessDeniedHandler)
+		.and()
+		.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 	}
-	
 	@Bean
     public PersistentTokenRepository tokenRepository() {
 		// JDBC 기반의 tokenRepository 구현체

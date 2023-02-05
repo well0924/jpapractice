@@ -1,13 +1,14 @@
-package co.kr.board.config.security.service;
+package co.kr.board.config.security.auth;
 
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import co.kr.board.config.security.vo.CustomUserDetails;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
@@ -21,17 +22,15 @@ public class CustomUserDetailService implements UserDetailsService{
 	private final MemberRepository repository;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
 		log.info("userdetailservice-------");
 		
-		Optional<Member> member = Optional.ofNullable(repository.findByUsername(username)
+		Optional<Member> member = Optional.ofNullable(repository.findByUsername(userPk)
 				.orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
 		
 		Member userdetail = member.get();
-		
-		log.info(userdetail.getRole().getValue());
-		log.info(username);
-		//log.info(member);
+		log.info(userPk);
+		log.info(userdetail);
 		return new CustomUserDetails(userdetail);
 	}
 

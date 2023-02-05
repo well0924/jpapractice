@@ -15,12 +15,10 @@ function getCommentlist(){
 	console.log(boardid);
 	
 	$.ajax({
-	
 		url:'/api/reply/list/'+boardid,
 		type:'get',
 		dataType:'json',
 		contentType:'application/json; charset=utf-8'
-	
 	}).done(function(resp){
 	
 		let html = "";

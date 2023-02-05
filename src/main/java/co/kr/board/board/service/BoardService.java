@@ -109,10 +109,7 @@ public class BoardService {
 	@Transactional
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){
 		
-		Optional<Board>articlelist = Optional
-				.ofNullable(
-						repos.findById(boardId)
-								.orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
 		//글 조회
 		Board board = articlelist.get();
@@ -143,6 +140,7 @@ public class BoardService {
 		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
 		String boardAuthor = board.get().getBoardAuthor();
+
 		String loginUser = member.getUsername();
 		
 		//글 작성자와 로그인한 유저의 아이디가 동일하지 않으면 Exception
