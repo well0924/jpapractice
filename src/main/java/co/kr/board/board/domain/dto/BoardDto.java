@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import co.kr.board.board.domain.Board;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 
 public class BoardDto {
@@ -45,6 +46,7 @@ public class BoardDto {
 		private LocalDateTime createdAt;
 				
 		@Builder
+		@QueryProjection
 		public BoardResponseDto(Board board) {			
 			this.boardId = board.getId();
 			this.boardTitle = board.getBoardTitle();

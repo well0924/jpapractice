@@ -31,7 +31,7 @@ public class BoardController {
 	private final BoardService service;	
 	
 	@GetMapping("/list")
-	public ModelAndView pagelist(
+	public ModelAndView pageList(
 			@RequestParam(required = false,defaultValue = "") String keyword,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
@@ -55,7 +55,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/detail/{id}")
-	public ModelAndView detailpage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto){
+	public ModelAndView detailPage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto){
 	
 		ModelAndView mv = new ModelAndView();
 		
@@ -68,7 +68,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/write")
-	public ModelAndView writepage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user){
+	public ModelAndView writePage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user){
 	
 		ModelAndView mv = new ModelAndView();	
 		
@@ -78,7 +78,7 @@ public class BoardController {
 	}
 	
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifypage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto){
+	public ModelAndView modifyPage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
 		

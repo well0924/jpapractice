@@ -70,9 +70,18 @@ public class BoardService{
 
  		return allSearch.map(board -> new BoardDto.BoardResponseDto(board));
 	}*/
+
+	/*
+	 * 페이징 + 검색기능
+	 * @Param searchVal,
+	 * @Param pageable
+	 *
+	 * 게시물에서 키워드 검색.
+	 */
 	@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto>findAllSearch(){
-		return null;
+	public Page<BoardDto.BoardResponseDto>findAllSearch(String searchVal, Pageable pageable){
+		Page<BoardDto.BoardResponseDto>list = repos.findByAllSearch(searchVal,pageable);
+		return list;
 	}
 
 	/*

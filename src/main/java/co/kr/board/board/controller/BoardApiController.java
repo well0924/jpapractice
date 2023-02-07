@@ -41,16 +41,17 @@ public class BoardApiController {
 		
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
-	
-	//페이징+검색.
-/*	@GetMapping("/list/search")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>searchList(@RequestParam(required = false) String keyword, @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
-		
-		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(keyword, pageable);
-			
-		return new Response<>(HttpStatus.OK.value(),list);	
-	}*/
+
+	//페이징 + 검색
+	@GetMapping("/list/search")
+	public Response<Page<BoardDto.BoardResponseDto>>searchList(
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,
+			@RequestParam(required = false,value = "searchVal")String searchVal){
+
+		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(searchVal,pageable);
+
+		return new Response<>(HttpStatus.OK.value(),list);
+	}
 	
 	//작성
 	@PostMapping("/write")
