@@ -2,6 +2,8 @@ package co.kr.board.config.security.auth;
 
 import java.util.Optional;
 
+import co.kr.board.config.redis.CacheKey;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,7 @@ public class CustomUserDetailService implements UserDetailsService{
 	private final MemberRepository repository;
 	
 	@Override
+	@Cacheable(value = CacheKey.USER, key = "#userPk", unless = "#result == null")
 	public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
 		log.info("userdetailservice-------");
 		

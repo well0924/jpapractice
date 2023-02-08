@@ -1,6 +1,7 @@
 package co.kr.board.board.domain;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,14 +26,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Proxy;
 
 @Getter
 @Entity
 @ToString(callSuper = true)
+@Proxy(lazy = false)
 @Table(name="board")
 @RequiredArgsConstructor
-public class Board extends BaseTime{
-	
+public class Board extends BaseTime implements Serializable {
+	//redis에 객체를 저장을 하면 내부적으로 직렬화가 되어서 저장이 된다.
+	//entity 객체중 lazy로 로딩이 되는 경우에는 @Proxy(lazy = false)를 선언해줘야 한다.
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="board_id")
@@ -45,7 +49,7 @@ public class Board extends BaseTime{
 	private String boardContents;
 	
 	//회원
-	@ManyToOne(fetch =FetchType.EAGER)
+	@ManyToOne(fetch =FetchType.LAZY)
 	@JoinColumn(name="useridx")
 	private Member writer;
 	

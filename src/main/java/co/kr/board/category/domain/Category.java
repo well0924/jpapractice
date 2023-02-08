@@ -1,4 +1,4 @@
-package co.kr.board.category;
+package co.kr.board.category.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

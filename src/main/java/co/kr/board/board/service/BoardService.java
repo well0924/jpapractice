@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import co.kr.board.config.redis.CacheKey;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,19 +59,6 @@ public class BoardService{
 				
 		return articlelist.map(board ->new BoardDto.BoardResponseDto(board));
 	}
-	
-	/*
-	 * 페이징 + 검색기능
-	 * @Param keyword
-	 * @Param pageable
-	 */
-	/*@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto>findAllSearch(String keyword,Pageable pageable){
-		
-		Page<Board>allSearch = repos.findAllSearch(keyword, pageable);
-
- 		return allSearch.map(board -> new BoardDto.BoardResponseDto(board));
-	}*/
 
 	/*
 	 * 페이징 + 검색기능
@@ -115,11 +104,12 @@ public class BoardService{
 	}
 	
     /*
-    * 글 목록 단일 조횐 
+    * 글 목록 단일 조회
     * @Param boardId
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
 	@Transactional
+	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));

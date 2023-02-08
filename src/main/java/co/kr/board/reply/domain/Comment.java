@@ -1,5 +1,6 @@
 package co.kr.board.reply.domain;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Table(name="reply")
 @RequiredArgsConstructor
-public class Comment{
+public class Comment implements Serializable {
 	
 	@Id
 	@Column(name="reply_id")

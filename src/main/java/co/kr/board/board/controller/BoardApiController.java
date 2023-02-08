@@ -31,29 +31,33 @@ public class BoardApiController {
 	private final BoardService service;
 	private final MemberRepository memberRepository;
 
-	//페이징
 	@GetMapping("/list")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>articleList(
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
+	public Response<Page<BoardDto.BoardResponseDto>>articleList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 				
 		Page<BoardDto.BoardResponseDto>list = service.findAllPage(pageable);
 		
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
 
-	//페이징 + 검색
 	@GetMapping("/list/search")
-	public Response<Page<BoardDto.BoardResponseDto>>searchList(
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,
-			@RequestParam(required = false,value = "searchVal")String searchVal){
+	@ResponseStatus(code=HttpStatus.OK)
+	public Response<Page<BoardDto.BoardResponseDto>>searchList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable, @RequestParam(required = false,value = "searchVal")String searchVal){
 
 		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(searchVal,pageable);
 
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
-	
-	//작성
+
+	@GetMapping("/detail/{id}")
+	@ResponseStatus(code=HttpStatus.OK)
+	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
+
+		BoardDto.BoardResponseDto detail = service.getBoard(boardId);
+
+		return new Response<>(HttpStatus.OK.value(),detail);
+	}
+
 	@PostMapping("/write")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult){
@@ -67,15 +71,6 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
 	
-	//단일 조회
-	@GetMapping("/detail/{id}")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
-		BoardDto.BoardResponseDto detail = service.getBoard(boardId);
-		return new Response<>(HttpStatus.OK.value(),detail);
-	}
-	
-	//삭제
 	@DeleteMapping("/delete/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId){
@@ -89,7 +84,6 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),200);
 	}
 	
-	//수정
 	@PatchMapping("/update/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>updateArticle(@PathVariable(value="id")Integer boardId,@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult){

@@ -1,5 +1,6 @@
 package co.kr.board.login.domain;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Proxy;
 
 @Getter
 @Setter
@@ -27,9 +29,10 @@ import lombok.ToString;
 @Builder
 @ToString
 @Table(name="member")
+@Proxy(lazy = false)
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Member extends BaseTime{
+public class Member extends BaseTime implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
