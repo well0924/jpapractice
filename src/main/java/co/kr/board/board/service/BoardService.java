@@ -108,6 +108,7 @@ public class BoardService{
     * @Param boardId
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
+
 	@Transactional
 	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){

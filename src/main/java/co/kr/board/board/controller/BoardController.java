@@ -2,6 +2,7 @@ package co.kr.board.board.controller;
 
 import javax.validation.Valid;
 
+import co.kr.board.board.domain.Board;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -58,8 +59,7 @@ public class BoardController {
 	public ModelAndView detailPage(@PathVariable(value="id")Integer boardId,BoardDto.BoardResponseDto dto){
 	
 		ModelAndView mv = new ModelAndView();
-		
-		dto = service.getBoard(boardId);
+		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 
 		mv.addObject("detail", dto);
 		mv.setViewName("board/detailpage");
@@ -81,8 +81,7 @@ public class BoardController {
 	public ModelAndView modifyPage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto){
 		
 		ModelAndView mv = new ModelAndView();
-		
-		dto = service.getBoard(boardId);
+		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		mv.addObject("modify", dto);
 		mv.setViewName("board/modifyboard");
 		

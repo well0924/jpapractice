@@ -118,24 +118,23 @@ public class LoginApiController {
 	@PostMapping("/signup")
     public Response <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
+
 		log.info("accessToken:"+tokenResponse.getAccessToken());
 		log.info("refreshToken:"+tokenResponse.getRefreshToken());
+
 		Authentication authentication = jwtTokenProvider.getAuthentication(tokenResponse.getAccessToken());
 		String username = jwtTokenProvider.getUserPK(tokenResponse.getAccessToken());
+
 		log.info(authentication.getName());
 		log.info(username);
+
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
 	//토큰 재발행
     @PostMapping("/reissue")
     public Response<TokenResponse>jwtreissue(@Valid @RequestBody TokenRequest tokenDto){
         TokenResponse tokenResponse = service.reissue(tokenDto);
-
-		//HttpHeaders httpHeaders = new HttpHeaders();
-		//httpHeaders.add("X-AUTH-TOKEN",tokenResponse.getAccessToken());
-
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
-    //로그아웃
 
 }

@@ -31,7 +31,6 @@ import org.hibernate.annotations.Proxy;
 @Getter
 @Entity
 @ToString(callSuper = true)
-@Proxy(lazy = false)
 @Table(name="board")
 @RequiredArgsConstructor
 public class Board extends BaseTime implements Serializable {

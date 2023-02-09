@@ -26,14 +26,10 @@ public class CustomUserDetailService implements UserDetailsService{
 	@Override
 	@Cacheable(value = CacheKey.USER, key = "#userPk", unless = "#result == null")
 	public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
-		log.info("userdetailservice-------");
-		
-		Optional<Member> member = Optional.ofNullable(repository.findByUsername(userPk)
+		Optional<Member> member = Optional
+				.ofNullable(repository.findByUsername(userPk)
 				.orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
-		
 		Member userdetail = member.get();
-		log.info(userPk);
-		log.info(userdetail);
 		return new CustomUserDetails(userdetail);
 	}
 

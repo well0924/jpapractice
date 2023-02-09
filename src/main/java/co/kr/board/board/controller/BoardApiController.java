@@ -2,6 +2,7 @@ package co.kr.board.board.controller;
 
 import javax.validation.Valid;
 
+import co.kr.board.board.domain.Board;
 import co.kr.board.config.exception.dto.ErrorCode;
 import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
@@ -57,7 +58,14 @@ public class BoardApiController {
 
 		return new Response<>(HttpStatus.OK.value(),detail);
 	}
+	/*@GetMapping("/detail/{id}")
+	@ResponseStatus(code=HttpStatus.OK)
+	public Response<Board> detailArticle(@PathVariable(value="id")Integer boardId){
 
+		Board detail = service.getBoard(boardId);
+
+		return new Response<>(HttpStatus.OK.value(),detail);
+	}*/
 	@PostMapping("/write")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult){
