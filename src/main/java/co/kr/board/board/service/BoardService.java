@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import co.kr.board.config.redis.CacheKey;
+import co.kr.board.file.domain.AttachFile;
+import co.kr.board.file.repository.AttachRepository;
+import co.kr.board.file.service.FileHandler;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,17 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.config.exception.dto.ErrorCode;
-import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
 public class BoardService{
 	
 	private final BoardRepository repos;
-
+	private final AttachRepository attachRepository;
+	private final FileHandler fileHandler;
 	/*
 	 * 글 목록 전체 조횐 
 	 * 
@@ -74,20 +79,20 @@ public class BoardService{
 	}
 
 	/*
-	* 글 등록 
+	* 글 등록 (파일 첨부)
 	* @Param BoardRequestDto 
 	* @Param Member
 	* 시큐리티 로그인 후 이용
 	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member){
+	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member , List<MultipartFile>files)throws Exception{
 		
 		//회원이 아니면 사용불가
 		if(member == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
-		
+
 		Board board = Board
 				.builder()
 				.member(member)
@@ -97,7 +102,16 @@ public class BoardService{
 				.readcount(0)
 				.createdat(dto.getCreatedAt())
 				.build();
-		
+
+		//파일처리
+		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
+
+		if(!fileList.isEmpty()){
+			for(AttachFile attachFile : fileList){
+				board.addAttach(attachFile);
+			}
+		}
+
 		repos.save(board);
 		
 		return board.getId();
@@ -108,7 +122,6 @@ public class BoardService{
     * @Param boardId
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
-
 	@Transactional
 	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){

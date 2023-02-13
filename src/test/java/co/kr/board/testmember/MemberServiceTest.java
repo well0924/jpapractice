@@ -23,8 +23,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import co.kr.board.config.exception.dto.ErrorCode;
-import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.domain.Role;

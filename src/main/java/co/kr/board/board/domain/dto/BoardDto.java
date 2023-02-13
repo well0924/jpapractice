@@ -31,7 +31,7 @@ public class BoardDto{
 	@ToString
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class BoardResponseDto implements Serializable {
+	public static class BoardResponseDto implements Serializable{
 		private Integer boardId;
 		private String boardTitle;
 		private String boardContents;

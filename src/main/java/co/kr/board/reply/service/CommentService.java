@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.config.exception.dto.ErrorCode;
-import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.reply.domain.Comment;
 import co.kr.board.reply.domain.dto.CommentDto;
-import co.kr.board.reply.domain.dto.CommentDto.CommentResponseDto;
 import co.kr.board.reply.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 

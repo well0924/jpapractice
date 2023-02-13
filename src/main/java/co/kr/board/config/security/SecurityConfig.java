@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	public void configure(WebSecurity web) {
 		web
 		.ignoring()
+				.antMatchers("/**")
 		.antMatchers("/favicon.ico")
 		.antMatchers("/webjars/**", "/dist/**", "/plugins/**", "/css/**", "/user/**","/swagger-resources/**")
 		.antMatchers("/images/**", "/js/**", "/font/**", "/webfonts/**", "/main/**", "/swagger-ui/**", "/v2/**");
@@ -84,7 +85,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)//jwt를 사용하기 위해서 session을 사용하지 않는다.
 		.and()
 		.authorizeRequests()//요청 url에 따라서 권한설정하기.
-		.antMatchers("/favicon.ico").permitAll()
 		.antMatchers("/api/login/signup").permitAll()
 		.antMatchers("/page/admin/list","/api/login/list").hasRole("ADMIN")
 		.antMatchers("/page/board/list","/api/board/**","/api/reply/**").hasAnyRole("ADMIN","USER")

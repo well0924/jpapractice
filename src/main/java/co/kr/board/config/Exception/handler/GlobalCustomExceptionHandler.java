@@ -1,12 +1,12 @@
-package co.kr.board.config.exception.handler;
+package co.kr.board.config.Exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import co.kr.board.config.exception.dto.ErrorDto;
-import co.kr.board.config.exception.dto.Response;
+import co.kr.board.config.Exception.dto.ErrorDto;
+import co.kr.board.config.Exception.dto.Response;
 
 @RestControllerAdvice
 public class GlobalCustomExceptionHandler {

@@ -2,9 +2,8 @@ package co.kr.board.board.controller;
 
 import javax.validation.Valid;
 
-import co.kr.board.board.domain.Board;
-import co.kr.board.config.exception.dto.ErrorCode;
-import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
 import org.springframework.data.domain.Page;
@@ -19,9 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import co.kr.board.board.domain.dto.BoardDto;
 import co.kr.board.board.service.BoardService;
-import co.kr.board.config.exception.dto.Response;
+import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Log4j2
 @RestController
@@ -58,24 +60,19 @@ public class BoardApiController {
 
 		return new Response<>(HttpStatus.OK.value(),detail);
 	}
-	/*@GetMapping("/detail/{id}")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Board> detailArticle(@PathVariable(value="id")Integer boardId){
-
-		Board detail = service.getBoard(boardId);
-
-		return new Response<>(HttpStatus.OK.value(),detail);
-	}*/
-	@PostMapping("/write")
+	@PostMapping(value = "/write",consumes = {"multipart/form-data"})
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public Response<Integer>writeArticle(@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult){
+	public Response<Integer>writeArticle(
+			@RequestPart(value="image", required=false) List<MultipartFile> files,
+			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto, BindingResult bindingresult)throws Exception{
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String)authentication.getPrincipal();
 		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 
-		int result = service.boardsave(dto,member);
-		
+		int result = service.boardsave(dto,member,files);
+
+		log.info("title: {},content: {},image:{}",dto.getBoardTitle(),dto.getBoardContents(),files);
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
 	

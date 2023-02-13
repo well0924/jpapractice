@@ -1,12 +1,9 @@
 package co.kr.board.login.controller;
 
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
-import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.TokenRequest;
@@ -14,10 +11,9 @@ import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.reply.repository.CommentRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import co.kr.board.config.exception.dto.Response;
+import co.kr.board.config.Exception.dto.Response;
 import co.kr.board.login.domain.dto.MemberDto;
 import co.kr.board.login.service.MemberService;
 import lombok.AllArgsConstructor;

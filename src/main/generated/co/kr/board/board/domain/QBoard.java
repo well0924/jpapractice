@@ -24,6 +24,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final QBaseTime _super = new QBaseTime(this);
 
+    public final ListPath<co.kr.board.file.domain.AttachFile, co.kr.board.file.domain.QAttachFile> attachFiles = this.<co.kr.board.file.domain.AttachFile, co.kr.board.file.domain.QAttachFile>createList("attachFiles", co.kr.board.file.domain.AttachFile.class, co.kr.board.file.domain.QAttachFile.class, PathInits.DIRECT2);
+
     public final StringPath boardAuthor = createString("boardAuthor");
 
     public final StringPath boardContents = createString("boardContents");

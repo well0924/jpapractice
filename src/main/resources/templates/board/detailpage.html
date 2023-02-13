@@ -14,6 +14,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <form>
   <fieldset>
     <legend>글 조회</legend>
+      [[${detail}]]
     <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
     <div class="form-group">
       <label for="boardTitle" class="form-label mt-4">글 제목</label>

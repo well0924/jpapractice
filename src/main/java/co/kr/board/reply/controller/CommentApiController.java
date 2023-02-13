@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import co.kr.board.config.exception.dto.ErrorCode;
-import co.kr.board.config.exception.handler.CustomExceptionHandler;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.kr.board.config.exception.dto.Response;
+import co.kr.board.config.Exception.dto.Response;
 import co.kr.board.reply.domain.dto.CommentDto;
 import co.kr.board.reply.service.CommentService;
 import lombok.AllArgsConstructor;

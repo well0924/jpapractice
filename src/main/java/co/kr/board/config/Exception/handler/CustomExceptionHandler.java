@@ -1,6 +1,6 @@
-package co.kr.board.config.exception.handler;
+package co.kr.board.config.Exception.handler;
 
-import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.Exception.dto.ErrorCode;
 import lombok.Getter;
 
 @Getter

@@ -6,32 +6,6 @@
 function main(){
 	location.href="/page/board/list";
 }
-//file check
-function filecheck(){
-	
-	var inputFiles = $('#attachfiles');
-	
-	var files = inputFiles[0].files;
-	
-	let filecount = 4;
-	
-	console.log(inputFiles);
-	console.log(files);
-	
-	if(files.length>filecount){
-		alert('파일은 4개까지 입니다.');
-		return false;
-	}
-	
-	if(inputFiles != null){
-		for(var i =0; i<files.lenght;i++){		
-			console.log(files[i]);
-			formdate.append("filelist",files[i]);
-		}
-	}
-	
-}
-
 //글 작성기능 o.k
 function savepost(){
 	
@@ -41,7 +15,28 @@ function savepost(){
 	let formdate = new FormData();
 	
 	let date = {boardTitle :title,boardContents : contents};
-	
+
+	var inputFiles = $('#attachfiles');
+
+	var files = inputFiles[0].files;
+
+	let filecount = 4;
+
+	console.log(inputFiles);
+	console.log(files);
+
+	if(files.length>filecount){
+		alert('파일은 4개까지 입니다.');
+		return false;
+	}
+
+	if(inputFiles != null){
+		for(var i =0; i<files.lenght;i++){
+			console.log(files[i]);
+			formdate.append("image",files[i]);
+		}
+	}
+
 	formdate.append("boardsave",new Blob([JSON.stringify(date)], {type: "application/json"}));	
 		
 		$.ajax({		
@@ -54,9 +49,7 @@ function savepost(){
      		enctype: 'multipart/form-data',    
             dataType: "json",
 		}).done(function(resp){
-				console.log(resp);
-				console.log(formdate);
-				
+
 				if(resp.status== 400){
 					
 					if(resp.data.hasOwnProperty('valid_boardTitle')){
@@ -77,6 +70,5 @@ function savepost(){
 					alert('글이 작성되었습니다.');
 		 			location.href='/page/board/list';	
 				}
-			
 		});
 }	

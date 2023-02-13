@@ -3,6 +3,7 @@ package co.kr.board.board.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -17,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import co.kr.board.file.domain.AttachFile;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.dto.BoardDto;
@@ -33,7 +35,7 @@ import org.hibernate.annotations.Proxy;
 @ToString(callSuper = true)
 @Table(name="board")
 @RequiredArgsConstructor
-public class Board extends BaseTime implements Serializable {
+public class Board extends BaseTime implements Serializable{
 	//redis에 객체를 저장을 하면 내부적으로 직렬화가 되어서 저장이 된다.
 	//entity 객체중 lazy로 로딩이 되는 경우에는 @Proxy(lazy = false)를 선언해줘야 한다.
 	@Id
@@ -66,6 +68,10 @@ public class Board extends BaseTime implements Serializable {
 	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
 	private List<Comment>commentlist;
 
+	//파일첨부
+	@OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true)
+	private List<AttachFile>attachFiles = new ArrayList<>();
+
 	@Builder
 	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
 		this.id = boardId;
@@ -87,5 +93,12 @@ public class Board extends BaseTime implements Serializable {
 		this.boardTitle = dto.getBoardTitle();
 		this.boardContents =dto.getBoardContents();
 		this.createdAt = LocalDateTime.now();
+	}
+
+	public void addAttach(AttachFile attachFile){
+		this.attachFiles.add(attachFile);
+		if(attachFile.getBoard()!=this){
+			attachFile.setBoard(this);
+		}
 	}
 }

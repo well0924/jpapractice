@@ -1,4 +1,4 @@
-package co.kr.board.config.exception.dto;
+package co.kr.board.config.Exception.dto;
 
 
 import lombok.AllArgsConstructor;

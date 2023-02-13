@@ -61,7 +61,7 @@ public class BoardController {
 		ModelAndView mv = new ModelAndView();
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 
-		mv.addObject("detail", dto);
+		mv.addObject("detail", board);
 		mv.setViewName("board/detailpage");
 		
 		return mv;
