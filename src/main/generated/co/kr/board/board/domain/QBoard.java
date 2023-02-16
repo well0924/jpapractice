@@ -38,6 +38,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Integer> id = createNumber("id", Integer.class);
 
+    public final SetPath<co.kr.board.likes.domain.Like, co.kr.board.likes.domain.QLike> likes = this.<co.kr.board.likes.domain.Like, co.kr.board.likes.domain.QLike>createSet("likes", co.kr.board.likes.domain.Like.class, co.kr.board.likes.domain.QLike.class, PathInits.DIRECT2);
+
     public final NumberPath<Integer> readCount = createNumber("readCount", Integer.class);
 
     public final co.kr.board.login.domain.QMember writer;

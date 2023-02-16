@@ -4,7 +4,9 @@ package co.kr.board.board.domain;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import co.kr.board.file.domain.AttachFile;
+import co.kr.board.likes.domain.Like;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.board.domain.dto.BoardDto;
@@ -28,7 +31,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.Proxy;
 
 @Getter
 @Entity
@@ -71,6 +73,9 @@ public class Board extends BaseTime implements Serializable{
 	//파일첨부
 	@OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true)
 	private List<AttachFile>attachFiles = new ArrayList<>();
+	//좋아요
+	@OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+	private Set<Like> likes = new HashSet<>();
 
 	@Builder
 	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
@@ -95,6 +100,7 @@ public class Board extends BaseTime implements Serializable{
 		this.createdAt = LocalDateTime.now();
 	}
 
+	//첨부 파일 추가
 	public void addAttach(AttachFile attachFile){
 		this.attachFiles.add(attachFile);
 		if(attachFile.getBoard()!=this){

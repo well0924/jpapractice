@@ -49,13 +49,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     let date = {boardTitle :title,boardContents : contents};
 
     var inputFiles = $('#files');
-    console.log(inputFiles);
     var attachfiles = inputFiles[0].files;
-    console.log(attachfiles);
     let filecount = 4;
-
-    console.log(inputFiles);
-    console.log(attachfiles);
 
     if(attachfiles.length>filecount){
       alert('파일은 4개까지 입니다.');
@@ -65,11 +60,12 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     if(inputFiles != null){
       for(var i =0; i<attachfiles.lenght;i++){
         console.log(attachfiles[i]);
-        formdate.append("image",attachfiles[i]);
+        formdate.append("files",attachfiles[i]);
       }
     }
 
     formdate.append("boardsave",new Blob([JSON.stringify(date)], {type: "application/json"}));
+
     var token = localStorage.getItem("X-AUTH-TOKEN");
 
     $.ajax({

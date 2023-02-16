@@ -63,7 +63,7 @@ public class BoardApiController {
 	@PostMapping(value = "/write",consumes = {"multipart/form-data"})
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(
-			@RequestPart(value="image", required=false) List<MultipartFile> files,
+			@RequestPart(value="files", required=false) List<MultipartFile> files,
 			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto, BindingResult bindingresult)throws Exception{
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

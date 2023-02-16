@@ -69,7 +69,7 @@
 - Build: Gradle
 
 
-- Front-end: Theymleaf,Html,CSS,JQuery
+- Front-end: TheymLeaf,Html,CSS,JQuery
 
 
 - TestTool: postman
@@ -77,7 +77,7 @@
 
 ### 개발 기간
 
-2022.09.13~진행중
+2022.09.13~2023.02~
 
 ### 기능
 
@@ -109,15 +109,11 @@
 
 - [x] Redis를 활용한 cache 처리.
 
-- [ ] 파일 첨부 기능
+- [x] 파일 첨부 기능
+
+- [ ] 파일 다운로드 기능
 
 - [ ] 좋아요 기능
-
-- [ ] 게시물 카테고리 기능
-
-- [ ] 어드민 페이지 배치(휴먼회원 전환)
-
-- [ ] 카카오 소셜 로그인 기능
 
 
 

@@ -102,19 +102,28 @@ public class BoardService{
 				.readcount(0)
 				.createdat(dto.getCreatedAt())
 				.build();
-
+		repos.save(board);
+		int result = board.getId();
 		//파일처리
-		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
+		List<AttachFile>fileList = null;
 
-		if(!fileList.isEmpty()){
-			for(AttachFile attachFile : fileList){
-				board.addAttach(attachFile);
-			}
+		if(fileList == null || fileList.size() == 0){
+			return result;
 		}
 
-		repos.save(board);
-		
-		return board.getId();
+		if(result >0){
+			fileList = fileHandler.parseFileInfo(files);
+			//첨부 파일이 있는 경우
+			if(!fileList.isEmpty()){
+				for(AttachFile attachFile : fileList){
+					board.addAttach(attachFile);
+				}
+			}
+			if(fileList == null || fileList.size() == 0){
+				return result;
+			}
+		}
+		return result;
 	}
 	
     /*
@@ -169,7 +178,7 @@ public class BoardService{
 	}
 	
     /*
-	* 글 수정 기능 
+	* 글 수정 기능
 	* @Param BoardRequestDto 
 	* @Param boardId
 	* @Param Member

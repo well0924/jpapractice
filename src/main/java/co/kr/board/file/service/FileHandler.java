@@ -55,7 +55,8 @@ public class FileHandler {
                     // 파일의 확장자 추출
                     String originalFileExtension;
                     String contentType = multipartFile.getContentType();
-
+                    String originFileName = multipartFile.getOriginalFilename();
+                    String ext = originFileName.substring(originFileName.lastIndexOf(".")+1);
                     // 확장자명이 존재하지 않을 경우 처리 x
                     if(ObjectUtils.isEmpty(contentType)) {
                         break;
@@ -65,14 +66,12 @@ public class FileHandler {
                             originalFileExtension = ".jpg";
                         else if(contentType.contains("image/png"))
                             originalFileExtension = ".png";
-                        /*else
-                            break;*/
-                        else//그밖에 확장자의 경우도 처리.
-                            originalFileExtension = contentType;
+                        else if(contentType.contains("applicaton/octect-stream"))
+                            originalFileExtension = ext;
                     }
 
                     // 파일명 중복 피하고자 나노초까지 얻어와 지정
-                    String new_file_name = System.nanoTime() + originalFileExtension;
+                    String new_file_name = System.nanoTime() + contentType;
 
                     AttachDto attachDto = AttachDto
                             .builder()
