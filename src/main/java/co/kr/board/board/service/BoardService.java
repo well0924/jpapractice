@@ -1,13 +1,17 @@
 package co.kr.board.board.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import co.kr.board.config.redis.CacheKey;
 import co.kr.board.file.domain.AttachFile;
+import co.kr.board.file.domain.dto.AttachDto;
 import co.kr.board.file.repository.AttachRepository;
 import co.kr.board.file.service.FileHandler;
+import co.kr.board.file.service.FileService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,13 +26,14 @@ import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
+@Log4j2
 @Service
 @AllArgsConstructor
 public class BoardService{
 	
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
+	private final FileService fileService;
 	private final FileHandler fileHandler;
 	/*
 	 * 글 목록 전체 조횐 
@@ -102,27 +107,26 @@ public class BoardService{
 				.readcount(0)
 				.createdat(dto.getCreatedAt())
 				.build();
-		repos.save(board);
-		int result = board.getId();
-		//파일처리
-		List<AttachFile>fileList = null;
 
+
+		int result = repos.save(board).getId();
+
+		//첨부파일이 있는경우
+		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
+
+		log.info(fileList);
 		if(fileList == null || fileList.size() == 0){
 			return result;
 		}
+		if(!fileList.isEmpty()){
 
-		if(result >0){
-			fileList = fileHandler.parseFileInfo(files);
-			//첨부 파일이 있는 경우
-			if(!fileList.isEmpty()){
-				for(AttachFile attachFile : fileList){
-					board.addAttach(attachFile);
-				}
+			for(AttachFile attachFile : fileList){
+				//파일 저장
+				board.addAttach(attachRepository.save(attachFile));
 			}
-			if(fileList == null || fileList.size() == 0){
-				return result;
-			}
+
 		}
+
 		return result;
 	}
 	
@@ -150,19 +154,19 @@ public class BoardService{
 	}
 	
     /*
-	* 게시글 삭제
+	* 게시글 삭제 (파일 삭제 포함)
 	* @Param boardId
 	* @Param Member
 	* @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
 	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
-	public void deleteBoard(Integer boardId , Member member){
+	public void deleteBoard(Integer boardId , Member member)throws Exception{
 		
 		if(member == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
-		
+		//글 조회
 		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
 		String boardAuthor = board.get().getBoardAuthor();
@@ -173,12 +177,25 @@ public class BoardService{
 		if(!boardAuthor.equals(loginUser)) {
 			throw new CustomExceptionHandler(ErrorCode.BOARD_DELETE_DENIED);
 		}
-		
+		//첨부 파일 조회
+		List<AttachDto>list = fileService.filelist(boardId);
+
+		for(int i = 0; i<list.size();i++){
+
+			String filePath = list.get(i).getFilePath();
+			File file = new File(filePath);
+			//파일 경로가 존재를 하면 해당 위치의 파일을 삭제한다.
+			if(file.exists()){
+				file.delete();
+			}
+		}
+
+		//게시물 삭제
 		repos.deleteById(board.get().getId());
 	}
 	
     /*
-	* 글 수정 기능
+	* 글 수정 기능 (파일 첨부)
 	* @Param BoardRequestDto 
 	* @Param boardId
 	* @Param Member
@@ -187,12 +204,12 @@ public class BoardService{
 	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	*/
 	@Transactional
-	public Integer updateBoard(Integer boardId, BoardDto.BoardRequestDto dto, Member member){
-		
+	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,Member member,List<MultipartFile>files)throws Exception{
+		//로그인 여부
 		if(member == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
-		
+		//글조회
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
 		Board result = articlelist.get();
@@ -201,11 +218,34 @@ public class BoardService{
 		String loginUser = member.getUsername();
 		
 		result.updateBoard(dto);
-		
+		//회원인지 아닌지 여부
 		if(!boardAuthor.equals(loginUser)) {
 			throw new CustomExceptionHandler(ErrorCode.BOARD_EDITE_DENIED);
 		}
+		int updateResult = result.getId();
+		//파일 조회를 하고 해당파일을 수정할 수 있으면 post를 한다.
+		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 
-		return result.getId();
+		if(fileList == null || fileList.size() ==0){
+			return updateResult;
+		}
+		//파일이 있는경우
+		if(!fileList.isEmpty()){
+			//저장된 파일경로에 있는 파일 삭제
+			for (int i=0;i<fileList.size();i++) {
+				String filePath = fileList.get(i).getFilePath();
+				File file = new File(filePath);
+				//파일 경로가 존재를 하면 해당 위치의 파일을 삭제한다.
+				if(file.exists()){
+					file.delete();
+				}
+			}
+			//새로 파일을 저장한다.
+			for(AttachFile attachFile : fileList){
+				//파일 저장
+				result.addAttach(attachRepository.save(attachFile));
+			}
+		}
+		return updateResult;
 	}
 }

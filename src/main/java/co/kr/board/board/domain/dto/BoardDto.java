@@ -39,6 +39,7 @@ public class BoardDto{
 		private Integer readCount;
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
+
 		@Builder
 		@QueryProjection
 		public BoardResponseDto(Board board) {			

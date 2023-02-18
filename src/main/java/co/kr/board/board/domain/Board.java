@@ -51,11 +51,6 @@ public class Board extends BaseTime implements Serializable{
 	@Column(name = "board_contents")
 	private String boardContents;
 	
-	//회원
-	@ManyToOne(fetch =FetchType.LAZY)
-	@JoinColumn(name="useridx")
-	private Member writer;
-	
 	@Column(name = "board_author")
 	private String boardAuthor;
 	
@@ -64,19 +59,28 @@ public class Board extends BaseTime implements Serializable{
 	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
-	
+
+	//회원
+	@ManyToOne(fetch =FetchType.LAZY)
+	@JoinColumn(name="useridx")
+	private Member writer;
+
 	//댓글
 	@ToString.Exclude
 	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
-	private List<Comment>commentlist;
+	private List<Comment>commentlist = new ArrayList<>();
 
-	//파일첨부
+	//파일첨부(게시글을 삭제하면 파일도 삭제)
+	//orphanRemoval을 true로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
+	//orphanRemoval과 CasecadeType.REMOVE 차이점 알아보기.
+	@ToString.Exclude
 	@OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true)
 	private List<AttachFile>attachFiles = new ArrayList<>();
+
 	//좋아요
 	@OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
 	private Set<Like> likes = new HashSet<>();
-
+	
 	@Builder
 	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
 		this.id = boardId;
@@ -107,4 +111,5 @@ public class Board extends BaseTime implements Serializable{
 			attachFile.setBoard(this);
 		}
 	}
+
 }

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -60,10 +61,10 @@ public class BoardApiController {
 
 		return new Response<>(HttpStatus.OK.value(),detail);
 	}
-	@PostMapping(value = "/write",consumes = {"multipart/form-data"})
+	@PostMapping(value = "/write")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(
-			@RequestPart(value="files", required=false) List<MultipartFile> files,
+			@RequestPart(value="filelist",required = false) List<MultipartFile> files,
 			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto, BindingResult bindingresult)throws Exception{
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -73,12 +74,12 @@ public class BoardApiController {
 		int result = service.boardsave(dto,member,files);
 
 		log.info("title: {},content: {},image:{}",dto.getBoardTitle(),dto.getBoardContents(),files);
+
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
-	
 	@DeleteMapping("/delete/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
-	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId){
+	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId)throws Exception{
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String)authentication.getPrincipal();
@@ -91,13 +92,16 @@ public class BoardApiController {
 	
 	@PatchMapping("/update/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
-	public Response<?>updateArticle(@PathVariable(value="id")Integer boardId,@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult){
+	public Response<?>updateArticle(
+			@PathVariable(value="id")Integer boardId,
+			@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult,
+			@RequestPart(value = "filelist",required = false)List<MultipartFile>fileList)throws Exception{
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String)authentication.getPrincipal();
 		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 
-		int result = service.updateBoard(boardId, dto,member);
+		int result = service.updateBoard(boardId, dto,member,fileList);
 
 		return new Response<>(HttpStatus.OK.value(),result);
 	}

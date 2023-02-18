@@ -3,6 +3,7 @@ package co.kr.board.config;
 import javax.servlet.Filter;
 import javax.servlet.MultipartConfigElement;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer{
-	
+    @Value("/istatic/images/")
+    private String imgStatic;
+    @Value("${server.file.upload}")
+    private String imgPath;
+
 	@Bean
 	public Filter characterEncodingFilter() {
 		CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
