@@ -5,5 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BoardCustomRepository {
-    public Page<BoardDto.BoardResponseDto> findByAllSearch(String searchVal, Pageable pageable);
+    //게시판 게시글 검색글
+    Page<BoardDto.BoardResponseDto> findByAllSearch(String searchVal, Pageable pageable);
 }

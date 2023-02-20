@@ -9,6 +9,10 @@ import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.TokenRequest;
 import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.reply.repository.CommentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
@@ -28,6 +32,7 @@ public class LoginApiController {
 	private final MemberService service;
 	private final JwtTokenProvider jwtTokenProvider;
 	@GetMapping("/logincheck/{id}")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Boolean>idcheck(@PathVariable(value="id") String username){
 				
 		Boolean checkresult = service.checkmemberIdDuplicate(username);
@@ -41,6 +46,7 @@ public class LoginApiController {
 	}
 	
 	@GetMapping("/emailcheck/{email}")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Boolean>emailcheck(@PathVariable(value="email")@Email String useremail){
 		Boolean checkresult = service.checkmemberEmailDuplicate(useremail);
 		
@@ -53,14 +59,25 @@ public class LoginApiController {
 	}
 	
 	@GetMapping("/list")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<List<MemberDto.MemeberResponseDto>>memberlist(){
 		
 		List<MemberDto.MemeberResponseDto>list = service.findAll();
 		
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
-	
+	@GetMapping("/list/search")
+	@ResponseStatus(code=HttpStatus.OK)
+	public Response<Page<MemberDto.MemeberResponseDto>>memberSearchList(
+			@RequestParam(value = "searchVal",required = false) String searchVal,
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+
+		Page<MemberDto.MemeberResponseDto>list = service.findByAll(searchVal,pageable);
+
+		return new Response<>(HttpStatus.OK.value(),list);
+	}
 	@GetMapping("/detailmember/{idx}/member")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable(value="idx")Integer useridx){
 		
 		MemberDto.MemeberResponseDto dto = service.getMember(useridx);
@@ -69,6 +86,7 @@ public class LoginApiController {
 	}
 	
 	@PostMapping("/memberjoin")
+	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Integer>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 		
 		int joinresult = service.memberjoin(dto);
@@ -120,9 +138,6 @@ public class LoginApiController {
 
 		Authentication authentication = jwtTokenProvider.getAuthentication(tokenResponse.getAccessToken());
 		String username = jwtTokenProvider.getUserPK(tokenResponse.getAccessToken());
-
-		log.info(authentication.getName());
-		log.info(username);
 
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }

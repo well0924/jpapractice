@@ -26,6 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -70,14 +71,14 @@ public class BoardApiControllerTest {
     public void controllerApiBoardListPagingSearchTest()throws Exception{
         String keyword = "test";
 
-        //given(boardService.findAllSearch(eq(keyword),any(Pageable.class))).willReturn(Page.empty());
+        given(boardService.findAllSearch(eq(keyword),any(Pageable.class))).willReturn(Page.empty());
 
         mockMvc.perform(get("/api/board/list/search"))
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        //then(boardService.findAllSearch(eq(keyword),any(Pageable.class))).should().get();
-        //verify(boardService).findAllSearch(eq(keyword),any(Pageable.class)).get();
+        then(boardService.findAllSearch(eq(keyword),any(Pageable.class)));
+        verify(boardService).findAllSearch(eq(keyword),any(Pageable.class)).get();
     }
 
     @WithMockUser(username = "well",authorities = "ROLE_ADMIN")

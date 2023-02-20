@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -46,7 +45,9 @@ public class BoardApiController {
 
 	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>searchList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable, @RequestParam(required = false,value = "searchVal")String searchVal){
+	public Response<Page<BoardDto.BoardResponseDto>>searchList(
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,
+			@RequestParam(required = false,value = "searchVal")String searchVal){
 
 		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(searchVal,pageable);
 
@@ -61,6 +62,7 @@ public class BoardApiController {
 
 		return new Response<>(HttpStatus.OK.value(),detail);
 	}
+
 	@PostMapping(value = "/write")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(

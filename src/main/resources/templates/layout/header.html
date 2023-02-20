@@ -50,8 +50,8 @@ layout:decorator="/layout/mainlayout">
           </div>
         </li>
       </ul>
-      <form th:action="@{/page/board/list}" method="get" class="d-flex" th:value="${param.keyword}">
-        <input class="form-control me-sm-2" type="text"  placeholder="Search" id="keyword" name="keyword">
+      <form th:action="@{/page/board/list}" method="get" class="d-flex" th:value="${searchVal}">
+        <input class="form-control me-sm-2" type="text"  placeholder="Search" id="keyword" name="searchVal">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>

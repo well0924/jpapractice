@@ -1,19 +1,18 @@
 package co.kr.board.login.domain.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import co.kr.board.login.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import co.kr.board.login.domain.Role;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.*;
 
 public class MemberDto {
 	
@@ -50,10 +49,10 @@ public class MemberDto {
 	}
 	
 	@Getter
-	@Builder
+	@ToString
 	@AllArgsConstructor
 	@NoArgsConstructor
-	public static class MemeberResponseDto{
+	public static class MemeberResponseDto implements Serializable {
 		
 		private Integer useridx;
 		private String username;
@@ -63,6 +62,17 @@ public class MemberDto {
 		private Role role;
 		@JsonFormat(pattern = "yyyy-mm-dd HH:mm")
 		private LocalDateTime createdAt;
-		
+
+		@Builder
+		@QueryProjection
+		public MemeberResponseDto(Member member){
+			this.useridx = member.getId();
+			this.membername = member.getMembername();
+			this.username = member.getUsername();
+			this.role = member.getRole();
+			this.password = member.getPassword();
+			this.useremail = member.getUseremail();
+			this.createdAt = member.getCreatedAt();
+		}
 	}
 }

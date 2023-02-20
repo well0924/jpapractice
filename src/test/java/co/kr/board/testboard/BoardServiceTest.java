@@ -259,5 +259,6 @@ class BoardServiceTest {
 		assertThat(pageResult).isNotNull();
 		assertThat(list).info.description();
 	}
-	
+
+	//글검색
 }

@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -30,6 +28,7 @@ import co.kr.board.login.domain.dto.TokenRequest;
 import co.kr.board.login.domain.dto.TokenResponse;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -57,13 +56,7 @@ public class MemberService {
 		for(Member member : memberlist) {
 			MemeberResponseDto dto = MemberDto.MemeberResponseDto
 									.builder()
-									.useridx(member.getId())
-									.username(member.getUsername())
-									.membername(member.getMembername())
-									.password(member.getPassword())
-									.useremail(member.getUseremail())
-									.createdAt(member.getCreatedAt())
-									.role(member.getRole())
+									.member(member)
 									.build();
 			
 			list.add(dto);
@@ -80,7 +73,16 @@ public class MemberService {
 	public Page<Member>findAll(Pageable pageable){
 		return repository.findAll(pageable);
 	}
-	
+
+	/*
+	* 회원 목록(페이징 + 검색)
+	* 어드민 페이지에서 회원아이디를 검색하는 기능
+	*/
+	@Transactional
+	public Page<MemberDto.MemeberResponseDto>findByAll(String searchVal,Pageable pageable){
+		Page<MemberDto.MemeberResponseDto>result = repository.findByAllSearch(searchVal,pageable);
+		return result;
+	}
 	/*
 	 * 회원 정보 단일 조회
 	 * 관리자 페이지 또는 회원 수정 페이지에서 회원 정보조회
@@ -89,11 +91,7 @@ public class MemberService {
 	 */
 	@Transactional
 	public MemberDto.MemeberResponseDto getMember(Integer useridx){
-		Optional<Member>memberdetail = Optional
-									.ofNullable(
-									repository
-									.findById(useridx)
-									.orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
+		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
 
 		if(!memberdetail.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
@@ -103,17 +101,17 @@ public class MemberService {
 
 		return MemberDto.MemeberResponseDto
 				.builder()
-				.useridx(useridx)
-				.username(member.getUsername())
-				.password(member.getPassword())
-				.membername(member.getMembername())
-				.useremail(member.getUseremail())
-				.role(member.getRole())
-				.createdAt(member.getCreatedAt())
+				.member(member)
 				.build();
 	}
-	
-	//로그인 인증
+
+	/*
+	 * 로그인 인증
+	 * 로그인페이지에서 로그인을 실행 jwt token값을 내놓는다.
+	 * @param LoginDto
+	 * @param Exception: 회원이 없는 경우 해당 회원이 없습니다.
+	 * @param Exception: 비밀번호가 안맞는 경우의 Exception
+	 */
     @Transactional
     public TokenResponse signin(LoginDto dto){
         //회원 정보 조회
@@ -148,7 +146,12 @@ public class MemberService {
 				.build();
     }
 
-    //토큰 재발급
+    /*
+    * 토큰 재발급
+    * 토큰 기간이 만료되기 전에 토큰을 재발급
+    * @Param : TokenRequest
+    * @Exception : RefreshToken이 일치하지 않는경우
+    */
     @Transactional
     public TokenResponse reissue(TokenRequest request){
 
@@ -182,6 +185,7 @@ public class MemberService {
 
 		//redis에 refresh 토큰 갱신
 		redisService.setValues(userpk,refreshToken.getValue());
+
 		//토큰 발급
         return TokenResponse
 				.builder()
