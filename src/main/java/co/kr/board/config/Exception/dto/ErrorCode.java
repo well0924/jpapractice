@@ -30,7 +30,9 @@ public enum ErrorCode {
 	//comment error
 	COMMENT_POST_DENINED(400,"작성할 권한이 없습니다."),
 	COMMENT_EDITE_DENINED(400,"수정할 권한이 없습니다."),
-	COMMENT_DELETE_DENIED(400,"삭제할 권한이 없습니다.");
+	COMMENT_DELETE_DENIED(400,"삭제할 권한이 없습니다."),
+	//like error
+	LIKE_NOT_FOUND(400,"좋아요를 찾을 수 없습니다.");
 		
 	private final int status;
 

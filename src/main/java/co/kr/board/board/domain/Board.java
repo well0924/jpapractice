@@ -56,7 +56,8 @@ public class Board extends BaseTime implements Serializable{
 	
 	@Column(name = "read_count")
 	private Integer readCount;
-	
+	@Column(nullable = false)
+	private Integer liked;//추천수
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
 
@@ -88,6 +89,7 @@ public class Board extends BaseTime implements Serializable{
 		this.boardContents = boardContents;
 		this.boardAuthor = member.getUsername();
 		this.readCount = readcount;
+		this.liked = 0;
 		this.createdAt = LocalDateTime.now();
 		this.writer = member;
 	}
@@ -112,4 +114,12 @@ public class Board extends BaseTime implements Serializable{
 		}
 	}
 
+	//좋아요 추가
+	public void increaseLikeCount(){
+		this.liked +=1;
+	}
+	//좋아요 취소
+	public void decreaseLikeCount(){
+		this.liked -=1;
+	}
 }

@@ -37,6 +37,7 @@ public class BoardDto{
 		private String boardContents;
 		private String boardAuthor;
 		private Integer readCount;
+		private Integer likeCount;
 		@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 		private LocalDateTime createdAt;
 
@@ -48,6 +49,7 @@ public class BoardDto{
 			this.boardAuthor = board.getWriter().getUsername();
 			this.boardContents = board.getBoardContents();
 			this.readCount = board.getReadCount();
+			this.likeCount = board.getLiked();
 			this.createdAt = board.getCreatedAt();
 		}		
 	}
