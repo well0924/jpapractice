@@ -13,6 +13,7 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "서버 에러입니다. 서버 팀에 연락주세요!"),
     DB_ERROR(400,"데이터베이스에 문제가 발생했습니다."),
 	ONLY_USER(403,"회원만 이용이 가능합니다."),
+	NOT_SEARCH(400,"검색결과가 없습니다."),
 	
 	//user error
 	USERID_DUPLICATE(400,"회원 아이디가 중복이 됩니다."),
@@ -32,7 +33,9 @@ public enum ErrorCode {
 	COMMENT_EDITE_DENINED(400,"수정할 권한이 없습니다."),
 	COMMENT_DELETE_DENIED(400,"삭제할 권한이 없습니다."),
 	//like error
-	LIKE_NOT_FOUND(400,"좋아요를 찾을 수 없습니다.");
+	LIKE_NOT_FOUND(400,"좋아요를 찾을 수 없습니다."),
+	CANNOT_CONVERT_NESTED_STRUCTURED_EXCEPTION(500,"계층형으로 변환을 할 수 없습니다."),
+	CATEGORY_NOT_FOUND(400,"카테고리를 찾을수 없습니다.");
 		
 	private final int status;
 

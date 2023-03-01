@@ -28,9 +28,8 @@ import lombok.extern.log4j.Log4j2;
 @AllArgsConstructor
 @RequestMapping("/api/login/*")
 public class LoginApiController {
-	private final CommentRepository commentRepository;
 	private final MemberService service;
-	private final JwtTokenProvider jwtTokenProvider;
+
 	@GetMapping("/logincheck/{id}")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Boolean>idcheck(@PathVariable(value="id") String username){
@@ -39,7 +38,6 @@ public class LoginApiController {
 			
 		if(checkresult.equals(true)) {//아이디 중복
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),true);
-			
 		}else{//사용가능한 아이디
 			return	new Response<>(HttpStatus.OK.value(),false);
 		}
@@ -52,7 +50,6 @@ public class LoginApiController {
 		
 		if(checkresult.equals(true)) {//아이디 중복
 			return new Response<>(HttpStatus.BAD_REQUEST.value(),false);
-			
 		}else {//사용가능한 아이디
 			return	new Response<>(HttpStatus.OK.value(),true);
 		}
@@ -61,7 +58,6 @@ public class LoginApiController {
 	@GetMapping("/list")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<List<MemberDto.MemeberResponseDto>>memberlist(){
-		
 		List<MemberDto.MemeberResponseDto>list = service.findAll();
 		
 		return new Response<>(HttpStatus.OK.value(),list);
@@ -70,7 +66,7 @@ public class LoginApiController {
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<MemberDto.MemeberResponseDto>>memberSearchList(
 			@RequestParam(value = "searchVal",required = false) String searchVal,
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable)throws Exception{
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 
 		Page<MemberDto.MemeberResponseDto>list = service.findByAll(searchVal,pageable);
 
@@ -124,7 +120,9 @@ public class LoginApiController {
 
 	@PutMapping("/passwordchange")
 	public Response<Integer>passwordChange(Integer useridx,MemberDto.MemberRequestDto dto){
+
 		int result = service.passwordchange(useridx,dto);
+
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
 
@@ -135,9 +133,6 @@ public class LoginApiController {
 
 		log.info("accessToken:"+tokenResponse.getAccessToken());
 		log.info("refreshToken:"+tokenResponse.getRefreshToken());
-
-		Authentication authentication = jwtTokenProvider.getAuthentication(tokenResponse.getAccessToken());
-		String username = jwtTokenProvider.getUserPK(tokenResponse.getAccessToken());
 
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }

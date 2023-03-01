@@ -28,9 +28,9 @@ public class JwtTokenProvider {
 
 	    // 토큰 유효시간 30분
 	    public static long tokenValidTime = 100 * 60 * 1000L;
-	    
 	    public static long refreshtokenValidTime = 1000 * 60 * 60 * 24 * 7;
-
+		public final static String ACCESS_TOKEN_NAME = "accessToken";
+		public final static String REFRESH_TOKEN_NAME = "refreshToken";
 	    private final UserDetailsService userDetailsService;
 
 	    // 객체 초기화, secretKey를 Base64로 인코딩
@@ -101,5 +101,4 @@ public class JwtTokenProvider {
 			}
 			return true;
 	    }
-	    
 }

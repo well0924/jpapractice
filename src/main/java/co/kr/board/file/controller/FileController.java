@@ -35,19 +35,5 @@ public class FileController {
     }
 
     //파일 다운로드
-    @GetMapping("/download/{id}")
-    public DownloadResponse<?> fileDownload(@PathVariable("id")Integer boarid)throws Exception{
 
-        HttpHeaders header = new HttpHeaders();
-        Resource res = null;
-
-        List<AttachDto>filelist = fileService.filelist(boarid);
-        String filePath = filelist.get(0).getFilePath();
-        String originName = filelist.get(0).getOriginFileName();
-        String fullPath = filePath;
-
-        File targetFile = new File(fullPath);
-
-        return new DownloadResponse<>(HttpStatus.OK.value(),header,res);
-    }
 }

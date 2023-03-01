@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import co.kr.board.category.domain.Category;
 import co.kr.board.file.domain.AttachFile;
 import co.kr.board.likes.domain.Like;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -44,44 +45,37 @@ public class Board extends BaseTime implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="board_id")
 	private Integer id;
-	
 	@Column(name = "board_title")
 	private String boardTitle;
-	
 	@Column(name = "board_contents")
 	private String boardContents;
-	
 	@Column(name = "board_author")
 	private String boardAuthor;
-	
 	@Column(name = "read_count")
 	private Integer readCount;
 	@Column(nullable = false)
 	private Integer liked;//추천수
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
-
 	//회원
 	@ManyToOne(fetch =FetchType.LAZY)
 	@JoinColumn(name="useridx")
 	private Member writer;
-
 	//댓글
 	@ToString.Exclude
 	@OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
 	private List<Comment>commentlist = new ArrayList<>();
-
 	//파일첨부(게시글을 삭제하면 파일도 삭제)
 	//orphanRemoval을 true로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
 	//orphanRemoval과 CasecadeType.REMOVE 차이점 알아보기.
 	@ToString.Exclude
 	@OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true)
 	private List<AttachFile>attachFiles = new ArrayList<>();
-
 	//좋아요
 	@OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
 	private Set<Like> likes = new HashSet<>();
-	
+	//카테고리
+
 	@Builder
 	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
 		this.id = boardId;
@@ -93,19 +87,16 @@ public class Board extends BaseTime implements Serializable{
 		this.createdAt = LocalDateTime.now();
 		this.writer = member;
 	}
-	
 	//게시글 조회수 증가
 	public void countUp() {
 		this.readCount ++;
 	}
-	
 	//게시글 수정
 	public void updateBoard(BoardDto.BoardRequestDto dto) {
 		this.boardTitle = dto.getBoardTitle();
 		this.boardContents =dto.getBoardContents();
 		this.createdAt = LocalDateTime.now();
 	}
-
 	//첨부 파일 추가
 	public void addAttach(AttachFile attachFile){
 		this.attachFiles.add(attachFile);
@@ -113,7 +104,6 @@ public class Board extends BaseTime implements Serializable{
 			attachFile.setBoard(this);
 		}
 	}
-
 	//좋아요 추가
 	public void increaseLikeCount(){
 		this.liked +=1;

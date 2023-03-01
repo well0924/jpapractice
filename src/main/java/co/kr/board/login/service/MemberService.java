@@ -81,6 +81,12 @@ public class MemberService {
 	@Transactional
 	public Page<MemberDto.MemeberResponseDto>findByAll(String searchVal,Pageable pageable){
 		Page<MemberDto.MemeberResponseDto>result = repository.findByAllSearch(searchVal,pageable);
+
+		//결과물이 없는경우
+		if(result.isEmpty()){
+			new CustomExceptionHandler(ErrorCode.NOT_SEARCH);
+		}
+
 		return result;
 	}
 	/*
@@ -92,7 +98,7 @@ public class MemberService {
 	@Transactional
 	public MemberDto.MemeberResponseDto getMember(Integer useridx){
 		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
-
+		//회원 정보가 존재하지 않는 경우
 		if(!memberdetail.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}

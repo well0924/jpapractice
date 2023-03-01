@@ -4,8 +4,10 @@ import javax.validation.Valid;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.redis.CacheKey;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,7 +38,8 @@ public class BoardApiController {
 
 	@GetMapping("/list")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>articleList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
+	public Response<Page<BoardDto.BoardResponseDto>>articleList(
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 				
 		Page<BoardDto.BoardResponseDto>list = service.findAllPage(pageable);
 		
@@ -56,6 +59,7 @@ public class BoardApiController {
 
 	@GetMapping("/detail/{id}")
 	@ResponseStatus(code=HttpStatus.OK)
+	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
 
 		BoardDto.BoardResponseDto detail = service.getBoard(boardId);

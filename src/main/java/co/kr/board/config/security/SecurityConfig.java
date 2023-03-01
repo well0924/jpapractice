@@ -77,10 +77,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		.cors().configurationSource(corsConfigurationSource())//cors설정 하는 이유 찾아보기.
 		.and()
 		.httpBasic().disable()// httpBasic 방식은 Authorization에 ID,PW를 들고 다니는 방식이다. <-> Bearer 방식 (토큰을 들고다니는 방식)
-		.headers()
-		.frameOptions()
-		.sameOrigin()
-		.and()
 		.sessionManagement()
 		.sessionCreationPolicy(SessionCreationPolicy.STATELESS)//jwt를 사용하기 위해서 session을 사용하지 않는다.
 		.and()

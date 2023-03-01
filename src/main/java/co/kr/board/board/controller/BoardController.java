@@ -3,6 +3,7 @@ package co.kr.board.board.controller;
 import javax.validation.Valid;
 
 import co.kr.board.board.domain.Board;
+import co.kr.board.board.repsoitory.QueryDsl.BoardCustomRepositoryImpl;
 import co.kr.board.file.domain.dto.AttachDto;
 import co.kr.board.file.service.FileService;
 import org.springframework.data.domain.Page;
@@ -44,17 +45,15 @@ public class BoardController {
 		ModelAndView mv = new ModelAndView();
 		
 		Page<BoardDto.BoardResponseDto> list =null;
-		//검색기능
+		//검색+페이징 기능
 		list =service.findAllSearch(searchVal, pageable);
-		//페이징 기능
-		//list = service.findAllPage(pageable);
 
 		mv.addObject("list", list);
+		mv.addObject("searchVal", searchVal);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());
 		mv.addObject("hasNext", list.hasNext());        
 		mv.addObject("hasPrev", list.hasPrevious());
-		mv.addObject("searchVal", searchVal);
 
 		mv.setViewName("board/boardlist");
 		

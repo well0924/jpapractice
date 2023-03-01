@@ -13,21 +13,21 @@ import lombok.AllArgsConstructor;
 public class RedisService {
 	
 	private final RedisTemplate<String, String> redisTemplate;
-
+    //redis에 값저장
     public void setValues(String key, String data) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, data);
     }
-
+    //redis에 값 꺼내기
     public String getValues(String key) {
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         return values.get(key);
     }
-
+    //redis에서 값 제거
     public void deleteValues(String key) {
         redisTemplate.delete(key);
     }
-
+    //refreshToken 값 확인하기.
     public void checkRefreshToken(String username, String refreshToken) {
         String redisRT = this.getValues(username);
         

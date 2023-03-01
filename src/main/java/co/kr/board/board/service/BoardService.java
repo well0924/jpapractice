@@ -36,7 +36,7 @@ public class BoardService{
 	private final FileService fileService;
 	private final FileHandler fileHandler;
 	/*
-	 * 글 목록 전체 조횐 
+	 * 글 목록 전체 조회
 	 * 
 	 */
 	@Transactional(readOnly = true)
@@ -136,7 +136,6 @@ public class BoardService{
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
 	@Transactional
-	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
@@ -144,7 +143,7 @@ public class BoardService{
 		//글 조회
 		Board board = articlelist.get();
 				
-		//게시글 조회수 증가
+		//게시글 조회수 증가->중복 증가 방지필요
 		board.countUp();		
 		
 		return BoardDto.BoardResponseDto
