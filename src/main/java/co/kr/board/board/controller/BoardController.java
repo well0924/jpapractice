@@ -4,6 +4,10 @@ import javax.validation.Valid;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.QueryDsl.BoardCustomRepositoryImpl;
+import co.kr.board.category.domain.Category;
+import co.kr.board.category.domain.dto.CategoryDto;
+import co.kr.board.category.repository.CategoryRepository;
+import co.kr.board.category.service.CategoryService;
 import co.kr.board.file.domain.dto.AttachDto;
 import co.kr.board.file.service.FileService;
 import org.springframework.data.domain.Page;
@@ -26,6 +30,7 @@ import co.kr.board.config.security.auth.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -36,19 +41,24 @@ public class BoardController {
 	
 	private final BoardService service;	
 	private final FileService fileService;
-
-	@GetMapping("/list")
+	private final CategoryRepository categoryRepository;
+	private final CategoryService categoryService;
+	@GetMapping("/list/{cid}")
 	public ModelAndView pageList(
+			@PathVariable(value = "cid",required = false) Integer categoryId,
 			@RequestParam(required = false,value = "searchVal") String searchVal,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
-		
+
+		Category category = categoryRepository.findById(categoryId).orElseThrow();
+
 		Page<BoardDto.BoardResponseDto> list =null;
-		//검색+페이징 기능
-		list =service.findAllSearch(searchVal, pageable);
+		//페이징 기능
+		list= service.findAllPage(pageable,categoryId);
 
 		mv.addObject("list", list);
+		//mv.addObject("category",category);
 		mv.addObject("searchVal", searchVal);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());

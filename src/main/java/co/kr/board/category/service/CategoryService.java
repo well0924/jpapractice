@@ -43,6 +43,7 @@ public class CategoryService {
         }
         categoryRepository.deleteById(id);
     }
+
     //카테고리 확인여부
     private boolean notExistsCategory(Integer id) {
         return !categoryRepository.existsById(id);

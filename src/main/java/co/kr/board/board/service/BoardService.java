@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import co.kr.board.category.repository.CategoryRepository;
 import co.kr.board.config.redis.CacheKey;
 import co.kr.board.file.domain.AttachFile;
 import co.kr.board.file.domain.dto.AttachDto;
@@ -35,6 +36,7 @@ public class BoardService{
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
 	private final FileHandler fileHandler;
+	private final CategoryRepository categoryRepository;
 	/*
 	 * 글 목록 전체 조회
 	 * 
@@ -55,19 +57,16 @@ public class BoardService{
 		}	
 		return list;
 	}
-	
-	
+
     /*
 	* 글목록 전체 조회(페이징)
 	* @Param Pageable
 	* 
 	*/
 	@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto> findAllPage(Pageable pageable) {
-		
-		Page<Board> articlelist = repos.findAll(pageable);
-				
-		return articlelist.map(board ->new BoardDto.BoardResponseDto(board));
+	public Page<BoardDto.BoardResponseDto> findAllPage(Pageable pageable,Integer categoryId) {
+		Page<Board>boards = repos.findAllByCategoryId(pageable,categoryId);
+		return boards.map(board ->new BoardDto.BoardResponseDto(board));
 	}
 
 	/*
@@ -75,10 +74,11 @@ public class BoardService{
 	 * @Param searchVal,
 	 * @Param pageable
 	 *
-	 * 게시물에서 키워드 검색.
+	 * 게시물에서 검색.
 	 */
 	@Transactional(readOnly = true)
 	public Page<BoardDto.BoardResponseDto>findAllSearch(String searchVal, Pageable pageable){
+
 		Page<BoardDto.BoardResponseDto>list = repos.findByAllSearch(searchVal,pageable);
 		return list;
 	}
@@ -139,7 +139,7 @@ public class BoardService{
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){
 		
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
-		
+
 		//글 조회
 		Board board = articlelist.get();
 				

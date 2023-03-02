@@ -15,6 +15,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 파일 업로드 기능
+ */
 @Log4j2
 @Component
 public class FileHandler {

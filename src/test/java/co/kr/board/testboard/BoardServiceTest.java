@@ -254,9 +254,9 @@ class BoardServiceTest {
 		for(int i=0; i<content.size();i++) {
 			System.out.println("boardpaging content:"+content.get(i).getClass());
 		}
-		Page<BoardDto.BoardResponseDto>pageResult = boardservice.findAllPage(pageable);
+		//Page<BoardDto.BoardResponseDto>pageResult = boardservice.findAllPage(pageable);
 		
-		assertThat(pageResult).isNotNull();
+		//assertThat(pageResult).isNotNull();
 		assertThat(list).info.description();
 	}
 

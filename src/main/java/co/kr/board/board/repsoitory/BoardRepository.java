@@ -10,5 +10,5 @@ import co.kr.board.board.domain.Board;
 public interface BoardRepository extends JpaRepository<Board, Integer>, BoardCustomRepository {
 	
 	//게시글 목록(페이징)
-	Page<Board> findAll(Pageable pageable);
+	Page<Board> findAllByCategoryId(Pageable pageable,Integer categoryId);
 }

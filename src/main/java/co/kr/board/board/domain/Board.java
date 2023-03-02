@@ -32,6 +32,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
@@ -75,14 +77,19 @@ public class Board extends BaseTime implements Serializable{
 	@OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
 	private Set<Like> likes = new HashSet<>();
 	//카테고리
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Category category;
 
 	@Builder
-	public Board(Integer boardId,String boardTitle,String boardContents,String boardAuthor,Integer readcount,LocalDateTime createdat,Member member) {
+	public Board(Integer boardId,String boardTitle,String boardAuthor,String boardContents,Integer readcount,Category category,LocalDateTime createdat,Member member) {
 		this.id = boardId;
 		this.boardTitle = boardTitle;
 		this.boardContents = boardContents;
 		this.boardAuthor = member.getUsername();
 		this.readCount = readcount;
+		this.category = category;
 		this.liked = 0;
 		this.createdAt = LocalDateTime.now();
 		this.writer = member;

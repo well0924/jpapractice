@@ -33,6 +33,7 @@ public class BoardDto{
 	@AllArgsConstructor
 	public static class BoardResponseDto implements Serializable{
 		private Integer boardId;
+		private Integer categoryId;
 		private String boardTitle;
 		private String boardContents;
 		private String boardAuthor;
@@ -50,6 +51,7 @@ public class BoardDto{
 			this.boardContents = board.getBoardContents();
 			this.readCount = board.getReadCount();
 			this.liked = board.getLiked();
+			this.categoryId = board.getCategory().getId();
 			this.createdAt = board.getCreatedAt();
 		}		
 	}

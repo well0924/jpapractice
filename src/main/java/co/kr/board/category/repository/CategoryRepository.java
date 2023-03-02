@@ -11,6 +11,7 @@ public interface CategoryRepository extends JpaRepository<Category,Integer>{
             "from " +
             "Category c " +
             "left join c.parent p " +
-            "order by p.id asc nulls first, c.id asc")
+            "order by " +
+            "p.id asc nulls first, c.id asc")
     List<Category> findAllOrderByParentIdAscNullsFirstCategoryIdAsc();
 }

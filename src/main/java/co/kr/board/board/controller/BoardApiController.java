@@ -36,12 +36,13 @@ public class BoardApiController {
 	private final BoardService service;
 	private final MemberRepository memberRepository;
 
-	@GetMapping("/list")
+	@GetMapping("/list/{cid}")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>articleList(
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
+			@PathVariable(value = "cid",required = false) Integer categoryId,
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10)Pageable pageable){
 				
-		Page<BoardDto.BoardResponseDto>list = service.findAllPage(pageable);
+		Page<BoardDto.BoardResponseDto>list = service.findAllPage(pageable,categoryId);
 		
 		return new Response<>(HttpStatus.OK.value(),list);
 	}

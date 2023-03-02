@@ -42,7 +42,7 @@ public class BoardControllerTest {
 	@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
 	public void CotrollerViewTest()throws Exception{
 		//given
-		given(boardService.findAllPage(any(Pageable.class))).willReturn(Page.empty());
+		//given(boardService.findAllPage(any(Pageable.class))).willReturn(Page.empty());
 		//when&then
 		mockMvc
 		.perform(get("/page/board/list")

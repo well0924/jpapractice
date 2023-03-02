@@ -32,6 +32,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final StringPath boardTitle = createString("boardTitle");
 
+    public final co.kr.board.category.domain.QCategory category;
+
     public final ListPath<co.kr.board.reply.domain.Comment, co.kr.board.reply.domain.QComment> commentlist = this.<co.kr.board.reply.domain.Comment, co.kr.board.reply.domain.QComment>createList("commentlist", co.kr.board.reply.domain.Comment.class, co.kr.board.reply.domain.QComment.class, PathInits.DIRECT2);
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
@@ -64,6 +66,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public QBoard(Class<? extends Board> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.category = inits.isInitialized("category") ? new co.kr.board.category.domain.QCategory(forProperty("category"), inits.get("category")) : null;
         this.writer = inits.isInitialized("writer") ? new co.kr.board.login.domain.QMember(forProperty("writer")) : null;
     }
 

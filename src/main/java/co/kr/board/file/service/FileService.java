@@ -2,6 +2,8 @@ package co.kr.board.file.service;
 
 import co.kr.board.board.domain.Board;
 import co.kr.board.board.repsoitory.BoardRepository;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.file.domain.AttachFile;
 import co.kr.board.file.domain.dto.AttachDto;
 import co.kr.board.file.repository.AttachRepository;
@@ -20,12 +22,14 @@ public class FileService {
     private final AttachRepository attachRepository;
     private final BoardRepository boardRepository;
 
-    //파일 목록
+    /*
+    * 파일 전체 목록
+    * @Param boardId
+    *
+    */
     @Transactional
     public List<AttachDto> filelist(@Param("id")Integer boardId)throws Exception{
-        Optional<Board>findBoard = boardRepository.findById(boardId);
-
-        Board board = findBoard.get();
+        Optional<Board>findBoard = Optional.ofNullable(boardRepository.findById(boardId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 
         List<AttachFile>list = attachRepository.findAttachFilesBoardId(boardId);
 
@@ -46,6 +50,7 @@ public class FileService {
         return filelist;
     }
 
+    
     //파일 리소스 가져오기.
 
 }
