@@ -1,5 +1,12 @@
 package co.kr.board.config.redis;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Getter
+@Component
+@RequiredArgsConstructor
 public class CacheKey {
         public static final int DEFAULT_EXPIRE_SEC = 60; // 1 minutes
         public static final String USER = "user";

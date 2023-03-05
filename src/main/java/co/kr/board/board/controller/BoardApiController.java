@@ -32,14 +32,13 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/board/*")
 public class BoardApiController {
-	
 	private final BoardService service;
 	private final MemberRepository memberRepository;
 
 	@GetMapping("/list/{cid}")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>articleList(
-			@PathVariable(value = "cid",required = false) Integer categoryId,
+			@PathVariable(value = "cid",required = true) Integer categoryId,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10)Pageable pageable){
 				
 		Page<BoardDto.BoardResponseDto>list = service.findAllPage(pageable,categoryId);
@@ -72,13 +71,13 @@ public class BoardApiController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(
 			@RequestPart(value="filelist",required = false) List<MultipartFile> files,
-			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto, BindingResult bindingresult)throws Exception{
+			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto,
+			BindingResult bindingresult,
+			@RequestParam(required = true,defaultValue = "2")int categoryId)throws Exception{
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-
-		int result = service.boardsave(dto,member,files);
+		//url: localhost:8085/api/board/write?categoryId=2
+		Member member = getMember();
+		int result = service.boardsave(dto,member,categoryId,files);
 
 		log.info("title: {},content: {},image:{}",dto.getBoardTitle(),dto.getBoardContents(),files);
 
@@ -87,13 +86,8 @@ public class BoardApiController {
 	@DeleteMapping("/delete/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId)throws Exception{
-
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-
+		Member member = getMember();
 		service.deleteBoard(boardId,member);
-				
 		return new Response<>(HttpStatus.OK.value(),200);
 	}
 	
@@ -104,12 +98,16 @@ public class BoardApiController {
 			@Valid @RequestBody BoardDto.BoardRequestDto dto, BindingResult bindingresult,
 			@RequestPart(value = "filelist",required = false)List<MultipartFile>fileList)throws Exception{
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-
+		Member member = getMember();
 		int result = service.updateBoard(boardId, dto,member,fileList);
 
 		return new Response<>(HttpStatus.OK.value(),result);
+	}
+
+	private Member getMember(){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String)authentication.getPrincipal();
+		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+		return member;
 	}
 }

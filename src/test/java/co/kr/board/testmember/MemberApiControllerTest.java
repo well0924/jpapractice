@@ -43,8 +43,8 @@ public class MemberApiControllerTest {
     @MockBean
     private MemberService memberService;
     ObjectMapper objectMapper = new ObjectMapper();
-    @MockBean
-    JwtTokenProvider jwtTokenProvider;
+    //@MockBean
+    //JwtTokenProvider jwtTokenProvider;
 
 
     @Test
@@ -188,7 +188,9 @@ public class MemberApiControllerTest {
     public void userUpdateApiTest()throws Exception{
         given(memberService.memberupdate(any(),any())).willReturn(responseDto().getUseridx());
 
-        mvc.perform(MockMvcRequestBuilders.put("/api/login/memberupdate/{id}/member",1)
+        mvc.perform(
+                MockMvcRequestBuilders
+                .put("/api/login/memberupdate/{id}/member",1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto())))
                 .andExpect(status().isOk())
@@ -246,12 +248,7 @@ public class MemberApiControllerTest {
     private MemberDto.MemeberResponseDto responseDto(){
         return MemberDto.MemeberResponseDto
                 .builder()
-                .useridx(1)
-                .username("well")
-                .membername("tester1")
-                .password("Qwer4149!")
-                .useremail("well123@Test.com")
-                .role(Role.ROLE_ADMIN)
+                .member(memberDto())
                 .build();
     }
 

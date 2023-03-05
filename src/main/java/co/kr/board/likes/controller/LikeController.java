@@ -23,12 +23,14 @@ public class LikeController {
     //좋아요기능
     @PostMapping("/{id}")
     public Response likeBoard(@PathVariable("id")Integer boardId,Member member){
-        //인증
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (String)authentication.getPrincipal();
-        member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-
+        member = getMember();
         String likeResult =likeService.updateLikeOfBoard(boardId,member);
         return new Response(HttpStatus.OK.value(),likeResult);
+    }
+    private Member getMember(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (String)authentication.getPrincipal();
+        Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+        return member;
     }
 }

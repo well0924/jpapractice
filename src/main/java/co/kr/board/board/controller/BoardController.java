@@ -58,7 +58,7 @@ public class BoardController {
 		list= service.findAllPage(pageable,categoryId);
 
 		mv.addObject("list", list);
-		//mv.addObject("category",category);
+		mv.addObject("category",category);
 		mv.addObject("searchVal", searchVal);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());

@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-	
 	 	@Value("${jwt.secret}")
 	 	private String secretKey;
 
@@ -39,7 +38,7 @@ public class JwtTokenProvider {
 	    }
 	    
 	    // JWT 토큰 생성
-	    public TokenDto createTokenDto(String userPk,Role roles){
+	    public TokenDto createTokenDto(String userPk,Role roles)throws ExpiredJwtException{
 	        Claims claims = Jwts.claims().setSubject(userPk);// JWT payload에 저장되는 정보 단위
 
 	        claims.put("roles",roles);// 정보 저장 (key-value)
@@ -101,4 +100,7 @@ public class JwtTokenProvider {
 			}
 			return true;
 	    }
+		public static Long getExpireTime(String token) {
+			return Jwts.parser().parseClaimsJws(token).getBody().getExpiration().getTime();;
+		}
 }

@@ -120,33 +120,27 @@ public class MemberService {
 	 */
     @Transactional
     public TokenResponse signin(LoginDto dto){
-        //회원 정보 조회
+		//회원 정보 조회
         Optional<Member> memberAccount = repository.findByUsername(dto.getUsername());
 
 		if(!memberAccount.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}
-
-        Member memberDetail = memberAccount.get();
-
+		Member memberDetail = memberAccount.get();
 		//비밀번호 유효성 검사
         passwordvalidation(memberDetail,dto);
-
-        //token 발행
+		//token 발행
         TokenDto tokenDto=jwtTokenProvider.createTokenDto(memberDetail.getUsername(),memberDetail.getRole());
-        
-        //refresh토큰 발행
-        RefreshToken refreshToken = RefreshToken
-                .builder()
-                .key(memberDetail.getUsername())
-                .value(tokenDto.getRefreshToken())
-                .build();
-
-        //redis로 refresh토큰 저장
+		//refresh토큰 발행
+		RefreshToken refreshToken = RefreshToken
+				.builder()
+				.key(memberDetail.getUsername())
+				.value(tokenDto.getRefreshToken())
+				.build();
+		//redis로 refresh토큰 저장
         redisService.setValues(memberDetail.getUsername(), refreshToken.getValue());
 
-        return TokenResponse
-				.builder()
+		return TokenResponse.builder()
 				.accessToken(tokenDto.getAccessToken())
 				.refreshToken(tokenDto.getRefreshToken())
 				.build();

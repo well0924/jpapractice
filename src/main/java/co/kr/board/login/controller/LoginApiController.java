@@ -1,20 +1,25 @@
 package co.kr.board.login.controller;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
+import co.kr.board.config.redis.RedisService;
+import co.kr.board.config.security.jwt.CookieUtile;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.TokenRequest;
 import co.kr.board.login.domain.dto.TokenResponse;
-import co.kr.board.reply.repository.CommentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import co.kr.board.config.Exception.dto.Response;
@@ -29,6 +34,9 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/api/login/*")
 public class LoginApiController {
 	private final MemberService service;
+	private final CookieUtile cookieUtile;
+	private final JwtTokenProvider jwtTokenProvider;
+	private final RedisService redisService;
 
 	@GetMapping("/logincheck/{id}")
 	@ResponseStatus(code=HttpStatus.OK)
@@ -128,19 +136,43 @@ public class LoginApiController {
 
 	//jwt 로그인 인증
 	@PostMapping("/signup")
-    public Response <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
+    public Response <TokenResponse> memberjwtlogin(HttpServletRequest req,HttpServletResponse res,@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
 
-		log.info("accessToken:"+tokenResponse.getAccessToken());
-		log.info("refreshToken:"+tokenResponse.getRefreshToken());
+		Cookie accessToken = cookieUtile.createCookie(JwtTokenProvider.ACCESS_TOKEN_NAME,tokenResponse.getAccessToken());
+		accessToken.setMaxAge((int)TimeUnit.MILLISECONDS.toSeconds(JwtTokenProvider.tokenValidTime));
 
+		Cookie refreshToken = cookieUtile.createCookie(JwtTokenProvider.REFRESH_TOKEN_NAME,tokenResponse.getRefreshToken());
+		refreshToken.setMaxAge((int)TimeUnit.MILLISECONDS.toSeconds(JwtTokenProvider.refreshtokenValidTime));
+
+		res.addCookie(accessToken);
+		res.addCookie(refreshToken);
+		
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
+	//로그아웃
+	@GetMapping("/logout")
+	public Response<String>logout(HttpServletRequest req,HttpServletResponse res){
+		SecurityContextHolder.clearContext();
+		Cookie accessToken = cookieUtile.getCookie(req,JwtTokenProvider.ACCESS_TOKEN_NAME);
+		Cookie refreshToken = cookieUtile.getCookie(req,JwtTokenProvider.REFRESH_TOKEN_NAME);
+		if (accessToken != null) {
+			Long expiration = JwtTokenProvider.getExpireTime(accessToken.getValue());
+			redisService.setBlackList(accessToken.getValue(), "accessToken", expiration-System.currentTimeMillis());
+			accessToken.setMaxAge(0);
+			res.addCookie(accessToken);
+		}
+		if (refreshToken != null) {
+			refreshToken.setMaxAge(0);
+			res.addCookie(refreshToken);
+			redisService.deleteValues(refreshToken.getValue());
+		}
+		return new Response<>(HttpStatus.OK.value(),"redirect:/page/login/loginpage");
+	}
 	//토큰 재발행
     @PostMapping("/reissue")
     public Response<TokenResponse>jwtreissue(@Valid @RequestBody TokenRequest tokenDto){
         TokenResponse tokenResponse = service.reissue(tokenDto);
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
-
 }

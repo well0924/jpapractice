@@ -3,6 +3,8 @@ package co.kr.board.config.security;
 import javax.sql.DataSource;
 
 import co.kr.board.config.security.jwt.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,13 +27,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	private final JwtTokenProvider jwtTokenProvider;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final CustomUserDetailService service;
 	private final DataSource dataSource;
+	private final JwtTokenProvider jwtTokenProvider;
 	//비밀번호 암호화
 	@Bean
 	public BCryptPasswordEncoder encoder() {

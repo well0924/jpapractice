@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import co.kr.board.category.domain.Category;
 import co.kr.board.category.repository.CategoryRepository;
-import co.kr.board.config.redis.CacheKey;
 import co.kr.board.file.domain.AttachFile;
 import co.kr.board.file.domain.dto.AttachDto;
 import co.kr.board.file.repository.AttachRepository;
 import co.kr.board.file.service.FileHandler;
 import co.kr.board.file.service.FileService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,19 +26,23 @@ import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.login.domain.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.criteria.CriteriaBuilder;
+
 @Log4j2
 @Service
 @AllArgsConstructor
 public class BoardService{
-	
+	private final CategoryRepository categoryRepository;
+
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
 	private final FileHandler fileHandler;
-	private final CategoryRepository categoryRepository;
+
 	/*
 	 * 글 목록 전체 조회
-	 * 
+	 * 카테고리별로 조회하기.
 	 */
 	@Transactional(readOnly = true)
 	public List<BoardDto.BoardResponseDto>findAll(){
@@ -91,12 +94,13 @@ public class BoardService{
 	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member , List<MultipartFile>files)throws Exception{
-		
+	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member ,Integer categoryId,List<MultipartFile>files)throws Exception{
 		//회원이 아니면 사용불가
 		if(member == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
+		//카테고리 조회
+		Category category = categoryRepository.findById(categoryId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
 
 		Board board = Board
 				.builder()
@@ -105,29 +109,29 @@ public class BoardService{
 				.boardAuthor(member.getUsername())
 				.boardContents(dto.getBoardContents())
 				.readcount(0)
+				.category(category)
 				.createdat(dto.getCreatedAt())
 				.build();
 
+		int InsertResult = repos.save(board).getId();
 
-		int result = repos.save(board).getId();
-
-		//첨부파일이 있는경우
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 
 		log.info(fileList);
-		if(fileList == null || fileList.size() == 0){
-			return result;
-		}
-		if(!fileList.isEmpty()){
 
+		//파일이 없는 경우
+		if(fileList == null || fileList.size() == 0){
+			return InsertResult;
+		}
+
+		//첨부파일이 있는경우
+		if(!fileList.isEmpty()){
 			for(AttachFile attachFile : fileList){
 				//파일 저장
 				board.addAttach(attachRepository.save(attachFile));
 			}
-
 		}
-
-		return result;
+		return InsertResult;
 	}
 	
     /*
@@ -169,13 +173,13 @@ public class BoardService{
 		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
 		String boardAuthor = board.get().getBoardAuthor();
-
 		String loginUser = member.getUsername();
 		
 		//글 작성자와 로그인한 유저의 아이디가 동일하지 않으면 Exception
 		if(!boardAuthor.equals(loginUser)) {
 			throw new CustomExceptionHandler(ErrorCode.BOARD_DELETE_DENIED);
 		}
+
 		//첨부 파일 조회
 		List<AttachDto>list = fileService.filelist(boardId);
 
@@ -183,12 +187,12 @@ public class BoardService{
 
 			String filePath = list.get(i).getFilePath();
 			File file = new File(filePath);
+
 			//파일 경로가 존재를 하면 해당 위치의 파일을 삭제한다.
 			if(file.exists()){
 				file.delete();
 			}
 		}
-
 		//게시물 삭제
 		repos.deleteById(board.get().getId());
 	}
@@ -211,17 +215,19 @@ public class BoardService{
 		//글조회
 		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
 		
-		Board result = articlelist.get();
+		Board boardDetail = articlelist.get();
 		
-		String boardAuthor = result.getBoardAuthor();
+		String boardAuthor = boardDetail.getBoardAuthor();
 		String loginUser = member.getUsername();
-		
-		result.updateBoard(dto);
+		//글 수정
+		boardDetail.updateBoard(dto);
 		//회원인지 아닌지 여부
 		if(!boardAuthor.equals(loginUser)) {
 			throw new CustomExceptionHandler(ErrorCode.BOARD_EDITE_DENIED);
 		}
-		int updateResult = result.getId();
+
+		int updateResult = boardDetail.getId();
+
 		//파일 조회를 하고 해당파일을 수정할 수 있으면 post를 한다.
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 
@@ -242,7 +248,7 @@ public class BoardService{
 			//새로 파일을 저장한다.
 			for(AttachFile attachFile : fileList){
 				//파일 저장
-				result.addAttach(attachRepository.save(attachFile));
+				boardDetail.addAttach(attachRepository.save(attachFile));
 			}
 		}
 		return updateResult;

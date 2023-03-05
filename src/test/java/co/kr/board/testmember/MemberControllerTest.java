@@ -173,12 +173,7 @@ public class MemberControllerTest {
     private MemberDto.MemeberResponseDto responseDto(){
        return MemberDto.MemeberResponseDto
                .builder()
-               .useridx(1)
-               .username("well")
-               .membername("tester1")
-               .password("Qwer4149!")
-               .useremail("well123@Test.com")
-               .role(Role.ROLE_ADMIN)
+               .member(memberDto())
                .build();
     }
 

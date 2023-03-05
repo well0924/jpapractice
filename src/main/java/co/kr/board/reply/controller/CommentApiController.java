@@ -44,10 +44,7 @@ public class CommentApiController {
 	@PostMapping("/write/{id}")
 	public Response<?>replyWrite(@PathVariable(value="id")Integer boardId,@Valid @RequestBody CommentDto.CommentRequestDto dto,BindingResult bindingresult){
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member mebmer = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-
+		Member mebmer = getMember();
 		int insertResult = service.replysave(dto, mebmer, boardId);
 		
 		return new Response<>(HttpStatus.OK.value(),insertResult);
@@ -56,10 +53,7 @@ public class CommentApiController {
 	@DeleteMapping("/delete/{id}")
 	public Response<?>replyDelete(@PathVariable(value="id")Integer replyId){
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member mebmer = memberRepository.findByUsername(username).orElseThrow();
-
+		Member mebmer = getMember();
 		service.replydelete(replyId,mebmer);
 
 		return new Response<>(HttpStatus.OK.value(),"o.k");
@@ -68,12 +62,16 @@ public class CommentApiController {
 	@PutMapping("/update/{id}")
 	public Response<?>replyUpdate(@PathVariable(value="id")Integer replyId,CommentDto.CommentRequestDto dto){
 
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member mebmer = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-
+		Member mebmer = getMember();
 		int updateResult = service.replyUpdate(dto,mebmer, replyId);
 		
 		return new Response<>(HttpStatus.OK.value(),updateResult);
+	}
+
+	private Member getMember(){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String)authentication.getPrincipal();
+		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+		return member;
 	}
 }
