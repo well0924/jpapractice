@@ -153,9 +153,12 @@ public class LoginApiController {
 	//로그아웃
 	@GetMapping("/logout")
 	public Response<String>logout(HttpServletRequest req,HttpServletResponse res){
+
 		SecurityContextHolder.clearContext();
+
 		Cookie accessToken = cookieUtile.getCookie(req,JwtTokenProvider.ACCESS_TOKEN_NAME);
 		Cookie refreshToken = cookieUtile.getCookie(req,JwtTokenProvider.REFRESH_TOKEN_NAME);
+
 		if (accessToken != null) {
 			Long expiration = JwtTokenProvider.getExpireTime(accessToken.getValue());
 			redisService.setBlackList(accessToken.getValue(), "accessToken", expiration-System.currentTimeMillis());
@@ -163,6 +166,7 @@ public class LoginApiController {
 			res.addCookie(accessToken);
 		}
 		if (refreshToken != null) {
+
 			refreshToken.setMaxAge(0);
 			res.addCookie(refreshToken);
 			redisService.deleteValues(refreshToken.getValue());

@@ -101,6 +101,6 @@ public class JwtTokenProvider {
 			return true;
 	    }
 		public static Long getExpireTime(String token) {
-			return Jwts.parser().parseClaimsJws(token).getBody().getExpiration().getTime();;
+			return Jwts.parser().parseClaimsJws(token).getBody().getExpiration().getTime();
 		}
 }
