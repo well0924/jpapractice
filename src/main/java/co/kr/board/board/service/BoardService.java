@@ -142,7 +142,7 @@ public class BoardService{
 	@Transactional
 	public BoardDto.BoardResponseDto getBoard(Integer boardId){
 		
-		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 
 		//글 조회
 		Board board = articlelist.get();
@@ -170,7 +170,7 @@ public class BoardService{
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
 		//글 조회
-		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 		
 		String boardAuthor = board.get().getBoardAuthor();
 		String loginUser = member.getUsername();
@@ -213,7 +213,7 @@ public class BoardService{
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
 		}
 		//글조회
-		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 		
 		Board boardDetail = articlelist.get();
 		

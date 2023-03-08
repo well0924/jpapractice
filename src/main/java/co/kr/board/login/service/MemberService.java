@@ -169,8 +169,8 @@ public class MemberService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+
 		String userpk = jwtTokenProvider.getUserPK(request.getRefreshToken());
-		System.out.println(userpk);
 
 		//redis에 refresh 토큰검사
         redisService.checkRefreshToken(authentication.getName(), request.getRefreshToken());
@@ -207,8 +207,6 @@ public class MemberService {
 
 		Member member = dtoToEntity(dto);
 		repository.save(member);
-		//회원가입 유효성 검사(아이디 중복 & 이메일 중복)
-		//validatedSignUpInfo(dto);
 
 		return member.getId();
 	}

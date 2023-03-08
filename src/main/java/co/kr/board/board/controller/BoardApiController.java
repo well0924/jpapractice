@@ -37,9 +37,7 @@ public class BoardApiController {
 
 	@GetMapping("/list/{cid}")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>articleList(
-			@PathVariable(value = "cid",required = true) Integer categoryId,
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10)Pageable pageable){
+	public Response<Page<BoardDto.BoardResponseDto>>articleList(@PathVariable(value = "cid",required = true) Integer categoryId, @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10)Pageable pageable){
 				
 		Page<BoardDto.BoardResponseDto>list = service.findAllPage(pageable,categoryId);
 		
@@ -48,9 +46,7 @@ public class BoardApiController {
 
 	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>searchList(
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,
-			@RequestParam(required = false,value = "searchVal")String searchVal){
+	public Response<Page<BoardDto.BoardResponseDto>>searchList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,@RequestParam(required = false,value = "searchVal")String searchVal){
 
 		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(searchVal,pageable);
 
@@ -61,9 +57,8 @@ public class BoardApiController {
 	@ResponseStatus(code=HttpStatus.OK)
 	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
-
+		log.info("detail");
 		BoardDto.BoardResponseDto detail = service.getBoard(boardId);
-
 		return new Response<>(HttpStatus.OK.value(),detail);
 	}
 
@@ -77,11 +72,11 @@ public class BoardApiController {
 
 		//url: localhost:8085/api/board/write?categoryId=2
 		Member member = getMember();
-		int result = service.boardsave(dto,member,categoryId,files);
+		int insertResult = service.boardsave(dto,member,categoryId,files);
 
 		log.info("title: {},content: {},image:{}",dto.getBoardTitle(),dto.getBoardContents(),files);
 
-		return new Response<>(HttpStatus.OK.value(),result);
+		return new Response<>(HttpStatus.OK.value(),insertResult);
 	}
 	@DeleteMapping("/delete/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
@@ -99,11 +94,12 @@ public class BoardApiController {
 			@RequestPart(value = "filelist",required = false)List<MultipartFile>fileList)throws Exception{
 
 		Member member = getMember();
-		int result = service.updateBoard(boardId, dto,member,fileList);
+		int updateResult = service.updateBoard(boardId, dto,member,fileList);
 
-		return new Response<>(HttpStatus.OK.value(),result);
+		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
 
+	
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String)authentication.getPrincipal();

@@ -29,7 +29,9 @@ public class CustomUserDetailService implements UserDetailsService{
 		Optional<Member> member = Optional
 				.ofNullable(repository.findByUsername(userPk)
 				.orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
+
 		Member userdetail = member.get();
+
 		return new CustomUserDetails(userdetail);
 	}
 

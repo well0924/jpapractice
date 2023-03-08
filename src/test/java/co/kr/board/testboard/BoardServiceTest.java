@@ -66,7 +66,7 @@ class BoardServiceTest {
 	public void boarddetailfail(){
 		
 		org.junit.jupiter.api.Assertions.assertThrows(Exception.class,()->{
-			Optional<Board>board = Optional.ofNullable(reposi.findById(3).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));});
+			Optional<Board>board = Optional.ofNullable(reposi.findById(3).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));});
 	}
 	
 	@Test

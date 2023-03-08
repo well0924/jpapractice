@@ -74,7 +74,7 @@ public class CommentService {
 		}
 		
 		//게시판에서 글 조회 -> 글이 없으면 Exception
-		Board board = boardrepository.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL));
+		Board board = boardrepository.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
 		
 		
 		Comment reply = Comment.builder()
@@ -137,7 +137,7 @@ public class CommentService {
 		String replywriter= comment.getReplyWriter();
 		
 		if(!userid.equals(replywriter)) {
-			throw new CustomExceptionHandler(ErrorCode.COMMENT_EDITE_DENINED);
+			throw new CustomExceptionHandler(ErrorCode.COMMENT_EDITE_DENIED);
 		}
 		
 		comment.contentsChange(dto.getReplyContents());

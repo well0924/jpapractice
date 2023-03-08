@@ -29,7 +29,7 @@ public class FileService {
     */
     @Transactional
     public List<AttachDto> filelist(@Param("id")Integer boardId)throws Exception{
-        Optional<Board>findBoard = Optional.ofNullable(boardRepository.findById(boardId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARDDETAIL)));
+        Optional<Board>findBoard = Optional.ofNullable(boardRepository.findById(boardId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 
         List<AttachFile>list = attachRepository.findAttachFilesBoardId(boardId);
 

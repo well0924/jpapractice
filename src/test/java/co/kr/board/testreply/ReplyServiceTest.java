@@ -214,6 +214,6 @@ public class ReplyServiceTest {
 		});
 
 		//then
-		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.COMMENT_EDITE_DENINED);
+		assertEquals(customExceptionHandler.getErrorCode(), ErrorCode.COMMENT_EDITE_DENIED);
 	}
 }
