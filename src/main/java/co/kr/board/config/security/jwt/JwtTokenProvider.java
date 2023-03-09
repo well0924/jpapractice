@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import co.kr.board.config.security.auth.CustomUserDetailService;
 import io.jsonwebtoken.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,7 @@ public class JwtTokenProvider {
 	    public static long refreshtokenValidTime = 1000 * 60 * 60 * 24 * 7;
 		public final static String ACCESS_TOKEN_NAME = "accessToken";
 		public final static String REFRESH_TOKEN_NAME = "refreshToken";
-	    private final UserDetailsService userDetailsService;
+	    private final CustomUserDetailService userDetailsService;
 
 	    // 객체 초기화, secretKey를 Base64로 인코딩
 	    protected void init() {

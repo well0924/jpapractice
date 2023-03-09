@@ -7,12 +7,14 @@ import co.kr.board.likes.service.LikeService;
 import co.kr.board.login.domain.Member;
 import co.kr.board.login.repository.MemberRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
+@Log4j2
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/like/*")
@@ -22,7 +24,7 @@ public class LikeController {
     
     //좋아요기능
     @PostMapping("/{id}")
-    public Response likeBoard(@PathVariable("id")Integer boardId,Member member){
+    public Response likeBoard(@PathVariable("id")Integer boardId,@AuthenticationPrincipal Member member){
         member = getMember();
         String likeResult =likeService.updateLikeOfBoard(boardId,member);
         return new Response(HttpStatus.OK.value(),likeResult);

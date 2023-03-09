@@ -31,16 +31,7 @@ layout:decorator="/layout/mainlayout">
 		</div>
 	</div>
 <script>
-	const myHeaders = new XMLHttpRequest();
-	let tokenValue = localStorage.getItem("X-AUTH-TOKEN");
-	console.log(tokenValue);
-	myHeaders.open("GET","/page/main/mainpage");
-	myHeaders.setRequestHeader("x-auth-token",tokenValue);
-	myHeaders.send();
-	/*fetch('/api/board/list',{
-		method:'get',
-		headers:{'x-auth-token' : localStorage.getItem('X-AUTH-TOKEN')}
-	}).then(res=>location.href='/page/board/list');*/
+
 </script>
 </th:block>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>

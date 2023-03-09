@@ -31,7 +31,7 @@ public class CustomUserDetailService implements UserDetailsService{
 				.orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
 
 		Member userdetail = member.get();
-
+		log.info(userdetail);
 		return new CustomUserDetails(userdetail);
 	}
 

@@ -14,6 +14,7 @@ import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.login.domain.dto.LoginDto;
 import co.kr.board.login.domain.dto.TokenRequest;
 import co.kr.board.login.domain.dto.TokenResponse;
+import co.kr.board.login.repository.RefreshTokenRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -33,6 +34,7 @@ import lombok.extern.log4j.Log4j2;
 @AllArgsConstructor
 @RequestMapping("/api/login/*")
 public class LoginApiController {
+	private final RefreshTokenRepository refreshTokenRepository;
 	private final MemberService service;
 	private final CookieUtile cookieUtile;
 	private final JwtTokenProvider jwtTokenProvider;
@@ -136,10 +138,10 @@ public class LoginApiController {
 
 	//jwt 로그인 인증
 	@PostMapping("/signup")
-    public Response <TokenResponse> memberjwtlogin(HttpServletRequest req,HttpServletResponse res,@RequestBody LoginDto loginDto){
+    public Response <TokenResponse> memberjwtlogin(HttpServletResponse res,@RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
 
-		Cookie accessToken = cookieUtile.createCookie(JwtTokenProvider.ACCESS_TOKEN_NAME,tokenResponse.getAccessToken());
+		Cookie accessToken = cookieUtile.createCookie("X-AUTH-TOKEN",tokenResponse.getAccessToken());
 		accessToken.setMaxAge((int)TimeUnit.MILLISECONDS.toSeconds(JwtTokenProvider.tokenValidTime));
 
 		Cookie refreshToken = cookieUtile.createCookie(JwtTokenProvider.REFRESH_TOKEN_NAME,tokenResponse.getRefreshToken());
@@ -159,9 +161,13 @@ public class LoginApiController {
 		Cookie accessToken = cookieUtile.getCookie(req,JwtTokenProvider.ACCESS_TOKEN_NAME);
 		Cookie refreshToken = cookieUtile.getCookie(req,JwtTokenProvider.REFRESH_TOKEN_NAME);
 
+		System.out.println(accessToken.getValue());
+		System.out.println(accessToken.getName());
+		System.out.println(refreshToken.getValue());
+
 		if (accessToken != null) {
 			Long expiration = JwtTokenProvider.getExpireTime(accessToken.getValue());
-			redisService.setBlackList(accessToken.getValue(), "accessToken", expiration-System.currentTimeMillis());
+			redisService.setBlackList(accessToken.getValue(), JwtTokenProvider.ACCESS_TOKEN_NAME, expiration-System.currentTimeMillis());
 			accessToken.setMaxAge(0);
 			res.addCookie(accessToken);
 		}
