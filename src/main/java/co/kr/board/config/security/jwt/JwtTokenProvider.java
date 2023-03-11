@@ -12,11 +12,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import co.kr.board.login.domain.Role;
-import co.kr.board.login.domain.dto.TokenDto;
+import co.kr.board.domain.Role;
+import co.kr.board.domain.Dto.TokenDto;
 import lombok.RequiredArgsConstructor;
 
 @Log4j2

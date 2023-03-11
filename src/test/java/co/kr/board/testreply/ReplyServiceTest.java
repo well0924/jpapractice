@@ -8,24 +8,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import co.kr.board.domain.Board;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import co.kr.board.board.domain.Board;
-import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.board.service.BoardService;
+import co.kr.board.repository.BoardRepository;
+import co.kr.board.service.BoardService;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.repository.MemberRepository;
-import co.kr.board.login.service.MemberService;
-import co.kr.board.reply.domain.Comment;
-import co.kr.board.reply.domain.dto.CommentDto;
-import co.kr.board.reply.repository.CommentRepository;
-import co.kr.board.reply.service.CommentService;
+import co.kr.board.domain.Member;
+import co.kr.board.repository.MemberRepository;
+import co.kr.board.service.MemberService;
+import co.kr.board.domain.Comment;
+import co.kr.board.domain.Dto.CommentDto;
+import co.kr.board.repository.CommentRepository;
+import co.kr.board.service.CommentService;
 
 @SpringBootTest
 public class ReplyServiceTest {

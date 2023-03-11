@@ -1,11 +1,11 @@
 package co.kr.board.testmember;
 
 import co.kr.board.config.security.SecurityConfig;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.domain.Role;
-import co.kr.board.login.domain.dto.LoginDto;
-import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.service.MemberService;
+import co.kr.board.domain.Member;
+import co.kr.board.domain.Role;
+import co.kr.board.domain.Dto.LoginDto;
+import co.kr.board.domain.Dto.MemberDto;
+import co.kr.board.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

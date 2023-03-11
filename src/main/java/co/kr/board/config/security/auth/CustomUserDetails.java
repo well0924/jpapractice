@@ -6,9 +6,8 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import co.kr.board.login.domain.Member;
+import co.kr.board.domain.Member;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

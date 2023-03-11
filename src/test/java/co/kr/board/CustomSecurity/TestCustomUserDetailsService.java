@@ -1,9 +1,9 @@
 package co.kr.board.CustomSecurity;
 
 import co.kr.board.config.security.auth.CustomUserDetails;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.domain.Role;
-import co.kr.board.login.repository.MemberRepository;
+import co.kr.board.domain.Member;
+import co.kr.board.domain.Role;
+import co.kr.board.repository.MemberRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

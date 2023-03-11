@@ -1,21 +1,19 @@
 package co.kr.board.testboard;
 
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
-import co.kr.board.board.domain.Board;
-import co.kr.board.board.domain.dto.BoardDto;
-import co.kr.board.board.service.BoardService;
+import co.kr.board.domain.Board;
+import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.service.BoardService;
 import co.kr.board.config.security.auth.CustomUserDetails;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.domain.Role;
-import co.kr.board.login.repository.MemberRepository;
+import co.kr.board.domain.Member;
+import co.kr.board.domain.Role;
+import co.kr.board.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;

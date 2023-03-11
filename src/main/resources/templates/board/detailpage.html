@@ -2,8 +2,7 @@
 <html 
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
 <title>게시글 조회화면</title>
@@ -30,6 +29,11 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="form-group">
       <label for="boardContents" class="form-label mt-4">조회수</label>
       <p>[[${detail.readCount}]]</p>
+    </div>
+    <div class="form-group">
+       <label for="board_like">
+           <button id="board_like" name="" onclick="addLike()">좋아요</button>
+       </label>
     </div>
     <div class="form-group">
         <label for="board_file" class="form-label mt-4">파일첨부</label>

@@ -18,7 +18,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
-import co.kr.board.login.domain.Role;
+import co.kr.board.domain.Role;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

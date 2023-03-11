@@ -26,14 +26,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.domain.Role;
-import co.kr.board.login.domain.dto.LoginDto;
-import co.kr.board.login.domain.dto.MemberDto;
-import co.kr.board.login.domain.dto.MemberDto.MemberRequestDto;
-import co.kr.board.login.domain.dto.TokenDto;
-import co.kr.board.login.repository.MemberRepository;
-import co.kr.board.login.service.MemberService;
+import co.kr.board.domain.Member;
+import co.kr.board.domain.Role;
+import co.kr.board.domain.Dto.LoginDto;
+import co.kr.board.domain.Dto.MemberDto;
+import co.kr.board.domain.Dto.MemberDto.MemberRequestDto;
+import co.kr.board.domain.Dto.TokenDto;
+import co.kr.board.repository.MemberRepository;
+import co.kr.board.service.MemberService;
 
 @SpringBootTest
 public class MemberServiceTest {

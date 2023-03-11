@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import co.kr.board.domain.Board;
+import co.kr.board.domain.Dto.BoardDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,14 +18,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import co.kr.board.board.domain.Board;
-import co.kr.board.board.domain.dto.BoardDto;
-import co.kr.board.board.repsoitory.BoardRepository;
-import co.kr.board.board.service.BoardService;
+import co.kr.board.repository.BoardRepository;
+import co.kr.board.service.BoardService;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.repository.MemberRepository;
+import co.kr.board.domain.Member;
+import co.kr.board.repository.MemberRepository;
 
 @SpringBootTest
 class BoardServiceTest {

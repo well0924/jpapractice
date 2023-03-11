@@ -1,16 +1,16 @@
 package co.kr.board.testreply;
 
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
-import co.kr.board.board.domain.Board;
 import co.kr.board.config.security.SecurityConfig;
 import co.kr.board.config.security.auth.CustomUserDetails;
-import co.kr.board.login.domain.Member;
-import co.kr.board.login.domain.Role;
-import co.kr.board.login.repository.MemberRepository;
-import co.kr.board.reply.domain.Comment;
-import co.kr.board.reply.domain.dto.CommentDto;
-import co.kr.board.reply.repository.CommentRepository;
-import co.kr.board.reply.service.CommentService;
+import co.kr.board.domain.Board;
+import co.kr.board.domain.Member;
+import co.kr.board.domain.Role;
+import co.kr.board.repository.MemberRepository;
+import co.kr.board.domain.Comment;
+import co.kr.board.domain.Dto.CommentDto;
+import co.kr.board.repository.CommentRepository;
+import co.kr.board.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
