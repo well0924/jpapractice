@@ -14,4 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category,Integer>{
             "order by " +
             "p.id asc nulls first, c.id asc")
     List<Category> findAllOrderByParentIdAscNullsFirstCategoryIdAsc();
+
+    Category findByName(String categoryName);
 }

@@ -30,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class BoardService{
 	private final CategoryRepository categoryRepository;
-
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
@@ -62,12 +61,7 @@ public class BoardService{
 	* @Param Pageable
 	* 
 	*/
-	/*@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto> findAllPage(Pageable pageable,Integer categoryId) {
-		Page<Board>boards = repos.findAllByCategoryId(pageable,categoryId);
-		return boards.map(board ->new BoardDto.BoardResponseDto(board));
-	}*/
-	@Transactional
+	@Transactional(readOnly = true)
 	public Page<BoardDto.BoardResponseDto>findAllPage(Pageable pageable, String categoryName){
 		Page<Board>boards = repos.findAllByCategoryName(pageable,categoryName);
 		return boards.map(board->new BoardDto.BoardResponseDto(board));

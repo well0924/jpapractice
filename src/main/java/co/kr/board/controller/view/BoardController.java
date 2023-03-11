@@ -39,17 +39,15 @@ public class BoardController {
 	private final FileService fileService;
 	private final CategoryRepository categoryRepository;
 
-	@GetMapping("/list/{cid}")
+	@GetMapping("/list/{cname}")
 	public ModelAndView pageList(
-			@PathVariable(value = "cid",required = false) String categoryName,
-			Integer categoryId,
+			@PathVariable(value = "cname",required = false) String categoryName,
 			@RequestParam(required = false,value = "searchVal") String searchVal,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
 
-		Category category = categoryRepository.findById(categoryId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
-
+		Category category = categoryRepository.findByName(categoryName);
 		Page<BoardDto.BoardResponseDto> list =null;
 		//페이징 기능
 		list= service.findAllPage(pageable,categoryName);
