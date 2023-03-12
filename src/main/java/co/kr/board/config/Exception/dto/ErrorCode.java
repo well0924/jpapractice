@@ -38,7 +38,9 @@ public enum ErrorCode {
 
 	//Category Error
 	CANNOT_CONVERT_NESTED_STRUCTURED_EXCEPTION(500,"계층형으로 변환을 할 수 없습니다."),
-	CATEGORY_NOT_FOUND(400,"카테고리를 찾을수 없습니다.");
+	CATEGORY_NOT_FOUND(400,"카테고리를 찾을수 없습니다."),
+	TOKEN_REFRESH_EXPIRED(500,"토큰이 만료되었습니다."),
+	REFRESH_TOKEN_AUTHENTICATION_VALID(500,"토큰의 유저 정보가 일치하지 않습니다.");
 		
 	private final int status;
 

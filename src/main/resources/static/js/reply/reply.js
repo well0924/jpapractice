@@ -6,7 +6,6 @@
 $(document).ready(function(){
 	getCommentlist();
 });
-
 //댓글 목록 출력하기.o.k
 function getCommentlist(){
 	
@@ -24,30 +23,22 @@ function getCommentlist(){
 		let html = "";
 		
 		var count = resp.data.length;
-	
-		console.log(resp);
-		console.log(count);
-		console.log(resp.data);
-		for(let i=0; i<resp.data.length;i++){
-			resp.data[i];
-			console.log(resp.data[i]);
-		}
+
 		//게시물이 있는 경우
 		if(resp.data.length > 0){
 			for(let i = 0; i<resp.data.length; i++){
 				 
-				 html +='<div class="commentArea" style="border-bottom:1px solid darkgray; margin-bottom: 15px;">';
-				 	html +='<div class="commentInfo'+resp.data[i].replyId+'">';
+				 html +='<div class="commentArea" style="border-bottom:1px solid darkgray; margin-bottom: 15px;">';
+				 	html +='<div class="commentInfo'+resp.data[i].replyId+'">';
 				 	html +='댓글번호:'+resp.data[i].replyId+'/작성자:'+resp.data[i].replyWriter;
 				 	html +='</br>';
-	             	html +='<div class="commentcontent'+resp.data[i].replyId+'">'; 
+	             	html +='<div class="commentcontent'+resp.data[i].replyId+'">';
 	             	html += '<p>내용:'+resp.data[i].replyContents+'</p>';
 	             		html +='<div>';
-	             			html +='<button type="button" class="btn btn-primary" onclick="commentUpdate('+resp.data[i].replyId+',\''+resp.data[i].replyContents+'\')";>'+'수정'+'</button>';	
 	             			html +='<button type="button" class="btn btn-primary" onclick="commentDelete('+resp.data[i].replyId+')">'+'삭제'+'</button>';                
 	             		html +='</div>';
-	             	html +='</div>';               
-	             	html +='</div>';
+	             	html +='</div>';
+	             	html +='</div>';
 	             html +='</div>';
 	             html +='<hr>';
 	             html +='</br>';
@@ -67,7 +58,7 @@ function getCommentlist(){
 
 //댓글 작성 o.k
 function replyInsert(){
-	
+	let token = localStorage.getItem('X-AUTH-TOKEN');
 	let content=$('#replycontents').val();
 	let boardid=$('#boardid').val();
 
@@ -77,18 +68,16 @@ function replyInsert(){
 	}
 	
 	$.ajax({
-	
 		url:'/api/reply/write/'+boardid,
 		type:'post',
+		headers:{
+			'X-AUTH-TOKEN':token,
+		},
 		data:JSON.stringify(data),
 		dataType:'json',
 		contentType:'application/json; charset=utf-8'
 	
 	}).done(function(resp){
-	
-		console.log(resp);
-		console.log(resp.status);
-		console.log(resp.data);
 	
 		if(resp.status == 200){
 		
@@ -99,8 +88,7 @@ function replyInsert(){
 		}
 		
 		if(resp.status == 400){
-			console.log("valid!");
-			
+
 			if(resp.data.hasOwnProperty('valid_replyContents')){
 				$('#valid_replyContents').text(resp.data.valid_replyContents);
 				$('#valid_replyContents').css('color','red');
@@ -112,13 +100,16 @@ function replyInsert(){
 }
 //댓글 삭제o.k
 function commentDelete(replyId){
-	
+	let token = localStorage.getItem('X-AUTH-TOKEN');
 	let Isconfirm = confirm('삭제하겠습니까?');
 	
 	if(Isconfirm){
 		$.ajax({
 			url:'/api/reply/delete/'+replyId,
 			type:'delete',
+			headers:{
+				'X-AUTH-TOKEN':token,
+			},
 			dataType:'json',
 			contentType:'application/json; charset=utf-8'
 			

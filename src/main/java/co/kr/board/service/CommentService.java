@@ -46,11 +46,7 @@ public class CommentService {
 			CommentDto.CommentResponseDto dto = CommentDto
 					.CommentResponseDto
 					.builder()
-					.boardId(board.getId())
-					.replyId(co.getId())
-					.replyContents(co.getReplyContents())
-					.replyWriter(co.getReplyWriter())
-					.createdAt(co.getCreatedAt())
+					.comment(co)
 					.build();
 			
 			list.add(dto);

@@ -42,10 +42,13 @@ public class CommentApiController {
 	}
 	
 	@PostMapping("/write/{id}")
-	public Response<?>replyWrite(@PathVariable(value="id")Integer boardId,@Valid @RequestBody CommentDto.CommentRequestDto dto,BindingResult bindingresult){
+	public Response<?>replyWrite(@PathVariable(value="id")Integer boardId,
+								 @Valid @RequestBody CommentDto.CommentRequestDto dto,
+								 BindingResult bindingresult){
 
-		Member mebmer = getMember();
-		int insertResult = service.replysave(dto, mebmer, boardId);
+		Member member = getMember();
+		log.info(member);
+		int insertResult = service.replysave(dto, member, boardId);
 		
 		return new Response<>(HttpStatus.OK.value(),insertResult);
 	}
@@ -57,15 +60,6 @@ public class CommentApiController {
 		service.replydelete(replyId,mebmer);
 
 		return new Response<>(HttpStatus.OK.value(),"o.k");
-	}
-	
-	@PutMapping("/update/{id}")
-	public Response<?>replyUpdate(@PathVariable(value="id")Integer replyId,CommentDto.CommentRequestDto dto){
-
-		Member mebmer = getMember();
-		int updateResult = service.replyUpdate(dto,mebmer, replyId);
-		
-		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
 
 	private Member getMember(){

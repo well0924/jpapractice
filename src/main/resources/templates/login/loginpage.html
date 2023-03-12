@@ -66,7 +66,6 @@ layout:decorator="/layout/mainlayout">
 function loginproc(){
 	let userid = $('#user_id').val();
 	let userpw = $('#user_pw').val();
-	const myHeaders = new Headers();
 
 	let logindata = {
 			username : userid,
@@ -83,17 +82,9 @@ function loginproc(){
 		console.log(data.data.accessToken);
 		console.log(data.data.refreshToken);
 		console.log(data.data);
-		const token = data.data.accessToken;
-		$.ajax({
-			type: 'GET',
-			url: '/page/main/mainpage',
-			header:{
-				'Authorization': 'Bearer ' + token
-			},
-			success: function (data) {
-				location.href = "/page/main/mainpage";
-			}
-		});
+		localStorage.setItem('X-AUTH-TOKEN',data.data.accessToken);
+		localStorage.setItem('refreshToken',data.data.refreshToken);
+		location.href='/page/main/mainpage';
     }).fail(function (error) {
         alert("존재하지 않는 회원입니다.");
     });	

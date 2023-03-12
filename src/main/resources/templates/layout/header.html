@@ -27,10 +27,10 @@ layout:decorator="/layout/mainlayout">
        		<a class="nav-link" th:href="@{/page/login/memberjoin}">회원가입</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/page/board/list}">게시판</a>
+          <a class="nav-link" th:href="@{/page/board/list/freeboard}">자유게시판</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
+          <a class="nav-link" href="/page/board/mypage">About</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/page/login/adminlist}">관리자 페이지</a>
@@ -39,18 +39,15 @@ layout:decorator="/layout/mainlayout">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
           <div class="dropdown-menu">
           	<div>
-          		<a class="dropdown-item" sec:authorize="hasRole('ROLE_USER')" th:href="@{/page/login/memberdelete}">회원탈퇴</a>
-            	<a class="dropdown-item" sec:authorize="hasRole('ROLE_USER')" th:href="@{/page/login/memberupdate}">회원수정</a>
+          		<a class="dropdown-item" th:href="@{/page/login/memberdelete}">회원탈퇴</a>
+            	<a class="dropdown-item" th:href="@{/page/login/memberupdate}">회원수정</a>
             	<a class="dropdown-item" th:href="@{/api/login/logout}">로그아웃</a>
           	</div>
-          	<div sec:authorize-expr="!isAuthenticated()">
-          		<a class="dropdown-item" th:href="@{/page/login/memberdelete}" sec:authorize="hasRole('ROLE_ADMIN')">회원탈퇴</a>
-          	</div>
-            <div class="dropdown-divider"></div>
+          	<div class="dropdown-divider"></div>
           </div>
         </li>
       </ul>
-      <form th:action="@{/page/board/list}" method="get" class="d-flex" th:value="${searchVal}">
+      <form th:action="@{/page/board/list/search}" method="get" class="d-flex" th:value="${searchVal}">
         <input class="form-control me-sm-2" type="text"  placeholder="Search" id="keyword" name="searchVal">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>

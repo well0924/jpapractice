@@ -6,20 +6,41 @@
 function main(){
 	location.href="/page/board/list";
 }
+//토큰 재발급
+function tokenReissue(){
+	let token = localStorage.getItem('X-AUTH-TOKEN');
+	let refreshToken = localStorage.getItem('refreshToken');
+
+	const tokenData = {
+		accessToken : token,
+		refreshToken : refreshToken
+	}
+
+	$.ajax({
+		url:'/api/login/reissue',
+		type:'post',
+		dataType: 'application/json; charset=utf-8',
+		data: tokenData
+	}).done(function(resp){
+		localStorage.setItem('X-AUTH-TOKEN',resp.accessToken);
+		localStorage.setItem('refreshToken',resp.refreshToken);
+	});
+}
 //글 작성기능 o.k
 function savepost(){
 	
+	let token = localStorage.getItem('X-AUTH-TOKEN');
+	let refresh = localStorage.getItem('refreshToken');
+
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
 	
 	let formdate = new FormData();
 	
 	let date = {boardTitle :title,boardContents : contents};
-
-	var inputFiles = $('#attachfiles');
-
-	var files = inputFiles[0].files;
-
+	let inputFiles = $('#attachfiles');
+	
+	let files = inputFiles[0].files;
 	let filecount = 4;
 
 	console.log(inputFiles);
@@ -43,6 +64,10 @@ function savepost(){
 			url:'/api/board/write',
 			type:'post',
 			data: formdate,
+			headers:{
+				'X-AUTH-TOKEN':token,
+				'refreshToken':refresh
+			},
 			contentType: false,  
             processData: false,
             cache: false,
@@ -65,10 +90,12 @@ function savepost(){
 						$('#valid_boardContents').text('');
 					}
 				}
-				
+				if(resp.status == 401){//인증이 안되는 경우
+					tokenReissue();//토큰 재발급
+				}
 				if(resp.status == 200){
 					alert('글이 작성되었습니다.');
-		 			location.href='/page/board/list';	
+		 			location.href='/page/board/list/freeboard';
 				}
 		});
 }	

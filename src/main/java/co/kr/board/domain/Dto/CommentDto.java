@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
 
+import co.kr.board.domain.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
@@ -34,7 +35,6 @@ public class CommentDto {
 	}
 	
 	@Getter
-	@Builder
 	@ToString
 	public static class CommentResponseDto{
 		
@@ -50,12 +50,12 @@ public class CommentDto {
 		private LocalDateTime createdAt;
 		
 		@Builder
-		public CommentResponseDto(Integer replyId,Integer boardId,String replyWriter,String replyContents,LocalDateTime createdAt){
-			this.replyId = replyId;
-			this.boardId = boardId;
-			this.replyWriter = replyWriter;
-			this.replyContents = replyContents;
-			this.createdAt = createdAt;
+		public CommentResponseDto(Comment comment){
+			this.replyId = comment.getId();
+			this.boardId = comment.getBoard().getId();
+			this.replyWriter = comment.getMember().getUsername();
+			this.replyContents = comment.getReplyContents();
+			this.createdAt = comment.getCreatedAt();
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package co.kr.board.service;
 
+import co.kr.board.config.redis.CacheKey;
 import co.kr.board.domain.Board;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.config.Exception.dto.ErrorCode;
@@ -8,6 +9,7 @@ import co.kr.board.domain.Like;
 import co.kr.board.repository.LikeRepository;
 import co.kr.board.domain.Member;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,36 +17,46 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class LikeService {
     private final LikeRepository repository;
-    private final BoardRepository boardRepository;
+    private final String likeMessage ="좋아요 처리 완료";
+    private final String likeCancelMessage ="좋아요 취소 처리 완료";
 
+    /*
+    * 좋아요+1
+    * @param Board
+    * @param Member
+    * 게시글조회에서 좋아요 +1기능
+    */
     @Transactional
-    public String updateLikeOfBoard(Integer boardId,Member member){
-        Board board = boardRepository.findById(boardId).orElseThrow(()->{throw new CustomExceptionHandler(ErrorCode.NOT_FOUND);});
-        //좋아요 중복체크 
-        if(!hasLikeBoard(board,member)){
-            board.increaseLikeCount();
-            return createLikeBoard(board,member);
-        }
-        //중복이 되는 경우에는 감소
-        board.decreaseLikeCount();
-        return removeLikeBoard(board,member);
-    }
-
-    //좋아요+1
+    @Cacheable(value = CacheKey.LIKE,key = "#likeMessage",unless = "#result == null")
     public String createLikeBoard(Board board,Member member){
+        board.increaseLikeCount();
         Like like = new Like(board,member);
         repository.save(like);
-        return "좋아요 처리 완료";
+        return likeMessage;
     }
 
-    //좋아요-1
+    /*
+     * 좋아요-1
+     * @param Board
+     * @param Member
+     * 게시글 조회에서 좋아요 -1
+     */
+    @Transactional
+    @Cacheable(value = CacheKey.LIKE,key = "#likeCancelMessage",unless = "#result == null")
     public String removeLikeBoard(Board board,Member member){
         Like likeBoard = repository.findByMemberAndBoard(member,board).orElseThrow(()->{throw new CustomExceptionHandler(ErrorCode.LIKE_NOT_FOUND);});
+        board.decreaseLikeCount();
         repository.delete(likeBoard);
-        return "좋아요 취소 처리 완료";
+        return likeCancelMessage;
     }
 
-    //좋아요 중복처리
+    /*
+    * 좋아요 중복처리기능
+    * @param Board
+    * @param Member
+    *
+    */
+    @Transactional
     public boolean hasLikeBoard(Board board,Member member){
         return repository.findByMemberAndBoard(member,board).isPresent();
     }

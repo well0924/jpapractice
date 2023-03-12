@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 public class CookieUtile {
     public Cookie createCookie(String cookieName, String value){
         Cookie token = new Cookie(cookieName,value);
-        token.setHttpOnly(true);//자바스크립트에서 쿠키 접근 불가
+        token.setHttpOnly(false);
         token.setMaxAge((int) JwtTokenProvider.refreshtokenValidTime);
         token.setPath("/");//전체 경로에서 유효
         return token;

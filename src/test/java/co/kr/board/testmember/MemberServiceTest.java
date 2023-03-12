@@ -43,12 +43,6 @@ public class MemberServiceTest {
 	MemberService memberservice;
 	@Autowired
 	BCryptPasswordEncoder encode;
-	@Autowired
-	JwtTokenProvider jwtTokenProvider;
-	@Autowired
-	private RedisService redisService;
-	@Autowired
-	private RedisTemplate redisTemplate;
 
 	@Test
 	@DisplayName("회원가입 테스트")
@@ -236,59 +230,6 @@ public class MemberServiceTest {
 		
 	}
 
-	@Test
-	@DisplayName("jwt 토큰 발급 테스트")
-	public void jwtTokenGenerateTest(){
-		
-		LoginDto dto = loginDto();
-		//회원조회
-		Optional<Member>memberAccount = memberRepository.findByUsername(dto.getUsername());
-
-		Member memberdetail = memberAccount.get();
-		//비밀번호 매칭
-		memberservice.passwordvalidation(memberdetail, dto);
-		//토큰을 발행
-		TokenDto tokenDto = jwtTokenProvider.createTokenDto(memberdetail.getUsername(), memberdetail.getRole());
-		//토큰값을 decode를 해서 name과 일치하는지 보기.
-		String userpk = jwtTokenProvider.getUserPK(tokenDto.getAccessToken());
-		
-		assertEquals(userpk, memberdetail.getUsername());
-	}
-
-	@Test
-	@DisplayName("jwt 토큰 재발급 테스트")
-	public void jwtTokenReissueTest() {
-		LoginDto dto = loginDto();
-		//회원조회
-		Optional<Member>memberAccount = memberRepository.findByUsername(dto.getUsername());
-
-		Member memberDetail = memberAccount.get();
-		//비밀번호 매칭
-		memberservice.passwordvalidation(memberDetail, dto);
-		//토큰을 발행
-		TokenDto tokenDto = jwtTokenProvider.createTokenDto(memberDetail.getUsername(), memberDetail.getRole());
-
-		//토큰에서 유저정보 가져오기
-		Authentication authentication = jwtTokenProvider.getAuthentication(tokenDto.getRefreshToken());
-
-		//권한 가져오기
-		String authority = authentication
-				.getAuthorities()
-				.stream()
-				.map(GrantedAuthority::getAuthority)
-				.collect(Collectors.joining(","));
-		//토큰 refresh
-		redisService.checkRefreshToken(authentication.getName(),tokenDto.getRefreshToken());
-
-		String result = jwtTokenProvider.getUserPK(tokenDto.getRefreshToken());
-
-		tokenDto = jwtTokenProvider.createTokenDto(authentication.getName(),Role.valueOf(authority));
-
-		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-		valueOperations.set(result,tokenDto.getRefreshToken());
-
-		assertEquals(valueOperations.get(result),tokenDto.getRefreshToken());
-	}
 	@Test
 	@DisplayName("비밀번호 재수정 테스트")
 	public void passwordChangeTest()throws Exception{

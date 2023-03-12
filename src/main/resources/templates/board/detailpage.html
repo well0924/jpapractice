@@ -32,7 +32,9 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
     </div>
     <div class="form-group">
        <label for="board_like">
-           <button id="board_like" name="" onclick="addLike()">좋아요</button>
+           <button id="board_like" onclick="addDuplicatedLike()">좋아요</button>
+           </br>
+           <p>[[${detail.liked}]]</p>
        </label>
     </div>
     <div class="form-group">

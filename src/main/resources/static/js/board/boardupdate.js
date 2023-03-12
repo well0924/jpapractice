@@ -3,11 +3,13 @@
  */
 //글 수정기능
 function modifypost(){
-	
+	let token = localStorage.getItem('X-AUTH-TOKEN');
+	let refresh = localStorage.getItem('refreshToken');
+
 	let id = $('#boardid').val();
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
-	
+
 	let formdate = new FormData();
 	
 	let date= {
@@ -22,6 +24,10 @@ function modifypost(){
 		url:'/api/board/update/'+id,
 		type:'patch',
 		data:formdate,
+		headers: {
+			'X-AUTH-TOKEN':token,
+			'refreshToken':refresh
+		},
 		contentType: false,  
         processData: false,
         cache: false,
@@ -58,13 +64,18 @@ function modifypost(){
 
 //글삭제o.k
 function deletepost(){
-	
+	let token = localStorage.getItem('X-AUTH-TOKEN');
+	let refresh = localStorage.getItem('refreshToken');
 	let id = $('#boardid').val();
 	
 	$.ajax({
 		
 		url:'/api/board/delete/'+id,
 		type:'delete',
+		headers:{
+			'X-AUTH-TOKEN':token,
+			'refreshToken':refresh
+		},
 		data: null,
 		contentType:'application/json; charset=utf-8'
 	

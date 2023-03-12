@@ -4,13 +4,10 @@
  
   1. jpa에 적응을 하기 위해서 간단한 게시판을 만드는 것을 목표로 한다.
 
-
   2. 기능은 간단한 crud기능 및 댓글 그리고 로그인을 기준으로 한다.(추후 추가적인 기능을 할 예정)
-
-  
+ 
   3. 기능이 다 구현된 뒤에는 aws를 사용해서 배포를 한다.
 
-  
 ### 요구사항
 
 1.게시판
@@ -77,15 +74,11 @@
 
 - Back-end: Java11, SpringBoot, Jpa , Jwt, Redis
 
-
 - DB: MariaDB
-
 
 - Build: Gradle
 
-
 - Front-end: TheymLeaf,Html,CSS,JQuery
-
 
 - TestTool: postman
 
@@ -111,13 +104,15 @@
 
 - [x] 아이디 찾기
 
+- [x] 비밀번호 재변경
+
 - [x] 로그인(시큐리티+jwt)
 
 - [x] 회원 탈퇴,수정기능
 
 - [x] Redis를 활용한 RefreshToken 관리
 
-- [x] Redis를 활용한 cache 처리.
+- [x] Redis를 활용한 cache 처리.(게시글 조회,로그인,좋아요,refreshToken에 적용)
 
 - [x] 파일 첨부 기능
 
@@ -125,6 +120,10 @@
 
 - [x] 게시글 카테고리 기능
 
-- [ ] 파일 다운로드 기능
+- [x] 파일 다운로드 기능
 
+- [ ] 방문자 수 
 
+- [ ] 회원이 작성한 글 확인하기.
+
+- [ ] 

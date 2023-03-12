@@ -1,5 +1,6 @@
 package co.kr.board.config.redis;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -39,9 +40,9 @@ public class RedisService {
     //refreshToken 값 확인하기.
     public void checkRefreshToken(String username, String refreshToken) {
         String redisRT = this.getValues(username);
-        
-        if(refreshToken.equals(redisRT)) {
-            throw new CustomExceptionHandler(ErrorCode.valueOf("토큰이 만료되었습니다."));
+
+        if(!refreshToken.equals(redisRT)) {
+            throw new CustomExceptionHandler(ErrorCode.TOKEN_REFRESH_EXPIRED);
         }
     }
 

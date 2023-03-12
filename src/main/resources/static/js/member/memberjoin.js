@@ -16,11 +16,11 @@ function usernameCheck(){
 			console.log(resp);
 			
 			if(resp.data == true){
-				$('#duplicatedid').text('사용가능!');
-				$('#duplicatedid').css('color','blue');
-			}else{
 				$('#duplicatedid').text('아이디 중복!');
 				$('#duplicatedid').css('color','red');
+			}else{
+				$('#duplicatedid').text('사용가능!');
+				$('#duplicatedid').css('color','blue');
 			}					
 		});	
 }

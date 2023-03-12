@@ -1,5 +1,6 @@
 package co.kr.board.controller.api;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
@@ -8,6 +9,7 @@ import co.kr.board.config.redis.CacheKey;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Member;
 import co.kr.board.repository.MemberRepository;
+import org.apache.commons.io.FileUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 @Log4j2
@@ -101,7 +106,22 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
 
-	
+	@GetMapping("/download")
+	public void download(HttpServletResponse response) throws IOException {
+
+		String path = "C:\\upload\\\\825443066852500..png";
+
+		byte[] fileByte = FileUtils.readFileToByteArray(new File(path));
+
+		response.setContentType("application/octet-stream");
+		response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode("tistory.png", "UTF-8")+"\";");
+		response.setHeader("Content-Transfer-Encoding", "binary");
+
+		response.getOutputStream().write(fileByte);
+		response.getOutputStream().flush();
+		response.getOutputStream().close();
+	}
+
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String)authentication.getPrincipal();
