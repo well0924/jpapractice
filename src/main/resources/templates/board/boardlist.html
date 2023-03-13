@@ -21,6 +21,7 @@ layout:decorator="/layout/mainlayout">
       <th scope="col">제목</th>
       <th scope="col">작성자</th>
       <th scope="col">조회수</th>
+      <th scope="col">좋아요</th>
       <th scope="col">등록일</th>
     </tr>
   </thead>
@@ -34,6 +35,7 @@ layout:decorator="/layout/mainlayout">
       </td>
       <td>[[${list.boardAuthor}]]</td>
       <td>[[${list.readCount}]]</td>
+      <td>[[${list.liked}]]</td>
       <td>[[${#temporals.format(list.createdAt,'yyyy-MM-dd HH:mm')}]]</td>
     </tr>
   </tbody>

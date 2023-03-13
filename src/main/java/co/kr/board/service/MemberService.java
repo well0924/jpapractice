@@ -289,9 +289,9 @@ public class MemberService {
 	 * @param MemberRequestDto
 	 * @Exception NOT_USER(회원이 존재하지 않습니다)
 	 */
-	public Integer passwordchange(Integer useridx,MemberDto.MemberRequestDto dto){
+	public Integer passwordchange(String username,MemberDto.MemberRequestDto dto){
 		//회원조회
-		Optional<Member>memberDetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
+		Optional<Member>memberDetail = Optional.ofNullable(repository.findByUsername(username).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));
 		memberDetail.ifPresent(member ->{
 			if(dto.getPassword()!= null) {
 				member.setPassword(encoder.encode(dto.getPassword()));
@@ -299,7 +299,7 @@ public class MemberService {
 			repository.save(member);
 		});
 
-		return useridx;
+		return memberDetail.get().getId();
 	}
 	//비밀번호 유효성 검사
     public void passwordvalidation(Member memberAccount,LoginDto dto){

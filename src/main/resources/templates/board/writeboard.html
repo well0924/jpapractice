@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<html 
-xmlns="http://www.w3.org/1999/xhtml"
-xmlns:th="http://www.thymeleaf.org" 
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>글 작성 화면</title>
@@ -28,82 +24,11 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
       <label for="boardcontents" class="form-label mt-4">파일첨부</label>
       <input type="file" multiple="multiple" id="files" name="file">
     </div>
-    <button type="button" class="btn btn-primary" onclick="savepost()" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_USER')">글작성</button>
+    <button type="button" class="btn btn-primary" onclick="savepost()">글작성</button>
     <button type="button" class="btn btn-primary" onclick="main()">목록</button>
   </fieldset>
 </form>
-<!--<script type="text/javascript" th:src="@{/js/board/boardwrite.js}"></script>-->
-<script>
-  //메인페이지 이동
-  function main(){
-    location.href="/page/board/list";
-  }
-  //글 작성기능 o.k
-  function savepost(){
-
-    let title = $('#boardtitle').val();
-    let contents = $('#boardcontents').val();
-
-    let formdate = new FormData();
-
-    let date = {boardTitle :title,boardContents : contents};
-
-    var inputFiles = $('#files');
-    var attachfiles = inputFiles[0].files;
-    let filecount = 4;
-
-    if(attachfiles.length>filecount){
-      alert('파일은 4개까지 입니다.');
-      return false;
-    }
-
-    if(inputFiles != null){
-      for(var i =0; i<attachfiles.lenght;i++){
-        console.log(attachfiles[i]);
-        formdate.append("files",attachfiles[i]);
-      }
-    }
-
-    formdate.append("boardsave",new Blob([JSON.stringify(date)], {type: "application/json"}));
-
-    var token = localStorage.getItem("X-AUTH-TOKEN");
-
-    $.ajax({
-      url:'/api/board/write',
-      type:'post',
-      data: formdate,
-      contentType: false,
-      processData: false,
-      cache: false,
-      enctype: 'multipart/form-data',
-      dataType: "json",
-      headers : {
-        Authorization: 'X-AUTH-TOKEN' + token}
-    }).done(function(resp){
-
-      if(resp.status== 400){
-
-        if(resp.data.hasOwnProperty('valid_boardTitle')){
-          $('#valid_boardTitle').text(resp.data.valid_boardTitle);
-          $('#valid_boardTitle').css('color','red');
-        }else{
-          $('#valid_boardTitle').text('');
-        }
-        if(resp.data.hasOwnProperty('valid_boardContents')){
-          $('#valid_boardContents').text(resp.data.valid_boardContents);
-          $('#valid_boardContents').css('color','red');
-        }else{
-          $('#valid_boardContents').text('');
-        }
-      }
-
-      if(resp.status == 200){
-        alert('글이 작성되었습니다.');
-        location.href='/page/board/list';
-      }
-    });
-  }
-</script>
+<script type="text/javascript" th:src="@{/js/board/boardwrite.js}"></script>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

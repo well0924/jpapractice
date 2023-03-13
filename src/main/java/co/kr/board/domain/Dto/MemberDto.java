@@ -47,7 +47,14 @@ public class MemberDto {
 		private LocalDateTime createdAt;
 		
 	}
-	
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class MemberPasswordChangeDto implements Serializable{
+		private Integer useridx;
+		private String password;
+	}
 	@Getter
 	@ToString
 	@AllArgsConstructor

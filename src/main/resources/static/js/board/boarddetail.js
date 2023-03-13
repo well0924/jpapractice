@@ -4,9 +4,8 @@
 
 //목록가기o.k
 function listpage(){
-	location.href='/page/board/list';
+	location.href='/page/board/list/freeboard';
 }
-
 //수정페이지 o.k
 function modifypage(){
 	
@@ -14,7 +13,6 @@ function modifypage(){
 	
 	location.href='/page/board/modify/'+id;
 }
-
 //좋아요 중복기능
 function addDuplicatedLike(){
 	let id = $('#boardid').val();
@@ -24,21 +22,16 @@ function addDuplicatedLike(){
 	$.ajax({
 		url:'/api/like/duplicated/'+id,
 		type:'get',
-		headers:{
-			'X-AUTH-TOKEN':token,
-			'refreshToken':refreshToken
-		},
+		headers:{'X-AUTH-TOKEN':token, 'refreshToken':refreshToken},
 		contentType:'application/json; charset = utf-8',
 		dataTye: 'json'
 	}).done(function(resp){
 		console.log(resp);
 		console.log(resp.data);
 		if(resp.data==true){
-			alert('plus');
 			addLike(id);
 		}
 		if(resp.data==false){
-			alert('minus');
 			minusLike(id);
 		}
 	});
@@ -52,11 +45,7 @@ function addLike(id){
 	$.ajax({
 		url:'/api/like/plus/'+id,
 		type: 'post',
-		headers: {
-			'X-AUTH-TOKEN':token,
-			'refreshToken':refreshToken
-		},
-		data:{boardId : id},
+		headers: {'X-AUTH-TOKEN':token,'refreshToken':refreshToken},
 		dataTye: 'json',
 		contentType: 'application/json; charset = utf-8'
 	}).done(function(resp){
@@ -65,13 +54,13 @@ function addLike(id){
 }
 //좋아요 -1
 function minusLike(id){
-	let boardId = $('#boardid').val();
 	let token = localStorage.getItem('X-AUTH-TOKEN');
 	let refreshToken = localStorage.getItem('refreshToken');
+
 	$.ajax({
 		url:'/api/like/minus/'+id,
 		type:'post',
-		data: {boardId:id},
+		headers: {'X-AUTH-TOKEN':token,'refreshToken':refreshToken},
 		dataTye:'json',
 		contentType:'application/json; charset=utf-8'
 	}).done(function(resp){

@@ -241,7 +241,7 @@ public class MemberServiceTest {
 
 		//when (비밀번호 수정)
 		memberRequestDto = MemberDto.MemberRequestDto.builder().password("4567").build();
-		memberservice.passwordchange(member.get().getId(),memberRequestDto);
+		memberservice.passwordchange(dto().getUsername(),memberRequestDto);
 
 		//then
 		assertThat(encode.matches("4567",member.get().getPassword()));

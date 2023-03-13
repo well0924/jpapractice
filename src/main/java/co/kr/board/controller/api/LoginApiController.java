@@ -1,27 +1,17 @@
 package co.kr.board.controller.api;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
-import co.kr.board.config.redis.RedisService;
-import co.kr.board.config.security.jwt.CookieUtile;
-import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.TokenRequest;
 import co.kr.board.domain.Dto.TokenResponse;
-import co.kr.board.repository.RefreshTokenRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import co.kr.board.config.Exception.dto.Response;
@@ -39,7 +29,7 @@ public class LoginApiController {
 
 	@GetMapping("/logincheck/{id}")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Boolean>idcheck(@PathVariable(value="id") String username){
+	public Response<Boolean>idCheck(@PathVariable(value="id") String username){
 				
 		Boolean checkresult = service.checkmemberIdDuplicate(username);
 			
@@ -52,7 +42,7 @@ public class LoginApiController {
 	
 	@GetMapping("/emailcheck/{email}")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Boolean>emailcheck(@PathVariable(value="email")@Email String useremail){
+	public Response<Boolean>emailCheck(@PathVariable(value="email")@Email String useremail){
 		Boolean checkresult = service.checkmemberEmailDuplicate(useremail);
 		
 		if(checkresult.equals(true)) {//아이디 중복
@@ -64,7 +54,7 @@ public class LoginApiController {
 	
 	@GetMapping("/list")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<List<MemberDto.MemeberResponseDto>>memberlist(){
+	public Response<List<MemberDto.MemeberResponseDto>>memberList(){
 		List<MemberDto.MemeberResponseDto>list = service.findAll();
 		
 		return new Response<>(HttpStatus.OK.value(),list);
@@ -81,7 +71,7 @@ public class LoginApiController {
 	}
 	@GetMapping("/detailmember/{idx}/member")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<MemberDto.MemeberResponseDto>memberdetail(@PathVariable(value="idx")Integer useridx){
+	public Response<MemberDto.MemeberResponseDto>memberDetail(@PathVariable(value="idx")Integer useridx){
 		
 		MemberDto.MemeberResponseDto dto = service.getMember(useridx);
 				
@@ -90,57 +80,48 @@ public class LoginApiController {
 	
 	@PostMapping("/memberjoin")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Integer>memberjoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
-		
+	public Response<Integer>memberJoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
 		int joinresult = service.memberjoin(dto);
-
 		return new Response<>(HttpStatus.OK.value(),joinresult);
 	}
 	
 	@DeleteMapping("/memberdelete/{idx}/member")
-	public Response<String>memberdelete(@PathVariable(value="idx")String username){
-		
-		service.memberdelete(username);		
-		
+	public Response<String>memberDelete(@PathVariable(value="idx")String username){
+		service.memberdelete(username);
 		return new Response<>(HttpStatus.OK.value(),"delete");
 	}
 	
 	@PutMapping("/memberupdate/{idx}/member")
-	public Response<Integer>memberupdate(
+	public Response<Integer>memberUpdate(
 			@PathVariable(value="idx")Integer useridx,
 			@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult){
-				
 		int updateresult = service.memberupdate(useridx, dto);
-		
 		return new Response<>(HttpStatus.OK.value(),updateresult);
 	}
 	
 	@PostMapping("/userfind/{name}/{email}")
-	public Response<?>userfindid(
+	public Response<?>userFindId(
 			@PathVariable(value="name")String membername,
 			@PathVariable(value="email")String useremail){
-		
 		String userid = service.findByMembernameAndUseremail(membername, useremail);
-		
 		return new Response<>(HttpStatus.OK.value(),userid);
 	}
 
-	@PutMapping("/passwordchange")
-	public Response<Integer>passwordChange(Integer useridx,MemberDto.MemberRequestDto dto){
-
-		int result = service.passwordchange(useridx,dto);
-
+	@PutMapping("/passwordchange/{name}")
+	public Response<Integer>passwordChange(@PathVariable(value = "name")String username,
+										   @Valid @RequestBody MemberDto.MemberRequestDto dto){
+		int result = service.passwordchange(username,dto);
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
 
 	@PostMapping("/signup")
-    public Response <TokenResponse> memberjwtlogin(@RequestBody LoginDto loginDto){
+    public Response <TokenResponse> memberJwtLogin(@Valid @RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
 
     @PostMapping("/reissue")
-    public Response<TokenResponse>jwtreissue(@RequestBody TokenRequest tokenDto){
+    public Response<TokenResponse>jwtReissue(@Valid @RequestBody TokenRequest tokenDto){
         TokenResponse tokenResponse = service.reissue(tokenDto);
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }

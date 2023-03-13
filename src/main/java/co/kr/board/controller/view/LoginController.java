@@ -79,8 +79,7 @@ public class LoginController {
 		Page<Member>list= service.findAll(pageable);
 				
 		mv.addObject("memberlist", list);
-		
-		mv.setViewName("admin/adminlist");
+		mv.setViewName("admin/index");
 		
 		return mv;
 	}

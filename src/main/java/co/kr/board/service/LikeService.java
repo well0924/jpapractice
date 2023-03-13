@@ -27,7 +27,6 @@ public class LikeService {
     * 게시글조회에서 좋아요 +1기능
     */
     @Transactional
-    @Cacheable(value = CacheKey.LIKE,key = "#likeMessage",unless = "#result == null")
     public String createLikeBoard(Board board,Member member){
         board.increaseLikeCount();
         Like like = new Like(board,member);
@@ -42,7 +41,6 @@ public class LikeService {
      * 게시글 조회에서 좋아요 -1
      */
     @Transactional
-    @Cacheable(value = CacheKey.LIKE,key = "#likeCancelMessage",unless = "#result == null")
     public String removeLikeBoard(Board board,Member member){
         Like likeBoard = repository.findByMemberAndBoard(member,board).orElseThrow(()->{throw new CustomExceptionHandler(ErrorCode.LIKE_NOT_FOUND);});
         board.decreaseLikeCount();
