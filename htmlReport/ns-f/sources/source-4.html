@@ -1,0 +1,130 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CategoryDto</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.domain.Dto</a>
+</div>
+
+<h1>Coverage Summary for Class: CategoryDto (co.kr.board.domain.Dto)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CategoryDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.domain.Dto;
+&nbsp;
+&nbsp;import co.kr.board.domain.Category;
+&nbsp;import lombok.*;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;@Getter
+<b class="nc">&nbsp;@Setter</b>
+<b class="nc">&nbsp;@ToString</b>
+<b class="nc">&nbsp;@NoArgsConstructor</b>
+<b class="nc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class CategoryDto {
+<b class="nc">&nbsp;    private Integer id;</b>
+<b class="nc">&nbsp;    private String name;</b>
+<b class="nc">&nbsp;    private List&lt;CategoryDto&gt; children;</b>
+&nbsp;
+&nbsp;    public static List&lt;CategoryDto&gt; toDtoList(List&lt;Category&gt; categories) {
+<b class="nc">&nbsp;        NestedConvertHelper helper = NestedConvertHelper.newInstance(</b>
+&nbsp;                categories,
+<b class="nc">&nbsp;                c -&gt; new CategoryDto(c.getId(), c.getName(), new ArrayList&lt;&gt;()),</b>
+<b class="nc">&nbsp;                c -&gt; c.getParent(),</b>
+<b class="nc">&nbsp;                c -&gt; c.getId(),</b>
+<b class="nc">&nbsp;                d -&gt; d.getChildren());</b>
+<b class="nc">&nbsp;        return helper.convert();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

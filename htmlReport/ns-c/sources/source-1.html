@@ -1,0 +1,250 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > BoardApiController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.controller.api</a>
+</div>
+
+<h1>Coverage Summary for Class: BoardApiController (co.kr.board.controller.api)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BoardApiController</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (5/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    21.9%
+  </span>
+  <span class="absValue">
+    (7/32)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BoardApiController$$EnhancerBySpringCGLIB$$670845e1</td>
+  </tr>
+  <tr>
+    <td class="name">BoardApiController$$EnhancerBySpringCGLIB$$670845e1$$FastClassBySpringCGLIB$$a2022cc6</td>
+  </tr>
+  <tr>
+    <td class="name">BoardApiController$$FastClassBySpringCGLIB$$4c2f1b49</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (5/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    21.9%
+  </span>
+  <span class="absValue">
+    (7/32)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.controller.api;
+&nbsp;
+&nbsp;import javax.servlet.http.HttpServletResponse;
+&nbsp;import javax.validation.Valid;
+&nbsp;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.config.redis.CacheKey;
+&nbsp;import co.kr.board.domain.Dto.BoardDto;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import co.kr.board.repository.MemberRepository;
+&nbsp;import org.apache.commons.io.FileUtils;
+&nbsp;import org.springframework.cache.annotation.Cacheable;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.data.web.PageableDefault;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.validation.BindingResult;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import co.kr.board.service.BoardService;
+&nbsp;import co.kr.board.config.Exception.dto.Response;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URLEncoder;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;@RestController
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;@RequestMapping(&quot;/api/board/*&quot;)
+&nbsp;public class BoardApiController {
+&nbsp;	private final BoardService service;
+&nbsp;	private final MemberRepository memberRepository;
+&nbsp;
+&nbsp;	@GetMapping(&quot;/list/{cname}&quot;)
+&nbsp;	@ResponseStatus(code=HttpStatus.OK)
+&nbsp;	public Response&lt;Page&lt;BoardDto.BoardResponseDto&gt;&gt;articleList(
+&nbsp;			@PathVariable(value = &quot;cname&quot;,required = true) String categoryName,
+&nbsp;			@PageableDefault(sort=&quot;id&quot;,direction = Sort.Direction.DESC,size=10)Pageable pageable){
+&nbsp;				
+<b class="nc">&nbsp;		Page&lt;BoardDto.BoardResponseDto&gt; list = service.findAllPage(pageable,categoryName);</b>
+&nbsp;		
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),list);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@GetMapping(&quot;/list/search&quot;)
+&nbsp;	@ResponseStatus(code=HttpStatus.OK)
+&nbsp;	public Response&lt;Page&lt;BoardDto.BoardResponseDto&gt;&gt;searchList(@PageableDefault(sort=&quot;id&quot;,direction = Sort.Direction.DESC,size=5)Pageable pageable,@RequestParam(required = false,value = &quot;searchVal&quot;)String searchVal){
+&nbsp;
+<b class="fc">&nbsp;		Page&lt;BoardDto.BoardResponseDto&gt;list = service.findAllSearch(searchVal,pageable);</b>
+&nbsp;
+<b class="fc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),list);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@GetMapping(&quot;/detail/{id}&quot;)
+&nbsp;	@ResponseStatus(code=HttpStatus.OK)
+&nbsp;	@Cacheable(value = CacheKey.BOARD,key = &quot;#boardId&quot;,unless = &quot;#result == null&quot;)
+&nbsp;	public Response&lt;BoardDto.BoardResponseDto&gt; detailArticle(@PathVariable(value=&quot;id&quot;)Integer boardId){
+<b class="nc">&nbsp;		log.info(&quot;detail&quot;);</b>
+<b class="nc">&nbsp;		BoardDto.BoardResponseDto detail = service.getBoard(boardId);</b>
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),detail);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@PostMapping(value = &quot;/write&quot;)
+&nbsp;	@ResponseStatus(code = HttpStatus.CREATED)
+&nbsp;	public Response&lt;Integer&gt;writeArticle(
+&nbsp;			@RequestPart(value=&quot;filelist&quot;,required = false) List&lt;MultipartFile&gt; files,
+&nbsp;			@Valid @RequestPart(value = &quot;boardsave&quot;) BoardDto.BoardRequestDto dto,
+&nbsp;			BindingResult bindingresult,
+&nbsp;			@RequestParam(required = true,defaultValue = &quot;2&quot;)int categoryId)throws Exception{
+&nbsp;
+&nbsp;		//url: localhost:8085/api/board/write?categoryId=2
+<b class="nc">&nbsp;		Member member = getMember();</b>
+<b class="nc">&nbsp;		int insertResult = service.boardsave(dto,member,categoryId,files);</b>
+&nbsp;
+<b class="nc">&nbsp;		log.info(&quot;title: {},content: {},image:{}&quot;,dto.getBoardTitle(),dto.getBoardContents(),files);</b>
+&nbsp;
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),insertResult);</b>
+&nbsp;	}
+&nbsp;	@DeleteMapping(&quot;/delete/{id}&quot;)
+&nbsp;	@ResponseStatus(code = HttpStatus.OK)
+&nbsp;	public Response&lt;?&gt;deleteArticle(@PathVariable(value=&quot;id&quot;)Integer boardId)throws Exception{
+<b class="fc">&nbsp;		Member member = getMember();</b>
+<b class="nc">&nbsp;		service.deleteBoard(boardId,member);</b>
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),200);</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@PatchMapping(&quot;/update/{id}&quot;)
+&nbsp;	@ResponseStatus(code = HttpStatus.OK)
+&nbsp;	public Response&lt;?&gt;updateArticle(
+&nbsp;			@PathVariable(value=&quot;id&quot;)Integer boardId,
+&nbsp;			@Valid @RequestPart(value = &quot;boardupdate&quot;) BoardDto.BoardRequestDto dto, BindingResult bindingresult,
+&nbsp;			@RequestPart(value = &quot;filelist&quot;,required = false)List&lt;MultipartFile&gt;fileList)throws Exception{
+&nbsp;
+<b class="nc">&nbsp;		Member member = getMember();</b>
+<b class="nc">&nbsp;		int updateResult = service.updateBoard(boardId, dto,member,fileList);</b>
+&nbsp;
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),updateResult);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@GetMapping(&quot;/download&quot;)
+&nbsp;	public void download(HttpServletResponse response) throws IOException {
+&nbsp;
+<b class="nc">&nbsp;		String path = &quot;C:\\upload\\\\825443066852500..png&quot;;</b>
+&nbsp;
+<b class="nc">&nbsp;		byte[] fileByte = FileUtils.readFileToByteArray(new File(path));</b>
+&nbsp;
+<b class="nc">&nbsp;		response.setContentType(&quot;application/octet-stream&quot;);</b>
+<b class="nc">&nbsp;		response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; fileName=\&quot;&quot; + URLEncoder.encode(&quot;tistory.png&quot;, &quot;UTF-8&quot;)+&quot;\&quot;;&quot;);</b>
+<b class="nc">&nbsp;		response.setHeader(&quot;Content-Transfer-Encoding&quot;, &quot;binary&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;		response.getOutputStream().write(fileByte);</b>
+<b class="nc">&nbsp;		response.getOutputStream().flush();</b>
+<b class="nc">&nbsp;		response.getOutputStream().close();</b>
+<b class="nc">&nbsp;	}</b>
+&nbsp;
+&nbsp;	private Member getMember(){
+<b class="fc">&nbsp;		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="fc">&nbsp;		String username = (String)authentication.getPrincipal();</b>
+<b class="nc">&nbsp;		Member member = memberRepository.findByUsername(username).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.NOT_FOUND));</b>
+<b class="nc">&nbsp;		return member;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

@@ -28,23 +28,15 @@ function tokenReissue(){
 }
 //글 작성기능 o.k
 function savepost(){
-	
 	let token = localStorage.getItem('X-AUTH-TOKEN');
 	let refresh = localStorage.getItem('refreshToken');
-
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
-	
 	let formdate = new FormData();
-	
 	let date = {boardTitle :title,boardContents : contents};
 	let inputFiles = $('#attachfiles');
-	
 	let files = inputFiles[0].files;
 	let filecount = 4;
-
-	console.log(inputFiles);
-	console.log(files);
 
 	if(files.length>filecount){
 		alert('파일은 4개까지 입니다.');

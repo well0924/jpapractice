@@ -109,7 +109,7 @@ public class LoginApiController {
 
 	@PutMapping("/passwordchange/{name}")
 	public Response<Integer>passwordChange(@PathVariable(value = "name")String username,
-										   @Valid @RequestBody MemberDto.MemberRequestDto dto){
+										   @RequestBody MemberDto.MemberRequestDto dto){
 		int result = service.passwordchange(username,dto);
 		return new Response<>(HttpStatus.OK.value(),result);
 	}

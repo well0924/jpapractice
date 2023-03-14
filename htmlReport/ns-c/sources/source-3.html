@@ -1,0 +1,190 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CommentApiController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.controller.api</a>
+</div>
+
+<h1>Coverage Summary for Class: CommentApiController (co.kr.board.controller.api)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommentApiController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    53.3%
+  </span>
+  <span class="absValue">
+    (8/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CommentApiController$$EnhancerBySpringCGLIB$$33cffdba</td>
+  </tr>
+  <tr>
+    <td class="name">CommentApiController$$EnhancerBySpringCGLIB$$33cffdba$$FastClassBySpringCGLIB$$40d0fac9</td>
+  </tr>
+  <tr>
+    <td class="name">CommentApiController$$FastClassBySpringCGLIB$$dab4de30</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    53.3%
+  </span>
+  <span class="absValue">
+    (8/15)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.controller.api;
+&nbsp;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;import javax.validation.Valid;
+&nbsp;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import co.kr.board.repository.MemberRepository;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.validation.BindingResult;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.PutMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RestController;
+&nbsp;
+&nbsp;import co.kr.board.config.Exception.dto.Response;
+&nbsp;import co.kr.board.domain.Dto.CommentDto;
+&nbsp;import co.kr.board.service.CommentService;
+&nbsp;import lombok.AllArgsConstructor;
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;@RestController
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;@RequestMapping(&quot;/api/reply/*&quot;)
+&nbsp;public class CommentApiController {
+&nbsp;	
+&nbsp;	private final CommentService service;
+&nbsp;	private final MemberRepository memberRepository;
+&nbsp;	@GetMapping(&quot;/list/{id}&quot;)
+&nbsp;	public Response&lt;List&lt;CommentDto.CommentResponseDto&gt;&gt;getBoardComments(@PathVariable(value=&quot;id&quot;)Integer boardId)throws Exception{
+<b class="fc">&nbsp;		List&lt;CommentDto.CommentResponseDto&gt;list = service.findCommentsBoardId(boardId);</b>
+<b class="fc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),list);</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@PostMapping(&quot;/write/{id}&quot;)
+&nbsp;	public Response&lt;?&gt;replyWrite(@PathVariable(value=&quot;id&quot;)Integer boardId,
+&nbsp;								 @Valid @RequestBody CommentDto.CommentRequestDto dto,
+&nbsp;								 BindingResult bindingresult){
+&nbsp;
+<b class="fc">&nbsp;		Member member = getMember();</b>
+<b class="nc">&nbsp;		log.info(member);</b>
+<b class="nc">&nbsp;		int insertResult = service.replysave(dto, member, boardId);</b>
+&nbsp;		
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),insertResult);</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@DeleteMapping(&quot;/delete/{id}&quot;)
+&nbsp;	public Response&lt;?&gt;replyDelete(@PathVariable(value=&quot;id&quot;)Integer replyId){
+&nbsp;
+<b class="fc">&nbsp;		Member mebmer = getMember();</b>
+<b class="nc">&nbsp;		service.replydelete(replyId,mebmer);</b>
+&nbsp;
+<b class="nc">&nbsp;		return new Response&lt;&gt;(HttpStatus.OK.value(),&quot;o.k&quot;);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private Member getMember(){
+<b class="fc">&nbsp;		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="fc">&nbsp;		String username = (String)authentication.getPrincipal();</b>
+<b class="nc">&nbsp;		Member member = memberRepository.findByUsername(username).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.NOT_FOUND));</b>
+<b class="nc">&nbsp;		return member;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

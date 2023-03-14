@@ -34,13 +34,10 @@ function modifypost(){
  		enctype: 'multipart/form-data',    
         dataType: "json",
 	}).done(function(resp){
-		console.log(resp);
-		console.log(resp.status);
-		console.log(resp.data);
-		
+
 		if(resp.status == 200){
 			alert('글이 수정되었습니다.');
- 			location.href='/page/board/list';	
+ 			location.href='/page/board/list/freeboard';
 		}
 		
 		if(resp.status== 400){

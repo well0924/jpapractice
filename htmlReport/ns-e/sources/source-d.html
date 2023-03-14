@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > QLike</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.domain</a>
+</div>
+
+<h1>Coverage Summary for Class: QLike (co.kr.board.domain)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QLike</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (3/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (10/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.domain;
+&nbsp;
+&nbsp;import static com.querydsl.core.types.PathMetadataFactory.*;
+&nbsp;
+&nbsp;import com.querydsl.core.types.dsl.*;
+&nbsp;
+&nbsp;import com.querydsl.core.types.PathMetadata;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import com.querydsl.core.types.Path;
+&nbsp;import com.querydsl.core.types.dsl.PathInits;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * QLike is a Querydsl query type for Like
+&nbsp; */
+&nbsp;@Generated(&quot;com.querydsl.codegen.DefaultEntitySerializer&quot;)
+&nbsp;public class QLike extends EntityPathBase&lt;Like&gt; {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = -501518572L;
+&nbsp;
+<b class="fc">&nbsp;    private static final PathInits INITS = PathInits.DIRECT2;</b>
+&nbsp;
+<b class="fc">&nbsp;    public static final QLike like = new QLike(&quot;like1&quot;);</b>
+&nbsp;
+&nbsp;    public final QBoard board;
+&nbsp;
+<b class="fc">&nbsp;    public final NumberPath&lt;Long&gt; id = createNumber(&quot;id&quot;, Long.class);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final BooleanPath likeStatus = createBoolean(&quot;likeStatus&quot;);</b>
+&nbsp;
+&nbsp;    public final QMember member;
+&nbsp;
+&nbsp;    public QLike(String variable) {
+<b class="fc">&nbsp;        this(Like.class, forVariable(variable), INITS);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QLike(Path&lt;? extends Like&gt; path) {
+<b class="nc">&nbsp;        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QLike(PathMetadata metadata) {
+<b class="nc">&nbsp;        this(metadata, PathInits.getFor(metadata, INITS));</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QLike(PathMetadata metadata, PathInits inits) {
+<b class="nc">&nbsp;        this(Like.class, metadata, inits);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QLike(Class&lt;? extends Like&gt; type, PathMetadata metadata, PathInits inits) {
+<b class="fc">&nbsp;        super(type, metadata, inits);</b>
+<b class="fc">&nbsp;        this.board = inits.isInitialized(&quot;board&quot;) ? new QBoard(forProperty(&quot;board&quot;), inits.get(&quot;board&quot;)) : null;</b>
+<b class="fc">&nbsp;        this.member = inits.isInitialized(&quot;member&quot;) ? new QMember(forProperty(&quot;member&quot;)) : null;</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 01:00</div>
+</div>
+</body>
+</html>

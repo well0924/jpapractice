@@ -1,0 +1,283 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CommentService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.service</a>
+</div>
+
+<h1>Coverage Summary for Class: CommentService (co.kr.board.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CommentService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CommentService$$EnhancerBySpringCGLIB$$42a19fdb</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$$EnhancerBySpringCGLIB$$42a19fdb$$FastClassBySpringCGLIB$$1e2f96b6</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$$FastClassBySpringCGLIB$$7e0d17c</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622$auxiliary$4gwGKlMM</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622$auxiliary$4SsagirN</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622$auxiliary$53EuqUNX</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622$auxiliary$iTVET9uc</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622$auxiliary$MbtyGke2</td>
+  </tr>
+  <tr>
+    <td class="name">CommentService$MockitoMock$823082622$auxiliary$Nrz9lkt5</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (43/43)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.service;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;import javax.transaction.Transactional;
+&nbsp;
+&nbsp;import co.kr.board.domain.Board;
+&nbsp;import org.springframework.data.repository.query.Param;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import co.kr.board.repository.BoardRepository;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import co.kr.board.domain.Comment;
+&nbsp;import co.kr.board.domain.Dto.CommentDto;
+&nbsp;import co.kr.board.repository.CommentRepository;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class CommentService {
+&nbsp;	
+&nbsp;	private final CommentRepository repository;
+&nbsp;	
+&nbsp;	private final BoardRepository boardrepository;
+&nbsp;	
+&nbsp;	/*
+&nbsp;	 * 댓글 목록
+&nbsp;	 * @Param id
+&nbsp;	 * 게시글 조회화면에서 댓글 목록 출력 
+&nbsp;	 */
+&nbsp;	@Transactional
+&nbsp;	public List&lt;CommentDto.CommentResponseDto&gt; findCommentsBoardId(@Param(&quot;id&quot;) Integer id)throws Exception{
+&nbsp;		
+<b class="fc">&nbsp;		Optional&lt;Board&gt; detail = boardrepository.findById(id);</b>
+&nbsp;		
+<b class="fc">&nbsp;		Board board = detail.get();</b>
+&nbsp;		
+<b class="fc">&nbsp;		List&lt;Comment&gt;comment = repository.findCommentsBoardId(id);</b>
+<b class="fc">&nbsp;		List&lt;CommentDto.CommentResponseDto&gt; list = new ArrayList&lt;&gt;();</b>
+&nbsp;		
+<b class="fc">&nbsp;		for(Comment co : comment) {</b>
+&nbsp;			CommentDto.CommentResponseDto dto = CommentDto
+&nbsp;					.CommentResponseDto
+<b class="fc">&nbsp;					.builder()</b>
+<b class="fc">&nbsp;					.comment(co)</b>
+<b class="fc">&nbsp;					.build();</b>
+&nbsp;			
+<b class="fc">&nbsp;			list.add(dto);</b>
+<b class="fc">&nbsp;		}</b>
+<b class="fc">&nbsp;		return list;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	/*
+&nbsp;	 * 댓글 추가하기.
+&nbsp;	 * @Param CommentRequestDto
+&nbsp;	 * @Param CustomUserDetails
+&nbsp;	 * @Exception : 댓글사용시 로그인을 하지 않은 경우 ONLY_USER
+&nbsp;	 * @Exception : 게시판글 조회시 글이 없는 경우에는 NOT_BOARDDETAIL 
+&nbsp;	 */
+&nbsp;	@Transactional
+&nbsp;	public Integer replysave(CommentDto.CommentRequestDto dto,Member principal,Integer boardId){
+&nbsp;		
+&nbsp;		//유저가 아니면 사용불가
+<b class="fc">&nbsp;		if(principal == null) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);</b>
+&nbsp;		}
+&nbsp;		
+&nbsp;		//게시판에서 글 조회 -&gt; 글이 없으면 Exception
+<b class="fc">&nbsp;		Board board = boardrepository.findById(boardId).orElseThrow(()-&gt; new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));</b>
+&nbsp;		
+&nbsp;		
+<b class="fc">&nbsp;		Comment reply = Comment.builder()</b>
+<b class="fc">&nbsp;				.board(board)</b>
+<b class="fc">&nbsp;				.member(principal)</b>
+<b class="fc">&nbsp;				.replyWriter(principal.getUsername())</b>
+<b class="fc">&nbsp;				.replyContents(dto.getReplyContents())</b>
+<b class="fc">&nbsp;				.createdAt(dto.getCreatedAt())</b>
+<b class="fc">&nbsp;				.build();</b>
+&nbsp;
+<b class="fc">&nbsp;		repository.save(reply);</b>
+&nbsp;		
+<b class="fc">&nbsp;		board.getCommentlist().add(reply);</b>
+&nbsp;		
+<b class="fc">&nbsp;		return reply.getId();</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	/*
+&nbsp;	 * 댓글 삭제 
+&nbsp;	 * @Param replyId
+&nbsp;	 */
+&nbsp;	@Transactional
+&nbsp;	public void replydelete(Integer replyId,Member principal){
+&nbsp;		
+<b class="fc">&nbsp;		if(principal == null) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);</b>
+&nbsp;		}
+&nbsp;		
+<b class="fc">&nbsp;		Comment comment = repository.findById(replyId).orElseThrow(()-&gt; new CustomExceptionHandler(ErrorCode.NOT_FOUND));</b>
+&nbsp;		
+<b class="fc">&nbsp;		String userid= principal.getUsername();</b>
+<b class="fc">&nbsp;		String replywriter= comment.getReplyWriter();</b>
+&nbsp;	
+<b class="fc">&nbsp;		if(!userid.equals(replywriter)) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.COMMENT_DELETE_DENIED);</b>
+&nbsp;		}
+<b class="fc">&nbsp;		repository.deleteById(replyId);</b>
+<b class="fc">&nbsp;	}</b>
+&nbsp;	
+&nbsp;	/*
+&nbsp;	 * 댓글 수정 기능
+&nbsp;	 * @Param CommentRequestDto 
+&nbsp;	 * @Param Member
+&nbsp;	 * @Param replyId
+&nbsp;	 * 
+&nbsp;	 * @Exception:로그인을 안한 경우 ONLY_USER
+&nbsp;	 * @Exception:수정시 로그인한 아이디와 댓글 작성자가 일치하지 않은 경우 COMMENT_EDITE_DENINED
+&nbsp;	 */
+&nbsp;	@Transactional
+&nbsp;	public Integer replyUpdate(CommentDto.CommentRequestDto dto,Member principal,Integer replyId){
+&nbsp;		
+<b class="fc">&nbsp;		if(principal == null) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);</b>
+&nbsp;		}
+&nbsp;		
+<b class="fc">&nbsp;		Comment comment = repository.findById(replyId).orElseThrow(()-&gt; new CustomExceptionHandler(ErrorCode.NOT_FOUND));</b>
+&nbsp;		
+<b class="fc">&nbsp;		String userid= principal.getUsername();</b>
+&nbsp;		
+<b class="fc">&nbsp;		String replywriter= comment.getReplyWriter();</b>
+&nbsp;		
+<b class="fc">&nbsp;		if(!userid.equals(replywriter)) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.COMMENT_EDITE_DENIED);</b>
+&nbsp;		}
+&nbsp;		
+<b class="fc">&nbsp;		comment.contentsChange(dto.getReplyContents());</b>
+&nbsp;		
+<b class="fc">&nbsp;		return comment.getId();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

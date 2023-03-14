@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LoginController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.controller.view</a>
+</div>
+
+<h1>Coverage Summary for Class: LoginController (co.kr.board.controller.view)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoginController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (33/33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.controller.view;
+&nbsp;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.data.web.PageableDefault;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.servlet.ModelAndView;
+&nbsp;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import co.kr.board.domain.Dto.MemberDto;
+&nbsp;import co.kr.board.service.MemberService;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;
+&nbsp;@Controller
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;@RequestMapping(&quot;/page/login/*&quot;)
+&nbsp;public class LoginController {
+&nbsp;	
+&nbsp;	private final MemberService service;
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/loginpage&quot;)
+&nbsp;	public ModelAndView loginPage(
+&nbsp;			@RequestParam(value=&quot;error&quot;,required = false) String error, 
+&nbsp;			@RequestParam(value=&quot;exception&quot;,required = false) String exception){
+&nbsp;		
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.addObject(&quot;error&quot;, error);</b>
+<b class="fc">&nbsp;		mv.addObject(&quot;exception&quot;, exception);</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/loginpage&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/memberjoin&quot;)
+&nbsp;	public ModelAndView mebmerJoin(){
+&nbsp;		
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/memberjoin&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/memberdelete&quot;)
+&nbsp;	public ModelAndView memberDelete(){
+&nbsp;		
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/memberdelete&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/memberupdate/{id}&quot;)
+&nbsp;	public ModelAndView memberUpdate(@PathVariable(&quot;id&quot;) Integer userIdx, MemberDto.MemeberResponseDto dto){
+&nbsp;		
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		dto = service.getMember(userIdx);</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.addObject(&quot;detail&quot;, dto);</b>
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/membermodify&quot;);</b>
+&nbsp;		
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/adminlist&quot;)
+&nbsp;	public ModelAndView adminList(@PageableDefault(sort=&quot;id&quot;,direction = Sort.Direction.DESC,size=5)Pageable pageable){
+&nbsp;		
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		Page&lt;Member&gt;list= service.findAll(pageable);</b>
+&nbsp;				
+<b class="fc">&nbsp;		mv.addObject(&quot;memberlist&quot;, list);</b>
+<b class="fc">&nbsp;		mv.setViewName(&quot;admin/index&quot;);</b>
+&nbsp;		
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/detail/{id}&quot;)
+&nbsp;	public ModelAndView memberDetail(@PathVariable(value=&quot;id&quot;)Integer userIdx, MemberDto.MemeberResponseDto dto){
+&nbsp;		
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		dto = service.getMember(userIdx);</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.addObject(&quot;detail&quot;, dto);</b>
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/membermodify&quot;);</b>
+&nbsp;		
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/finduserid&quot;)
+&nbsp;	public ModelAndView findUserIdPage(){
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/userfindid&quot;);</b>
+&nbsp;		
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/finduserpw&quot;)
+&nbsp;	public ModelAndView findUserPw(){
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.setViewName(&quot;login/userfindpw&quot;);</b>
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

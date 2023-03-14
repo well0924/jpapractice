@@ -1,0 +1,200 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > BoardCustomRepositoryImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.repository.QueryDsl</a>
+</div>
+
+<h1>Coverage Summary for Class: BoardCustomRepositoryImpl (co.kr.board.repository.QueryDsl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BoardCustomRepositoryImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14.3%
+  </span>
+  <span class="absValue">
+    (1/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    17.9%
+  </span>
+  <span class="absValue">
+    (7/39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.repository.QueryDsl;
+&nbsp;
+&nbsp;import co.kr.board.domain.*;
+&nbsp;import co.kr.board.domain.Dto.BoardDto;
+&nbsp;import com.querydsl.core.BooleanBuilder;
+&nbsp;import com.querydsl.core.types.dsl.BooleanExpression;
+&nbsp;import com.querydsl.jpa.impl.JPAQueryFactory;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.PageImpl;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import javax.persistence.EntityManager;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.function.Supplier;
+&nbsp;
+&nbsp;public class BoardCustomRepositoryImpl implements BoardCustomRepository{
+&nbsp;    private final JPAQueryFactory jpaQueryFactory;
+&nbsp;    private QBoard qBoard;
+&nbsp;    private QMember qMember;
+&nbsp;    private QLike qLike;
+&nbsp;    private QCategory qCategory;
+&nbsp;
+&nbsp;    //생성자 주입
+<b class="fc">&nbsp;    public BoardCustomRepositoryImpl(EntityManager em){</b>
+&nbsp;
+<b class="fc">&nbsp;        this.jpaQueryFactory = new JPAQueryFactory(em);</b>
+<b class="fc">&nbsp;        qBoard = QBoard.board;</b>
+<b class="fc">&nbsp;        qMember = QMember.member;</b>
+<b class="fc">&nbsp;        qLike = QLike.like;</b>
+<b class="fc">&nbsp;        qCategory = QCategory.category;</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    //게시글 검색
+&nbsp;    @Override
+&nbsp;    public Page&lt;BoardDto.BoardResponseDto&gt; findByAllSearch(String searchVal, Pageable pageable) {
+<b class="nc">&nbsp;        List&lt;Board&gt;content = getBoardMemberDtos(searchVal,pageable);</b>
+&nbsp;
+<b class="nc">&nbsp;        List&lt;BoardDto.BoardResponseDto&gt;contents = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="nc">&nbsp;        long count = getCount(searchVal);</b>
+&nbsp;
+<b class="nc">&nbsp;        for(Board article : content){</b>
+&nbsp;            BoardDto.BoardResponseDto responseDto = BoardDto.BoardResponseDto
+<b class="nc">&nbsp;                    .builder()</b>
+<b class="nc">&nbsp;                    .board(article)</b>
+<b class="nc">&nbsp;                    .build();</b>
+<b class="nc">&nbsp;            contents.add(responseDto);</b>
+<b class="nc">&nbsp;        }</b>
+<b class="nc">&nbsp;        return new PageImpl&lt;&gt;(contents,pageable,count);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //글목록 조회
+&nbsp;    private List&lt;Board&gt;getBoardMemberDtos(String searchVal, Pageable pageable){
+&nbsp;
+<b class="nc">&nbsp;        List&lt;Board&gt;content = jpaQueryFactory</b>
+<b class="nc">&nbsp;               .select(qBoard)</b>
+<b class="nc">&nbsp;               .from(qBoard)</b>
+<b class="nc">&nbsp;               .where(</b>
+<b class="nc">&nbsp;                       titleCt(searchVal).or(contentCt(searchVal))</b>
+&nbsp;               )
+<b class="nc">&nbsp;               .orderBy(qBoard.id.desc())</b>
+<b class="nc">&nbsp;               .offset(pageable.getOffset())</b>
+<b class="nc">&nbsp;               .limit(pageable.getPageSize())</b>
+<b class="nc">&nbsp;               .fetch();</b>
+&nbsp;
+<b class="nc">&nbsp;       return content;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    //검색 결과물 갯수
+&nbsp;    private Long getCount(String searchVal){
+&nbsp;
+<b class="nc">&nbsp;        Long count = jpaQueryFactory</b>
+<b class="nc">&nbsp;                .select(qBoard.count())</b>
+<b class="nc">&nbsp;                .from(qBoard)</b>
+<b class="nc">&nbsp;                .leftJoin(qBoard.writer,qMember)</b>
+<b class="nc">&nbsp;                .where(titleCt(searchVal).or(contentCt(searchVal)))</b>
+<b class="nc">&nbsp;                .fetchOne();</b>
+<b class="nc">&nbsp;        return count;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //게시글 제목
+&nbsp;    BooleanBuilder titleCt(String searchVal) {
+<b class="nc">&nbsp;        return nullSafeBuilder(() -&gt; qBoard.boardTitle.contains(searchVal));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //게시글 내용
+<b class="nc">&nbsp;    BooleanBuilder contentCt(String searchVal) {return nullSafeBuilder(() -&gt; qBoard.boardContents.contains(searchVal));}</b>
+&nbsp;
+&nbsp;    //BooleanBuilder를 Safe하게 만들기 위해 만든 메소드
+&nbsp;    BooleanBuilder nullSafeBuilder(Supplier&lt;BooleanExpression&gt; f) {
+&nbsp;        try {
+<b class="nc">&nbsp;            return new BooleanBuilder(f.get());</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return new BooleanBuilder();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

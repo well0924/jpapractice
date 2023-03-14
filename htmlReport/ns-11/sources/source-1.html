@@ -1,0 +1,383 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > BoardService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.service</a>
+</div>
+
+<h1>Coverage Summary for Class: BoardService (co.kr.board.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BoardService</td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (7/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70.7%
+  </span>
+  <span class="absValue">
+    (58/82)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BoardService$$EnhancerBySpringCGLIB$$eef6c8c6</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$$EnhancerBySpringCGLIB$$eef6c8c6$$FastClassBySpringCGLIB$$385da29c</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$$FastClassBySpringCGLIB$$b9d0cc95</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$BJRccbwJ</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$dLZzVaYX</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$mEHvf2Cf</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$MhtcqJ3M</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$sj09IBJ8</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$tB1ZPRMR</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$TJbtlrMg</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$U1qYRxDd</td>
+  </tr>
+  <tr>
+    <td class="name">BoardService$MockitoMock$1803820138$auxiliary$wkfJuVyQ</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (7/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70.7%
+  </span>
+  <span class="absValue">
+    (58/82)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.service;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;import co.kr.board.domain.AttachFile;
+&nbsp;import co.kr.board.domain.Board;
+&nbsp;import co.kr.board.domain.Category;
+&nbsp;import co.kr.board.domain.Dto.BoardDto;
+&nbsp;import co.kr.board.repository.CategoryRepository;
+&nbsp;import co.kr.board.domain.Dto.AttachDto;
+&nbsp;import co.kr.board.repository.AttachRepository;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import co.kr.board.repository.BoardRepository;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import org.springframework.web.multipart.MultipartFile;
+&nbsp;
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;@Service
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class BoardService{
+&nbsp;	private final CategoryRepository categoryRepository;
+&nbsp;	private final BoardRepository repos;
+&nbsp;	private final AttachRepository attachRepository;
+&nbsp;	private final FileService fileService;
+&nbsp;	private final FileHandler fileHandler;
+&nbsp;
+&nbsp;	/*
+&nbsp;	 * 글 목록 전체 조회
+&nbsp;	 * 카테고리별로 조회하기.
+&nbsp;	 */
+&nbsp;	@Transactional(readOnly = true)
+&nbsp;	public List&lt;BoardDto.BoardResponseDto&gt;findAll(){
+&nbsp;	
+<b class="fc">&nbsp;		List&lt;Board&gt; articlelist= repos.findAll();</b>
+&nbsp;		
+<b class="fc">&nbsp;		List&lt;BoardDto.BoardResponseDto&gt; list = new ArrayList&lt;&gt;();</b>
+&nbsp;		
+<b class="fc">&nbsp;		for(Board article : articlelist) {</b>
+&nbsp;			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
+<b class="fc">&nbsp;												.builder()											</b>
+<b class="fc">&nbsp;												.board(article)</b>
+<b class="fc">&nbsp;												.build();	</b>
+<b class="fc">&nbsp;			list.add(boardDto);</b>
+<b class="fc">&nbsp;		}	</b>
+<b class="fc">&nbsp;		return list;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;    /*
+&nbsp;	* 글목록 전체 조회(페이징+카테고리)
+&nbsp;	* @Param Pageable
+&nbsp;	* 
+&nbsp;	*/
+&nbsp;	@Transactional(readOnly = true)
+&nbsp;	public Page&lt;BoardDto.BoardResponseDto&gt;findAllPage(Pageable pageable, String categoryName){
+<b class="nc">&nbsp;		Page&lt;Board&gt;boards = repos.findAllByCategoryName(pageable,categoryName);</b>
+<b class="nc">&nbsp;		return boards.map(board-&gt;new BoardDto.BoardResponseDto(board));</b>
+&nbsp;	}
+&nbsp;	/*
+&nbsp;	 * 페이징 + 검색기능
+&nbsp;	 * @Param searchVal,
+&nbsp;	 * @Param pageable
+&nbsp;	 *
+&nbsp;	 * 게시물에서 검색.
+&nbsp;	 */
+&nbsp;	@Transactional(readOnly = true)
+&nbsp;	public Page&lt;BoardDto.BoardResponseDto&gt;findAllSearch(String searchVal, Pageable pageable){
+<b class="nc">&nbsp;		Page&lt;BoardDto.BoardResponseDto&gt;list = repos.findByAllSearch(searchVal,pageable);</b>
+<b class="nc">&nbsp;		return list;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/*
+&nbsp;	* 글 등록 (파일 첨부)
+&nbsp;	* @Param BoardRequestDto 
+&nbsp;	* @Param Member
+&nbsp;	* 시큐리티 로그인 후 이용
+&nbsp;	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
+&nbsp;	*/
+&nbsp;	@Transactional
+&nbsp;	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member ,Integer categoryId,List&lt;MultipartFile&gt;files)throws Exception{
+&nbsp;
+<b class="fc">&nbsp;		if(member == null) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);</b>
+&nbsp;		}
+&nbsp;
+<b class="fc">&nbsp;		Category category = categoryRepository.findById(categoryId).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));</b>
+&nbsp;
+&nbsp;		Board board = Board
+<b class="fc">&nbsp;				.builder()</b>
+<b class="fc">&nbsp;				.member(member)</b>
+<b class="fc">&nbsp;				.boardTitle(dto.getBoardTitle())</b>
+<b class="fc">&nbsp;				.boardAuthor(member.getUsername())</b>
+<b class="fc">&nbsp;				.boardContents(dto.getBoardContents())</b>
+<b class="fc">&nbsp;				.readcount(0)</b>
+<b class="fc">&nbsp;				.category(category)</b>
+<b class="fc">&nbsp;				.createdat(dto.getCreatedAt())</b>
+<b class="fc">&nbsp;				.build();</b>
+&nbsp;
+<b class="fc">&nbsp;		int InsertResult = repos.save(board).getId();</b>
+&nbsp;
+<b class="fc">&nbsp;		List&lt;AttachFile&gt;fileList = fileHandler.parseFileInfo(files);</b>
+&nbsp;
+<b class="fc">&nbsp;		log.info(fileList);</b>
+&nbsp;
+<b class="fc">&nbsp;		if(fileList == null || fileList.size() == 0){</b>
+<b class="fc">&nbsp;			return InsertResult;</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if(!fileList.isEmpty()){</b>
+<b class="nc">&nbsp;			for(AttachFile attachFile : fileList){</b>
+<b class="nc">&nbsp;				board.addAttach(attachRepository.save(attachFile));</b>
+<b class="nc">&nbsp;			}</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return InsertResult;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;    /*
+&nbsp;    * 글 목록 단일 조회
+&nbsp;    * @Param boardId
+&nbsp;    * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
+&nbsp;    */
+&nbsp;	@Transactional
+&nbsp;	public BoardDto.BoardResponseDto getBoard(Integer boardId){
+&nbsp;		
+<b class="fc">&nbsp;		Optional&lt;Board&gt;articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-&gt; new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));</b>
+&nbsp;
+&nbsp;		//글 조회
+<b class="fc">&nbsp;		Board board = articlelist.get();</b>
+&nbsp;				
+&nbsp;		//게시글 조회수 증가-&gt;중복 증가 방지필요
+<b class="fc">&nbsp;		board.countUp();		</b>
+&nbsp;		
+<b class="fc">&nbsp;		return BoardDto.BoardResponseDto</b>
+<b class="fc">&nbsp;			   .builder()</b>
+<b class="fc">&nbsp;			   .board(board)</b>
+<b class="fc">&nbsp;			   .build();</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;    /*
+&nbsp;	* 게시글 삭제 (파일 삭제 포함)
+&nbsp;	* @Param boardId
+&nbsp;	* @Param Member
+&nbsp;	* @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
+&nbsp;	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
+&nbsp;	*/
+&nbsp;	@Transactional
+&nbsp;	public void deleteBoard(Integer boardId , Member member)throws Exception{
+&nbsp;		
+<b class="fc">&nbsp;		if(member == null) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);</b>
+&nbsp;		}
+<b class="fc">&nbsp;		Optional&lt;Board&gt; board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-&gt; new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));</b>
+&nbsp;		
+<b class="fc">&nbsp;		String boardAuthor = board.get().getBoardAuthor();</b>
+<b class="fc">&nbsp;		String loginUser = member.getUsername();</b>
+&nbsp;		
+<b class="fc">&nbsp;		if(!boardAuthor.equals(loginUser)) {</b>
+<b class="nc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.BOARD_DELETE_DENIED);</b>
+&nbsp;		}
+&nbsp;
+<b class="fc">&nbsp;		List&lt;AttachDto&gt;list = fileService.filelist(boardId);</b>
+&nbsp;
+<b class="fc">&nbsp;		for(int i = 0; i&lt;list.size();i++){</b>
+&nbsp;
+<b class="nc">&nbsp;			String filePath = list.get(i).getFilePath();</b>
+<b class="nc">&nbsp;			File file = new File(filePath);</b>
+&nbsp;
+<b class="nc">&nbsp;			if(file.exists()){</b>
+<b class="nc">&nbsp;				file.delete();</b>
+&nbsp;			}
+&nbsp;		}
+<b class="fc">&nbsp;		repos.deleteById(board.get().getId());</b>
+<b class="fc">&nbsp;	}</b>
+&nbsp;	
+&nbsp;    /*
+&nbsp;	* 글 수정 기능 (파일 첨부)
+&nbsp;	* @Param BoardRequestDto 
+&nbsp;	* @Param boardId
+&nbsp;	* @Param Member
+&nbsp;	* @Exception : 로그인을 하지 않은경우 ONLY_USER
+&nbsp;	* @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL 
+&nbsp;	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
+&nbsp;	*/
+&nbsp;	@Transactional
+&nbsp;	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,Member member,List&lt;MultipartFile&gt;files)throws Exception{
+<b class="fc">&nbsp;		if(member == null) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);</b>
+&nbsp;		}
+<b class="fc">&nbsp;		Optional&lt;Board&gt;articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-&gt; new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));</b>
+&nbsp;		
+<b class="fc">&nbsp;		Board boardDetail = articlelist.get();</b>
+&nbsp;		
+<b class="fc">&nbsp;		String boardAuthor = boardDetail.getBoardAuthor();</b>
+<b class="fc">&nbsp;		String loginUser = member.getUsername();</b>
+&nbsp;
+<b class="fc">&nbsp;		boardDetail.updateBoard(dto);</b>
+&nbsp;
+<b class="fc">&nbsp;		if(!boardAuthor.equals(loginUser)) {</b>
+<b class="fc">&nbsp;			throw new CustomExceptionHandler(ErrorCode.BOARD_EDITE_DENIED);</b>
+&nbsp;		}
+&nbsp;
+<b class="fc">&nbsp;		int updateResult = boardDetail.getId();</b>
+&nbsp;
+<b class="fc">&nbsp;		List&lt;AttachFile&gt;fileList = fileHandler.parseFileInfo(files);</b>
+&nbsp;
+<b class="fc">&nbsp;		if(fileList == null || fileList.size() ==0){</b>
+<b class="fc">&nbsp;			return updateResult;</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		if(!fileList.isEmpty()){</b>
+<b class="nc">&nbsp;			for (int i=0;i&lt;fileList.size();i++) {</b>
+<b class="nc">&nbsp;				String filePath = fileList.get(i).getFilePath();</b>
+<b class="nc">&nbsp;				File file = new File(filePath);</b>
+<b class="nc">&nbsp;				if(file.exists()){</b>
+<b class="nc">&nbsp;					file.delete();</b>
+&nbsp;				}
+&nbsp;			}
+<b class="nc">&nbsp;			for(AttachFile attachFile : fileList){</b>
+<b class="nc">&nbsp;				boardDetail.addAttach(attachRepository.save(attachFile));</b>
+<b class="nc">&nbsp;			}</b>
+&nbsp;		}
+<b class="nc">&nbsp;		return updateResult;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

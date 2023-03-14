@@ -1,5 +1,6 @@
 package co.kr.board.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -24,6 +25,7 @@ public class Category {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category parent;
 
+    @Builder
     public Category(String name, Category parent) {
         this.name = name;
         this.parent = parent;

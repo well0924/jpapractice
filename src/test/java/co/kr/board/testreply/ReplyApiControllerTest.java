@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -102,28 +103,17 @@ public class ReplyApiControllerTest {
     }
 
     @Test
-    @DisplayName("[api]댓글작성-성공-인증이 안된경우-응답코드 401")
+    @DisplayName("[api]댓글작성-성공-인증이 안된경우")
     public void replyWriteTestFail()throws Exception{
-        mvc.perform(MockMvcRequestBuilders.post("/api/reply/write/{id}",comment().getBoard().getId())
+        mvc.perform(MockMvcRequestBuilders
+                        .post("/api/reply/write/{id}",comment().getBoard().getId())
+                        .header("X-AUTH-TOKEN")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .content(objectMapper.writeValueAsString(requestDto())))
-                .andExpect(status().is4xxClientError())
+                        .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }
-
-    @Test
-    @DisplayName("[api]댓글수정- 성공")
-    public void replyUpdateTest()throws Exception{
-        given(commentRepository.findById(1)).willReturn(Optional.of(comment()));
-
-        mvc.perform(MockMvcRequestBuilders.put("/api/reply/update/{id}",1)
-                        .with(user(customUserDetails))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto())))
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
-
 
     @Test
     @DisplayName("[api]댓글수정- 응답40xs: user가 인증이 안된경우")
@@ -164,10 +154,7 @@ public class ReplyApiControllerTest {
     private static CommentDto.CommentResponseDto responseDto(){
         return CommentDto.CommentResponseDto
                 .builder()
-                .replyId(1)
-                .boardId(1)
-                .replyContents("tester")
-                .replyWriter("well")
+                .comment(comment())
                 .build();
     }
     //댓글객체

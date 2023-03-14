@@ -139,9 +139,9 @@ public class ReplyServiceTest {
 		//given
 		CommentDto.CommentRequestDto dto = CommentDto.CommentRequestDto.builder().replyContents("deleteTest!").createdAt(LocalDateTime.now()).build();
 		Integer result = commentservice.replysave(dto, member, board.getId());
+
 		member = memberRepository.findById(2).orElseThrow();
 		//when(회원이 아닌 경우)
-		
 		//then
 		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
 			commentservice.replydelete(result, member);
@@ -185,6 +185,7 @@ public class ReplyServiceTest {
 		
 		getcomment.contentsChange(dto.getReplyContents());
 		member = null;
+
 		//when
 		CustomExceptionHandler customExceptionHandler =assertThrows(CustomExceptionHandler.class,()->{
 			commentservice.replyUpdate(dto, member, getcomment.getId());

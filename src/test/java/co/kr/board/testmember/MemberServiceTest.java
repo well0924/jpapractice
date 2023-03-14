@@ -8,30 +8,21 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import co.kr.board.config.redis.RedisService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Role;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.domain.Dto.MemberDto.MemberRequestDto;
-import co.kr.board.domain.Dto.TokenDto;
 import co.kr.board.repository.MemberRepository;
 import co.kr.board.service.MemberService;
 

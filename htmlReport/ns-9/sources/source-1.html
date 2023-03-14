@@ -1,0 +1,143 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CustomUserDetailService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.config.security.auth</a>
+</div>
+
+<h1>Coverage Summary for Class: CustomUserDetailService (co.kr.board.config.security.auth)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CustomUserDetailService</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CustomUserDetailService$$EnhancerBySpringCGLIB$$dd7dcfd3</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.config.security.auth;
+&nbsp;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;import co.kr.board.config.redis.CacheKey;
+&nbsp;import org.springframework.cache.annotation.Cacheable;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;import org.springframework.security.core.userdetails.UserDetailsService;
+&nbsp;import org.springframework.security.core.userdetails.UsernameNotFoundException;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import co.kr.board.repository.MemberRepository;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;@Service
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class CustomUserDetailService implements UserDetailsService{
+&nbsp;	private final MemberRepository repository;
+&nbsp;	@Override
+&nbsp;	@Cacheable(value = CacheKey.USER, key = &quot;#userPk&quot;, unless = &quot;#result == null&quot;)
+&nbsp;	public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
+<b class="nc">&nbsp;		Optional&lt;Member&gt; member = Optional.ofNullable(repository.findByUsername(userPk).orElseThrow(()-&gt; new UsernameNotFoundException(&quot;조회된 아이디가 없습니다.&quot;)));</b>
+<b class="nc">&nbsp;		Member userdetail = member.get();</b>
+<b class="nc">&nbsp;		return new CustomUserDetails(userdetail);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 01:00</div>
+</div>
+</body>
+</html>

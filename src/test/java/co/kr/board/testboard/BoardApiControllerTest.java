@@ -2,7 +2,9 @@ package co.kr.board.testboard;
 
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
 import co.kr.board.domain.Board;
+import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.domain.Dto.CategoryDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.domain.Member;
@@ -14,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,23 +67,21 @@ public class BoardApiControllerTest {
         customUserDetails = (CustomUserDetails)testCustomUserDetailsService.loadUserByUsername(memberDto().getUsername());
     }
 
-    @DisplayName("[api]게시글 목록(페이징+검색)")
+    @DisplayName("[api]게시글 목록(페이징+검색)-성공")
     @Test
-    @Disabled
     public void controllerApiBoardListPagingSearchTest()throws Exception{
         String keyword = "test";
+        given(boardService.findAllSearch(eq(keyword),any(Pageable.class))).willReturn(Page.empty());
 
-        //given(boardService.findAllSearch(eq(keyword),any(Pageable.class))).willReturn(Page.empty());
-
-        mockMvc.perform(get("/api/board/list/search"))
+        mockMvc.perform(get("/api/board/list/search").param("searchVal",keyword))
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        //then(boardService.findAllSearch(eq(keyword),any(Pageable.class)));
+        then(boardService.findAllSearch(eq(keyword),any(Pageable.class)));
         //verify(boardService).findAllSearch(eq(keyword),any(Pageable.class)).get();
     }
 
-    @WithMockUser(username = "well",authorities = "ROLE_ADMIN")
+    //@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
     @DisplayName("[api] 게시글 단일조회-성공")
     @Test
     public void controllerDetailApiTest()throws Exception{
@@ -89,7 +91,8 @@ public class BoardApiControllerTest {
         given(boardService.getBoard(boardId)).willReturn(boardResponseDto());
 
         mockMvc
-                .perform(get("/api/board/detail/{boardId}",boardId))
+                .perform(get("/api/board/detail/{boardId}",boardId)
+                        .with(user(customUserDetails)))
                 .andExpect(status().isOk())
                 .andDo(print());
 

@@ -1,0 +1,175 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > RedisService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.config.redis</a>
+</div>
+
+<h1>Coverage Summary for Class: RedisService (co.kr.board.config.redis)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RedisService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44.4%
+  </span>
+  <span class="absValue">
+    (4/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    43.5%
+  </span>
+  <span class="absValue">
+    (10/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.config.redis;
+&nbsp;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.redis.core.RedisTemplate;
+&nbsp;import org.springframework.data.redis.core.StringRedisTemplate;
+&nbsp;import org.springframework.data.redis.core.ValueOperations;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;
+&nbsp;import java.time.Duration;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class RedisService {
+&nbsp;    @Autowired
+&nbsp;    private StringRedisTemplate stringRedisTemplate;
+<b class="fc">&nbsp;    private final String REDIS_KEY_PREFIX = &quot;LOGOUT_&quot;;</b>
+<b class="fc">&nbsp;    private final String EXPIRED_DURATION = &quot;EXPIRE_DURATION&quot;;</b>
+&nbsp;	private final RedisTemplate&lt;String, String&gt; redisTemplate;
+&nbsp;
+&nbsp;    //redis에 값저장
+&nbsp;    public void setValues(String key, String data) {
+<b class="fc">&nbsp;        ValueOperations&lt;String, String&gt; values = redisTemplate.opsForValue();</b>
+<b class="fc">&nbsp;        values.set(key, data);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;    //redis에 값 꺼내기
+&nbsp;    public String getValues(String key) {
+<b class="fc">&nbsp;        ValueOperations&lt;String, String&gt; values = redisTemplate.opsForValue();</b>
+<b class="fc">&nbsp;        return values.get(key);</b>
+&nbsp;    }
+&nbsp;    //redis에서 값 제거
+&nbsp;    public void deleteValues(String key) {
+<b class="fc">&nbsp;        redisTemplate.delete(key);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    //refreshToken 값 확인하기.
+&nbsp;    public void checkRefreshToken(String username, String refreshToken) {
+<b class="nc">&nbsp;        String redisRT = this.getValues(username);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(!refreshToken.equals(redisRT)) {</b>
+<b class="nc">&nbsp;            throw new CustomExceptionHandler(ErrorCode.TOKEN_REFRESH_EXPIRED);</b>
+&nbsp;        }
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    //로그아웃시에 기존의 액세스 토큰을 로그아웃된 토큰으로 만료되었음을 표시하게 하기위한 메소드
+&nbsp;    public void setBlackList(String key, Object o, Long second) {
+<b class="nc">&nbsp;        stringRedisTemplate.opsForValue().set(REDIS_KEY_PREFIX + key, o.toString(), Duration.ofMillis(second));</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    //토큰이 탈취되어 잘못된 인증을 시도하는 접근이 있는지 확인하는 메소드
+&nbsp;    public boolean hasKeyBlackList(String key) {
+<b class="nc">&nbsp;        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(REDIS_KEY_PREFIX + key));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //레디스에 저장되어있는 데이터를 가져오는 메소드
+&nbsp;    public String getData(String key){
+<b class="nc">&nbsp;        ValueOperations&lt;String,String&gt; valueOperations = stringRedisTemplate.opsForValue();</b>
+<b class="nc">&nbsp;        return valueOperations.get(key);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //이미 생성되어있거나 생성되어있지 않은 데이터를 만료기한까지 설정해 저장하는 메소드
+&nbsp;    public void setDataExpire(String key,String value,long duration){
+<b class="nc">&nbsp;        ValueOperations&lt;String,String&gt; valueOperations = stringRedisTemplate.opsForValue();</b>
+<b class="nc">&nbsp;        Duration expireDuration = Duration.ofMillis(duration);</b>
+<b class="nc">&nbsp;        valueOperations.set(key,value,expireDuration);</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

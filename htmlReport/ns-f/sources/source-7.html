@@ -1,0 +1,290 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > MemberDto</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.domain.Dto</a>
+</div>
+
+<h1>Coverage Summary for Class: MemberDto (co.kr.board.domain.Dto)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MemberDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MemberDto$MemberPasswordChangeDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MemberDto$MemberRequestDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MemberDto$MemberRequestDto$MemberRequestDtoBuilder</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MemberDto$MemeberResponseDto</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.7%
+  </span>
+  <span class="absValue">
+    (11/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    95%
+  </span>
+  <span class="absValue">
+    (19/20)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MemberDto$MemeberResponseDto$MemeberResponseDtoBuilder</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    77.4%
+  </span>
+  <span class="absValue">
+    (24/31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    82.1%
+  </span>
+  <span class="absValue">
+    (32/39)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.domain.Dto;
+&nbsp;
+&nbsp;import java.io.Serializable;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;
+&nbsp;import javax.validation.constraints.Email;
+&nbsp;import javax.validation.constraints.NotBlank;
+&nbsp;import javax.validation.constraints.Pattern;
+&nbsp;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import com.fasterxml.jackson.annotation.JsonFormat;
+&nbsp;
+&nbsp;import co.kr.board.domain.Role;
+&nbsp;import com.querydsl.core.annotations.QueryProjection;
+&nbsp;import lombok.*;
+&nbsp;
+<b class="nc">&nbsp;public class MemberDto {</b>
+&nbsp;	
+&nbsp;	@Getter
+<b class="fc">&nbsp;	@Setter</b>
+<b class="fc">&nbsp;	@Builder</b>
+<b class="fc">&nbsp;	@NoArgsConstructor</b>
+<b class="fc">&nbsp;	@AllArgsConstructor</b>
+&nbsp;	public static class MemberRequestDto{
+&nbsp;		
+<b class="fc">&nbsp;		private Integer useridx;</b>
+&nbsp;		
+&nbsp;		@NotBlank(message = &quot;아이디는 필수 입력값입니다.&quot;)
+&nbsp;		@Pattern(regexp = &quot;^[a-z0-9]{4,20}$&quot;, message = &quot;아이디는 영어 소문자와 숫자만 사용하여 4~20자리여야 합니다.&quot;)
+<b class="fc">&nbsp;		private String username;</b>
+&nbsp;		
+&nbsp;		@Pattern(regexp = &quot;^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&amp;])[A-Za-z\\d$@$!%*#?&amp;]{8,50}$&quot;,
+&nbsp;				message = &quot;비밀번호는 8~50자리수여야 합니다. 영문 대소문자, 숫자, 특수문자를 1개 이상 포함해야 합니다.&quot;)
+<b class="fc">&nbsp;		private String password;</b>
+&nbsp;		
+&nbsp;		@NotBlank(message=&quot;회원이름을 입력해주세요.&quot;)
+&nbsp;		@Pattern(regexp = &quot;^[가-힣a-zA-Z0-9]{2,10}$&quot; , message = &quot;닉네임은 특수문자를 포함하지 않은 2~10자리여야 합니다.&quot;)
+<b class="fc">&nbsp;		private String membername;</b>
+&nbsp;		
+&nbsp;		@NotBlank(message=&quot;이메일을 입력해주세요.&quot;)
+&nbsp;		@Email
+<b class="fc">&nbsp;		private String useremail;</b>
+&nbsp;		
+<b class="fc">&nbsp;		private Role role;</b>
+&nbsp;		
+&nbsp;		@JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm&quot;)
+<b class="fc">&nbsp;		private LocalDateTime createdAt;</b>
+&nbsp;		
+&nbsp;	}
+&nbsp;	@Getter
+<b class="nc">&nbsp;	@Setter</b>
+<b class="nc">&nbsp;	@NoArgsConstructor</b>
+<b class="nc">&nbsp;	@AllArgsConstructor</b>
+&nbsp;	public static class MemberPasswordChangeDto implements Serializable{
+<b class="nc">&nbsp;		private Integer useridx;</b>
+<b class="nc">&nbsp;		private String password;</b>
+&nbsp;	}
+&nbsp;	@Getter
+<b class="fc">&nbsp;	@ToString</b>
+<b class="nc">&nbsp;	@AllArgsConstructor</b>
+<b class="fc">&nbsp;	@NoArgsConstructor</b>
+&nbsp;	public static class MemeberResponseDto implements Serializable {
+&nbsp;		
+<b class="fc">&nbsp;		private Integer useridx;</b>
+<b class="fc">&nbsp;		private String username;</b>
+<b class="fc">&nbsp;		private String password;</b>
+<b class="fc">&nbsp;		private String membername;</b>
+<b class="fc">&nbsp;		private String useremail;</b>
+<b class="fc">&nbsp;		private Role role;</b>
+&nbsp;		@JsonFormat(pattern = &quot;yyyy-mm-dd HH:mm&quot;)
+<b class="fc">&nbsp;		private LocalDateTime createdAt;</b>
+&nbsp;
+<b class="fc">&nbsp;		@Builder</b>
+&nbsp;		@QueryProjection
+<b class="fc">&nbsp;		public MemeberResponseDto(Member member){</b>
+<b class="fc">&nbsp;			this.useridx = member.getId();</b>
+<b class="fc">&nbsp;			this.membername = member.getMembername();</b>
+<b class="fc">&nbsp;			this.username = member.getUsername();</b>
+<b class="fc">&nbsp;			this.role = member.getRole();</b>
+<b class="fc">&nbsp;			this.password = member.getPassword();</b>
+<b class="fc">&nbsp;			this.useremail = member.getUseremail();</b>
+<b class="fc">&nbsp;			this.createdAt = member.getCreatedAt();</b>
+<b class="fc">&nbsp;		}</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > WebConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.config</a>
+</div>
+
+<h1>Coverage Summary for Class: WebConfig (co.kr.board.config)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WebConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86.2%
+  </span>
+  <span class="absValue">
+    (25/29)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WebConfig$$EnhancerBySpringCGLIB$$4ddebaae</td>
+  </tr>
+  <tr>
+    <td class="name">WebConfig$$EnhancerBySpringCGLIB$$4ddebaae$$FastClassBySpringCGLIB$$ebffc716</td>
+  </tr>
+  <tr>
+    <td class="name">WebConfig$$FastClassBySpringCGLIB$$90bfb57</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86.2%
+  </span>
+  <span class="absValue">
+    (25/29)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.config;
+&nbsp;
+&nbsp;import javax.servlet.Filter;
+&nbsp;import javax.servlet.MultipartConfigElement;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.boot.web.servlet.MultipartConfigFactory;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.util.unit.DataSize;
+&nbsp;import org.springframework.util.unit.DataUnit;
+&nbsp;import org.springframework.web.filter.CharacterEncodingFilter;
+&nbsp;import org.springframework.web.multipart.MultipartResolver;
+&nbsp;import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+&nbsp;import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+&nbsp;import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+&nbsp;import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+&nbsp;
+&nbsp;@Configuration
+&nbsp;@EnableWebMvc
+<b class="fc">&nbsp;public class WebConfig implements WebMvcConfigurer{</b>
+&nbsp;    @Value(&quot;/istatic/images/&quot;)
+&nbsp;    private String imgStatic;
+&nbsp;    @Value(&quot;${server.file.upload}&quot;)
+&nbsp;    private String imgPath;
+&nbsp;
+&nbsp;	@Bean
+&nbsp;	public Filter characterEncodingFilter() {
+<b class="nc">&nbsp;		CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();</b>
+<b class="nc">&nbsp;        encodingFilter.setEncoding(&quot;UTF-8&quot;);</b>
+<b class="nc">&nbsp;        encodingFilter.setForceEncoding(true);</b>
+&nbsp;		
+<b class="nc">&nbsp;        return encodingFilter;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;    @Bean
+&nbsp;    public MultipartConfigElement multipartConfigElement() {
+&nbsp;        
+<b class="fc">&nbsp;    	MultipartConfigFactory factory = new MultipartConfigFactory();</b>
+<b class="fc">&nbsp;        factory.setMaxFileSize(DataSize.of(30, DataUnit.MEGABYTES));</b>
+<b class="fc">&nbsp;        factory.setMaxRequestSize(DataSize.of(30, DataUnit.MEGABYTES));</b>
+&nbsp;
+<b class="fc">&nbsp;        return factory.createMultipartConfig();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    @Bean
+&nbsp;    public MultipartResolver multipartResolver(){
+<b class="fc">&nbsp;        return new StandardServletMultipartResolver();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+&nbsp;		
+<b class="fc">&nbsp;		registry</b>
+<b class="fc">&nbsp;        .addResourceHandler(&quot;/img/**&quot;)</b>
+<b class="fc">&nbsp;        .addResourceLocations(&quot;classpath:/static/img/&quot;)</b>
+<b class="fc">&nbsp;        .setCachePeriod(60 * 60 * 24 * 365); </b>
+&nbsp;        
+<b class="fc">&nbsp;		registry</b>
+<b class="fc">&nbsp;        .addResourceHandler(&quot;/font/**&quot;)</b>
+<b class="fc">&nbsp;        .addResourceLocations(&quot;classpath:/static/font/&quot;)</b>
+<b class="fc">&nbsp;        .setCachePeriod(60 * 60 * 24 * 365); </b>
+&nbsp;        		
+<b class="fc">&nbsp;		registry</b>
+<b class="fc">&nbsp;        .addResourceHandler(&quot;/webjars/**&quot;)</b>
+<b class="fc">&nbsp;        .addResourceLocations(&quot;classpath:/META-INF/resources/webjars/&quot;); </b>
+&nbsp;        
+<b class="fc">&nbsp;		registry</b>
+<b class="fc">&nbsp;        .addResourceHandler(&quot;/js/**&quot;)</b>
+<b class="fc">&nbsp;        .addResourceLocations(&quot;classpath:/static/js/&quot;); </b>
+&nbsp;		
+<b class="fc">&nbsp;        registry</b>
+<b class="fc">&nbsp;        .addResourceHandler(&quot;/**&quot;)</b>
+<b class="fc">&nbsp;        .addResourceLocations(&quot;classpath:/static/&quot;,&quot;classpath:/template/&quot;);	</b>
+&nbsp;        
+<b class="fc">&nbsp;		WebMvcConfigurer.super.addResourceHandlers(registry);</b>
+<b class="fc">&nbsp;	}</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

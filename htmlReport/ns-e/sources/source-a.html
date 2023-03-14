@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > QBoard</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.domain</a>
+</div>
+
+<h1>Coverage Summary for Class: QBoard (co.kr.board.domain)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QBoard</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (4/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    84%
+  </span>
+  <span class="absValue">
+    (21/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.domain;
+&nbsp;
+&nbsp;import static com.querydsl.core.types.PathMetadataFactory.*;
+&nbsp;
+&nbsp;import com.querydsl.core.types.dsl.*;
+&nbsp;
+&nbsp;import com.querydsl.core.types.PathMetadata;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import com.querydsl.core.types.Path;
+&nbsp;import com.querydsl.core.types.dsl.PathInits;
+&nbsp;
+&nbsp;
+&nbsp;/**
+&nbsp; * QBoard is a Querydsl query type for Board
+&nbsp; */
+&nbsp;@Generated(&quot;com.querydsl.codegen.DefaultEntitySerializer&quot;)
+&nbsp;public class QBoard extends EntityPathBase&lt;Board&gt; {
+&nbsp;
+&nbsp;    private static final long serialVersionUID = 1623727881L;
+&nbsp;
+<b class="fc">&nbsp;    private static final PathInits INITS = PathInits.DIRECT2;</b>
+&nbsp;
+<b class="fc">&nbsp;    public static final QBoard board = new QBoard(&quot;board&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final QBaseTime _super = new QBaseTime(this);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final ListPath&lt;AttachFile, QAttachFile&gt; attachFiles = this.&lt;AttachFile, QAttachFile&gt;createList(&quot;attachFiles&quot;, AttachFile.class, QAttachFile.class, PathInits.DIRECT2);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final StringPath boardAuthor = createString(&quot;boardAuthor&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final StringPath boardContents = createString(&quot;boardContents&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final StringPath boardTitle = createString(&quot;boardTitle&quot;);</b>
+&nbsp;
+&nbsp;    public final QCategory category;
+&nbsp;
+<b class="fc">&nbsp;    public final ListPath&lt;Comment, QComment&gt; commentlist = this.&lt;Comment, QComment&gt;createList(&quot;commentlist&quot;, Comment.class, QComment.class, PathInits.DIRECT2);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final DateTimePath&lt;java.time.LocalDateTime&gt; createdAt = createDateTime(&quot;createdAt&quot;, java.time.LocalDateTime.class);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final NumberPath&lt;Integer&gt; id = createNumber(&quot;id&quot;, Integer.class);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final NumberPath&lt;Integer&gt; liked = createNumber(&quot;liked&quot;, Integer.class);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final SetPath&lt;Like, QLike&gt; likes = this.&lt;Like, QLike&gt;createSet(&quot;likes&quot;, Like.class, QLike.class, PathInits.DIRECT2);</b>
+&nbsp;
+<b class="fc">&nbsp;    public final NumberPath&lt;Integer&gt; readCount = createNumber(&quot;readCount&quot;, Integer.class);</b>
+&nbsp;
+&nbsp;    public final QMember writer;
+&nbsp;
+&nbsp;    public QBoard(String variable) {
+<b class="fc">&nbsp;        this(Board.class, forVariable(variable), INITS);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QBoard(Path&lt;? extends Board&gt; path) {
+<b class="nc">&nbsp;        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QBoard(PathMetadata metadata) {
+<b class="nc">&nbsp;        this(metadata, PathInits.getFor(metadata, INITS));</b>
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QBoard(PathMetadata metadata, PathInits inits) {
+<b class="fc">&nbsp;        this(Board.class, metadata, inits);</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    public QBoard(Class&lt;? extends Board&gt; type, PathMetadata metadata, PathInits inits) {
+<b class="fc">&nbsp;        super(type, metadata, inits);</b>
+<b class="fc">&nbsp;        this.category = inits.isInitialized(&quot;category&quot;) ? new QCategory(forProperty(&quot;category&quot;), inits.get(&quot;category&quot;)) : null;</b>
+<b class="fc">&nbsp;        this.writer = inits.isInitialized(&quot;writer&quot;) ? new QMember(forProperty(&quot;writer&quot;)) : null;</b>
+<b class="fc">&nbsp;    }</b>
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 01:00</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > BoardController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.controller.view</a>
+</div>
+
+<h1>Coverage Summary for Class: BoardController (co.kr.board.controller.view)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BoardController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (3/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14.7%
+  </span>
+  <span class="absValue">
+    (5/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.controller.view;
+&nbsp;
+&nbsp;import javax.validation.Valid;
+&nbsp;
+&nbsp;import co.kr.board.domain.Category;
+&nbsp;import co.kr.board.domain.Dto.BoardDto;
+&nbsp;import co.kr.board.repository.CategoryRepository;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.domain.Dto.AttachDto;
+&nbsp;import co.kr.board.service.FileService;
+&nbsp;import org.springframework.data.domain.Page;
+&nbsp;import org.springframework.data.domain.Pageable;
+&nbsp;import org.springframework.data.domain.Sort;
+&nbsp;import org.springframework.data.web.PageableDefault;
+&nbsp;import org.springframework.security.core.annotation.AuthenticationPrincipal;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.validation.BindingResult;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.ModelAttribute;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.servlet.ModelAndView;
+&nbsp;
+&nbsp;import co.kr.board.service.BoardService;
+&nbsp;import co.kr.board.config.security.auth.CustomUserDetails;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;@Controller
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;@RequestMapping(&quot;/page/board&quot;)
+&nbsp;public class BoardController {
+&nbsp;	private final BoardService service;	
+&nbsp;	private final FileService fileService;
+&nbsp;	private final CategoryRepository categoryRepository;
+&nbsp;
+&nbsp;	@GetMapping(&quot;/list/{cname}&quot;)
+&nbsp;	public ModelAndView pageList(
+&nbsp;			@PathVariable(value = &quot;cname&quot;,required = false) String categoryName,
+&nbsp;			@RequestParam(required = false,value = &quot;searchVal&quot;) String searchVal,
+&nbsp;			@PageableDefault(sort=&quot;id&quot;,direction = Sort.Direction.DESC,size=5)Pageable pageable){
+&nbsp;		
+<b class="nc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+&nbsp;
+<b class="nc">&nbsp;		Category category = categoryRepository.findByName(categoryName);</b>
+<b class="nc">&nbsp;		Page&lt;BoardDto.BoardResponseDto&gt; list =null;</b>
+&nbsp;		//페이징 기능
+<b class="nc">&nbsp;		list= service.findAllPage(pageable,categoryName);</b>
+&nbsp;
+<b class="nc">&nbsp;		mv.addObject(&quot;list&quot;, list);</b>
+<b class="nc">&nbsp;		mv.addObject(&quot;category&quot;,category);</b>
+<b class="nc">&nbsp;		mv.addObject(&quot;searchVal&quot;, searchVal);</b>
+<b class="nc">&nbsp;		mv.addObject(&quot;previous&quot;, pageable.previousOrFirst().getPageNumber());</b>
+<b class="nc">&nbsp;		mv.addObject(&quot;next&quot;, pageable.next().getPageNumber());</b>
+<b class="nc">&nbsp;		mv.addObject(&quot;hasNext&quot;, list.hasNext());        </b>
+<b class="nc">&nbsp;		mv.addObject(&quot;hasPrev&quot;, list.hasPrevious());</b>
+&nbsp;
+<b class="nc">&nbsp;		mv.setViewName(&quot;board/boardlist&quot;);</b>
+&nbsp;		
+<b class="nc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/detail/{id}&quot;)
+&nbsp;	public ModelAndView detailPage(@PathVariable(value=&quot;id&quot;)Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
+&nbsp;	
+<b class="nc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+<b class="nc">&nbsp;		BoardDto.BoardResponseDto board = service.getBoard(boardId);</b>
+&nbsp;		//파일 첨부목록
+<b class="nc">&nbsp;		List&lt;AttachDto&gt; fileList = fileService.filelist(boardId);</b>
+&nbsp;		
+<b class="nc">&nbsp;		log.info(fileList);</b>
+&nbsp;
+<b class="nc">&nbsp;		mv.addObject(&quot;fileList&quot;,fileList);</b>
+<b class="nc">&nbsp;		mv.addObject(&quot;detail&quot;, board);</b>
+<b class="nc">&nbsp;		mv.setViewName(&quot;board/detailpage&quot;);</b>
+&nbsp;		
+<b class="nc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/write&quot;)
+&nbsp;	public ModelAndView writePage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user){
+&nbsp;	
+<b class="fc">&nbsp;		ModelAndView mv = new ModelAndView();	</b>
+&nbsp;		
+<b class="fc">&nbsp;		mv.setViewName(&quot;board/writeboard&quot;);</b>
+&nbsp;	
+<b class="fc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	@GetMapping(&quot;/modify/{id}&quot;)
+&nbsp;	public ModelAndView modifyPage(@PathVariable(value=&quot;id&quot;)Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
+&nbsp;		
+<b class="nc">&nbsp;		ModelAndView mv = new ModelAndView();</b>
+<b class="nc">&nbsp;		BoardDto.BoardResponseDto board = service.getBoard(boardId);</b>
+&nbsp;		//파일 첨부목록
+<b class="nc">&nbsp;		List&lt;AttachDto&gt; fileList = fileService.filelist(boardId);</b>
+&nbsp;
+<b class="nc">&nbsp;		log.info(fileList);</b>
+&nbsp;
+<b class="nc">&nbsp;		mv.addObject(&quot;fileList&quot;,fileList);</b>
+&nbsp;
+<b class="nc">&nbsp;		mv.addObject(&quot;modify&quot;, dto);</b>
+<b class="nc">&nbsp;		mv.setViewName(&quot;board/modifyboard&quot;);</b>
+&nbsp;		
+<b class="nc">&nbsp;		return mv;</b>
+&nbsp;	}
+&nbsp;	
+&nbsp;	
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>

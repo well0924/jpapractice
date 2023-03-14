@@ -1,0 +1,170 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CustomUserDetails</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.config.security.auth</a>
+</div>
+
+<h1>Coverage Summary for Class: CustomUserDetails (co.kr.board.config.security.auth)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CustomUserDetails</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (4/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.1%
+  </span>
+  <span class="absValue">
+    (8/14)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.config.security.auth;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Collection;
+&nbsp;
+&nbsp;import org.springframework.security.core.GrantedAuthority;
+&nbsp;import org.springframework.security.core.userdetails.UserDetails;
+&nbsp;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;@Getter
+&nbsp;public class CustomUserDetails implements UserDetails{
+&nbsp;	
+&nbsp;	private static final long serialVersionUID = 1L;
+<b class="nc">&nbsp;	private final Member member;</b>
+&nbsp;	
+<b class="fc">&nbsp;	public CustomUserDetails(Member member) {</b>
+<b class="fc">&nbsp;		this.member = member;</b>
+<b class="fc">&nbsp;	}</b>
+&nbsp;	
+&nbsp;	@Override
+&nbsp;	public Collection&lt;? extends GrantedAuthority&gt; getAuthorities() {
+<b class="fc">&nbsp;		Collection&lt;GrantedAuthority&gt; collectors = new ArrayList&lt;&gt;();</b>
+&nbsp;
+<b class="fc">&nbsp;		collectors.add(()-&gt; member.getRole().getValue());</b>
+<b class="fc">&nbsp;		return collectors;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public String getPassword() {
+&nbsp;		// TODO Auto-generated method stub
+<b class="fc">&nbsp;		return member.getPassword();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public String getUsername() {
+&nbsp;		// TODO Auto-generated method stub
+<b class="nc">&nbsp;		return member.getUsername();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean isAccountNonExpired() {
+&nbsp;		// TODO Auto-generated method stub
+<b class="nc">&nbsp;		return true;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean isAccountNonLocked() {
+&nbsp;		// TODO Auto-generated method stub
+<b class="nc">&nbsp;		return true;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean isCredentialsNonExpired() {
+&nbsp;		// TODO Auto-generated method stub
+<b class="nc">&nbsp;		return true;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public boolean isEnabled() {
+&nbsp;		// TODO Auto-generated method stub
+<b class="nc">&nbsp;		return true;</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 01:00</div>
+</div>
+</body>
+</html>

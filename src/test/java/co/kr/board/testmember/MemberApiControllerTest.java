@@ -42,9 +42,6 @@ public class MemberApiControllerTest {
     @MockBean
     private MemberService memberService;
     ObjectMapper objectMapper = new ObjectMapper();
-    //@MockBean
-    //JwtTokenProvider jwtTokenProvider;
-
 
     @Test
     @DisplayName("[api]회원목록-성공")
@@ -168,12 +165,12 @@ public class MemberApiControllerTest {
 
     @Test
     @DisplayName("[api]비밀번호 재발급-성공")
-    @WithMockUser
     public void passwordChangeApiTest()throws Exception{
 
         given(memberService.getMember(1)).willReturn(responseDto());
+        given(memberService.passwordchange("well",requestDto())).willReturn(1);
 
-        mvc.perform(MockMvcRequestBuilders.put("/api/login/passwordchange")
+        mvc.perform(MockMvcRequestBuilders.put("/api/login/passwordchange/{name}","well")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto()))
                         .characterEncoding(StandardCharsets.UTF_8))
@@ -240,6 +237,7 @@ public class MemberApiControllerTest {
 
     private MemberDto.MemberRequestDto updateDto(){
         return MemberDto.MemberRequestDto.builder()
+                .username("well")
                 .password("Qsdvger12%")
                 .build();
     }

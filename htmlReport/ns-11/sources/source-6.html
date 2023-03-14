@@ -1,0 +1,198 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > LikeService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">co.kr.board.service</a>
+</div>
+
+<h1>Coverage Summary for Class: LikeService (co.kr.board.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LikeService</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (8/12)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LikeService$$EnhancerBySpringCGLIB$$e7909d0f</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$$EnhancerBySpringCGLIB$$e7909d0f$$FastClassBySpringCGLIB$$e84c51cb</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$$FastClassBySpringCGLIB$$77666eb8</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$MockitoMock$2004817054</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$7Q3jf5W6</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$Hh6UYiMO</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$pJGOGnYj</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$SR1CwvUw</td>
+  </tr>
+  <tr>
+    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$xZc5xXnw</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (8/12)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.service;
+&nbsp;
+&nbsp;import co.kr.board.config.redis.CacheKey;
+&nbsp;import co.kr.board.domain.Board;
+&nbsp;import co.kr.board.repository.BoardRepository;
+&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.domain.Like;
+&nbsp;import co.kr.board.repository.LikeRepository;
+&nbsp;import co.kr.board.domain.Member;
+&nbsp;import lombok.AllArgsConstructor;
+&nbsp;import org.springframework.cache.annotation.Cacheable;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@AllArgsConstructor</b>
+&nbsp;public class LikeService {
+&nbsp;    private final LikeRepository repository;
+<b class="fc">&nbsp;    private final String likeMessage =&quot;좋아요 처리 완료&quot;;</b>
+<b class="fc">&nbsp;    private final String likeCancelMessage =&quot;좋아요 취소 처리 완료&quot;;</b>
+&nbsp;
+&nbsp;    /*
+&nbsp;    * 좋아요+1
+&nbsp;    * @param Board
+&nbsp;    * @param Member
+&nbsp;    * 게시글조회에서 좋아요 +1기능
+&nbsp;    */
+&nbsp;    @Transactional
+&nbsp;    public String createLikeBoard(Board board,Member member){
+<b class="nc">&nbsp;        board.increaseLikeCount();</b>
+<b class="nc">&nbsp;        Like like = new Like(board,member);</b>
+<b class="nc">&nbsp;        repository.save(like);</b>
+<b class="nc">&nbsp;        return likeMessage;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /*
+&nbsp;     * 좋아요-1
+&nbsp;     * @param Board
+&nbsp;     * @param Member
+&nbsp;     * 게시글 조회에서 좋아요 -1
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public String removeLikeBoard(Board board,Member member){
+<b class="fc">&nbsp;        Like likeBoard = repository.findByMemberAndBoard(member,board).orElseThrow(()-&gt;{throw new CustomExceptionHandler(ErrorCode.LIKE_NOT_FOUND);});</b>
+<b class="fc">&nbsp;        board.decreaseLikeCount();</b>
+<b class="fc">&nbsp;        repository.delete(likeBoard);</b>
+<b class="fc">&nbsp;        return likeCancelMessage;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /*
+&nbsp;    * 좋아요 중복처리기능
+&nbsp;    * @param Board
+&nbsp;    * @param Member
+&nbsp;    *
+&nbsp;    */
+&nbsp;    @Transactional
+&nbsp;    public boolean hasLikeBoard(Board board,Member member){
+<b class="fc">&nbsp;        return repository.findByMemberAndBoard(member,board).isPresent();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-03-15 00:59</div>
+</div>
+</body>
+</html>
