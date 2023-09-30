@@ -1,5 +1,6 @@
 package co.kr.board.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +11,11 @@ import javax.persistence.*;
 
 @Getter
 @Entity
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Category {
+
     //카테고리의 경우에는 self join을 사용한다.
     @Id
     @Column(name = "category_id")

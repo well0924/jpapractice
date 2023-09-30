@@ -37,15 +37,7 @@ public class CategoryService {
     //카테고리 삭제
     @Transactional
     public void delete(Integer id) {
-        if(notExistsCategory(id)){
-            throw new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND);
-        }
+        Category category = categoryRepository.findById(id).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
         categoryRepository.deleteById(id);
     }
-
-    //카테고리 확인여부
-    private boolean notExistsCategory(Integer id) {
-        return !categoryRepository.existsById(id);
-    }
-
 }

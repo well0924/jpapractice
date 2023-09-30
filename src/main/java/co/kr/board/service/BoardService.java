@@ -37,7 +37,6 @@ public class BoardService{
 
 	/*
 	 * 글 목록 전체 조회
-	 * 카테고리별로 조회하기.
 	 */
 	@Transactional(readOnly = true)
 	public List<BoardDto.BoardResponseDto>findAll(){
@@ -66,6 +65,7 @@ public class BoardService{
 		Page<Board>boards = repos.findAllByCategoryName(pageable,categoryName);
 		return boards.map(board->new BoardDto.BoardResponseDto(board));
 	}
+
 	/*
 	 * 페이징 + 검색기능
 	 * @Param searchVal,
@@ -136,7 +136,7 @@ public class BoardService{
 
 		//글 조회
 		Board board = articlelist.get();
-				
+
 		//게시글 조회수 증가->중복 증가 방지필요
 		board.countUp();		
 		
@@ -230,5 +230,16 @@ public class BoardService{
 			}
 		}
 		return updateResult;
+	}
+
+	/*
+	 * 회원이 작성한 글목록
+	 * @Param String username 회원의 아이디
+	 * @Param Pagaeable 페이징 객체
+	 */
+	@Transactional
+	public Page<BoardDto.BoardResponseDto>memberArticle(String username,Pageable pageable){
+		Page<BoardDto.BoardResponseDto>list = repos.findByAllContents(username,pageable);
+		return list;
 	}
 }

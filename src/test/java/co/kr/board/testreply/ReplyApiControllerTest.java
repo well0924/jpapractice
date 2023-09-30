@@ -95,6 +95,7 @@ public class ReplyApiControllerTest {
         mvc.perform(MockMvcRequestBuilders
                 .post("/api/reply/write/{id}",comment().getBoard().getId())
                         .with(user(customUserDetails))
+                        .header("X-AUTH-TOKEN","")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8)
                 .content(objectMapper.writeValueAsString(requestDto())))
@@ -107,7 +108,6 @@ public class ReplyApiControllerTest {
     public void replyWriteTestFail()throws Exception{
         mvc.perform(MockMvcRequestBuilders
                         .post("/api/reply/write/{id}",comment().getBoard().getId())
-                        .header("X-AUTH-TOKEN")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .content(objectMapper.writeValueAsString(requestDto())))
@@ -137,6 +137,7 @@ public class ReplyApiControllerTest {
 
         mvc.perform(MockMvcRequestBuilders
                         .delete("/api/reply/delete/{id}",replyId)
+                        .header("X-AUTH-TOKEN","")
                         .with(user(customUserDetails)))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -189,4 +190,6 @@ public class ReplyApiControllerTest {
                 .member(memberDto())
                 .boardContents("contetns").build();
     }
+
+    //토큰 dto
 }

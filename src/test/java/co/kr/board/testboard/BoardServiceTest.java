@@ -9,7 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 import co.kr.board.domain.Board;
+import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.repository.CategoryRepository;
+import co.kr.board.repository.CommentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,9 +39,12 @@ class BoardServiceTest {
 	
 	@Autowired
 	MemberRepository memberrepos;
-	
+	@Autowired
+	CategoryRepository categoryRepository;
 	private Member member1;
-		
+	@Autowired
+	private CommentRepository commentRepository;
+
 	@BeforeEach
 	public void before() {
 		//admin 내용
@@ -258,5 +264,27 @@ class BoardServiceTest {
 		assertThat(list).info.description();
 	}
 
+	//카테고리 + 페이징
+	@Test
+	@DisplayName("게시글 카테고리 + 페이징")
+	public void boardListPagingCategoryTest(){
+		Category category = categoryRepository.findById(1).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
+		String categoryName = category.getName();
+		Pageable pageable = Pageable.ofSize(5);
+
+		Page<BoardDto.BoardResponseDto>result = boardservice.findAllPage(pageable,categoryName);
+
+		assertThat(result.get().findAny().get().getCategoryId()).isEqualTo(1);
+	}
 	//글검색
+	@Test
+	@DisplayName("게시글 카테고리 + 페이징+검색")
+	public void boardListPagingCategorySearchTest(){
+		String keyword = "test";
+		Pageable pageable = Pageable.ofSize(5);
+
+		Page<BoardDto.BoardResponseDto>result = boardservice.findAllSearch(keyword,pageable);
+		assertThat(result.get().findAny().get());
+		assertThat(result.get().findAny().get().getBoardAuthor()).isEqualTo("well4149");
+	}
 }

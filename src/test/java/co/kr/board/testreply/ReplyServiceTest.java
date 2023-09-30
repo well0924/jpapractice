@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.service.BoardService;
@@ -26,6 +25,7 @@ import co.kr.board.domain.Comment;
 import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.repository.CommentRepository;
 import co.kr.board.service.CommentService;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class ReplyServiceTest {
