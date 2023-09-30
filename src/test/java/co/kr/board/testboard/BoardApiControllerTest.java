@@ -1,10 +1,17 @@
 package co.kr.board.testboard;
 
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CategoryDto;
+import co.kr.board.domain.Dto.MemberDto;
+import co.kr.board.domain.Dto.TokenDto;
+import co.kr.board.repository.CategoryRepository;
+import co.kr.board.repository.RefreshTokenRepository;
 import co.kr.board.service.BoardService;
 import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.domain.Member;
@@ -18,8 +25,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.mock.web.MockPart;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -27,6 +38,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,14 +58,19 @@ public class BoardApiControllerTest {
     MockMvc mockMvc;
     @MockBean
     private BoardService boardService;
+    @MockBean
+    private MemberRepository memberRepository;
+    @MockBean
+    private CategoryRepository categoryRepository;
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
     private WebApplicationContext context;
-    @MockBean
-    private MemberRepository memberRepository;
     private CustomUserDetails customUserDetails;
     private final TestCustomUserDetailsService testCustomUserDetailsService = new TestCustomUserDetailsService();
+    private Category category;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     public void setup(){
@@ -63,36 +80,48 @@ public class BoardApiControllerTest {
                 .build();
 
         memberRepository.save(memberDto());
-
         customUserDetails = (CustomUserDetails)testCustomUserDetailsService.loadUserByUsername(memberDto().getUsername());
+        System.out.println(customUserDetails);
+        category = categoryRepository.findByName(categoryDto().getName());
     }
 
     @DisplayName("[api]게시글 목록(페이징+검색)-성공")
     @Test
     public void controllerApiBoardListPagingSearchTest()throws Exception{
         String keyword = "test";
+        String accessToken = tokenDto().getAccessToken();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails.getUsername(),"",customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        given(memberRepository.findByUsername(authentication.getName())).willReturn(Optional.of(memberDto()));
         given(boardService.findAllSearch(eq(keyword),any(Pageable.class))).willReturn(Page.empty());
 
-        mockMvc.perform(get("/api/board/list/search").param("searchVal",keyword))
+
+        mockMvc.perform(
+                get("/api/board/list/search")
+                        .param("searchVal",keyword)
+                        .header("X-AUTH-TOKEN",accessToken))
                 .andExpect(status().isOk())
                 .andDo(print());
 
         then(boardService.findAllSearch(eq(keyword),any(Pageable.class)));
-        //verify(boardService).findAllSearch(eq(keyword),any(Pageable.class)).get();
     }
 
-    //@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
     @DisplayName("[api] 게시글 단일조회-성공")
     @Test
     public void controllerDetailApiTest()throws Exception{
 
         int boardId = 4;
+        String accessToken = tokenDto().getAccessToken();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails.getUsername(),"",customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        given(memberRepository.findByUsername(authentication.getName())).willReturn(Optional.of(memberDto()));
         given(boardService.getBoard(boardId)).willReturn(boardResponseDto());
 
         mockMvc
                 .perform(get("/api/board/detail/{boardId}",boardId)
-                        .with(user(customUserDetails)))
+                .header("X-AUTH-TOKEN",accessToken))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -102,11 +131,14 @@ public class BoardApiControllerTest {
     @DisplayName("[api]게시글 작성-성공")
     @Test
     public void controllerPostViewProcTest()throws Exception{
-        mockMvc.perform(post("/api/board/write")
-                        .with(user(customUserDetails))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(objectMapper.writeValueAsString(boardRequestDto())))
+
+        String accessToken = tokenDto().getAccessToken();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails.getUsername(),"",customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        given(memberRepository.findByUsername(authentication.getName())).willReturn(Optional.of(memberDto()));
+
+        mockMvc.perform(multipart("/api/board/save")
+                        .part())
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }
@@ -114,10 +146,16 @@ public class BoardApiControllerTest {
     @Test
     @DisplayName("[api]게시물 수정")
     public void boardUpdateApiTest()throws Exception{
+        String accessToken = tokenDto().getAccessToken();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails.getUsername(),"",customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        given(memberRepository.findByUsername(authentication.getName())).willReturn(Optional.of(memberDto()));
+
         mockMvc.perform(patch("/api/board/update/{id}",1)
                 .with(user(customUserDetails))
+                .header("X-AUTH-TOKEN",accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8).content(objectMapper.writeValueAsString(boardRequestDto())))
+                .characterEncoding(StandardCharsets.UTF_8).content(objectMapper.writeValueAsString(boardRequestDto())))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }
@@ -125,10 +163,14 @@ public class BoardApiControllerTest {
     @Test
     @DisplayName("[api]게시물 삭제-성공")
     public void boardDeleteApiTest()throws Exception{
+        String accessToken = tokenDto().getAccessToken();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails.getUsername(),"",customUserDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        given(memberRepository.findByUsername(authentication.getName())).willReturn(Optional.of(memberDto()));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/api/board/delete/{id}",1)
-                        .with(user(customUserDetails))
+                        .header("X-AUTH-TOKEN", accessToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -154,6 +196,7 @@ public class BoardApiControllerTest {
                 .boardTitle("testTitle")
                 .readcount(0)
                 .member(memberDto())
+                .category(categoryDto())
                 .createdat(LocalDateTime.now()).build();
 
         return BoardDto.BoardResponseDto
@@ -171,6 +214,26 @@ public class BoardApiControllerTest {
                 .useremail("well123@Test.com")
                 .role(Role.ROLE_ADMIN)
                 .createdAt(LocalDateTime.now())
+                .build();
+    }
+    //카테고리 dto
+    private Category categoryDto(){
+        return Category.builder()
+                .id(1)
+                .name("freeboard")
+                .parent(null)
+                .build();
+    }
+
+    private TokenDto tokenDto(){
+        TokenDto result = jwtTokenProvider.createTokenDto(memberDto().getUsername(),Role.ROLE_ADMIN);
+        String accessToken = result.getAccessToken();
+        String refreshToken = result.getRefreshToken();
+
+        return TokenDto
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

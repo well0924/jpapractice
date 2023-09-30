@@ -106,6 +106,13 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
 
+	@GetMapping("/my-article/{id}")
+	@ResponseStatus(code = HttpStatus.OK)
+	public Response<?>memberArticle(@PathVariable("id") String username,Pageable pageable)throws Exception{
+		Page<BoardDto.BoardResponseDto>list = service.memberArticle(username,pageable);
+		return new Response<>(HttpStatus.OK.value(),list);
+	}
+
 	@GetMapping("/download")
 	public void download(HttpServletResponse response) throws IOException {
 
