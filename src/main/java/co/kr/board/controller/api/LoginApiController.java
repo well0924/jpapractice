@@ -1,6 +1,5 @@
 package co.kr.board.controller.api;
 
-import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
@@ -51,14 +50,14 @@ public class LoginApiController {
 			return	new Response<>(HttpStatus.OK.value(),true);
 		}
 	}
-	
+	//페이징
 	@GetMapping("/list")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<List<MemberDto.MemeberResponseDto>>memberList(){
-		List<MemberDto.MemeberResponseDto>list = service.findAll();
-		
+	public Response<Page<MemberDto.MemeberResponseDto>>memberList(@PageableDefault(sort = "id",direction = Sort.Direction.DESC,size = 10) Pageable pageable){
+		Page<MemberDto.MemeberResponseDto>list= service.findAll(pageable);
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
+
 	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<MemberDto.MemeberResponseDto>>memberSearchList(
@@ -69,6 +68,7 @@ public class LoginApiController {
 
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
+
 	@GetMapping("/detailmember/{idx}/member")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<MemberDto.MemeberResponseDto>memberDetail(@PathVariable(value="idx")Integer useridx){

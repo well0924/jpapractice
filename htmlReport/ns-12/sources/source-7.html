@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > AttachRepository</title>
+  <title>Coverage Report > LikeRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">co.kr.board.repository</a>
 </div>
 
-<h1>Coverage Summary for Class: AttachRepository (co.kr.board.repository)</h1>
+<h1>Coverage Summary for Class: LikeRepository (co.kr.board.repository)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">AttachRepository</td>
+  <td class="name">LikeRepository</td>
 </tr>
 
 </table>
@@ -40,17 +40,16 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.repository;
 &nbsp;
-&nbsp;import co.kr.board.domain.AttachFile;
+&nbsp;import co.kr.board.domain.Board;
+&nbsp;import co.kr.board.domain.Like;
+&nbsp;import co.kr.board.domain.Member;
 &nbsp;import org.springframework.data.jpa.repository.JpaRepository;
-&nbsp;import org.springframework.data.jpa.repository.Query;
-&nbsp;import org.springframework.data.repository.query.Param;
 &nbsp;
-&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
 &nbsp;
-&nbsp;public interface AttachRepository extends JpaRepository&lt;AttachFile,Integer&gt; {
-&nbsp;    //파일 목록
-&nbsp;    @Query(&quot;select a from AttachFile a where a.board.id = :id&quot;)
-&nbsp;    List&lt;AttachFile&gt;findAttachFilesBoardId(@Param(&quot;id&quot;)Integer boardId)throws Exception;
+&nbsp;public interface LikeRepository extends JpaRepository&lt;Like,Long&gt; {
+&nbsp;    //좋아요 중복여부
+&nbsp;    Optional&lt;Like&gt;findByMemberAndBoard(Member member, Board board);
 &nbsp;}
 </code>
 </pre>
@@ -75,7 +74,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

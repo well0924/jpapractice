@@ -40,40 +40,46 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">LikeController</td>
 <td class="coverageStat">
   <span class="percent">
-    20%
+    60%
   </span>
   <span class="absValue">
-    (1/5)
+    (3/5)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    5%
+    20%
   </span>
   <span class="absValue">
-    (1/20)
+    (4/20)
   </span>
 </td>
 </tr>
   <tr>
-    <td class="name">LikeController$$EnhancerBySpringCGLIB$$890d2f44</td>
+    <td class="name">LikeController$$EnhancerBySpringCGLIB$$fa08c0ea</td>
+  </tr>
+  <tr>
+    <td class="name">LikeController$$EnhancerBySpringCGLIB$$fa08c0ea$$FastClassBySpringCGLIB$$3c5dab79</td>
+  </tr>
+  <tr>
+    <td class="name">LikeController$$FastClassBySpringCGLIB$$17c5b64c</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    20%
+    60%
   </span>
   <span class="absValue">
-    (1/5)
+    (3/5)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    5%
+    20%
   </span>
   <span class="absValue">
-    (1/20)
+    (4/20)
   </span>
 </td>
 </tr>
@@ -114,7 +120,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    //좋아요+1기능
 &nbsp;    @PostMapping(&quot;/plus/{id}&quot;)
 &nbsp;    public Response&lt;String&gt; likeBoard(@PathVariable(value = &quot;id&quot;)Integer boardId){
-<b class="nc">&nbsp;        Member member = getMember();</b>
+<b class="fc">&nbsp;        Member member = getMember();</b>
 <b class="nc">&nbsp;        Board board = boardRepository.findById(boardId).orElseThrow(() -&gt; new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));</b>
 <b class="nc">&nbsp;        String likeResult =likeService.createLikeBoard(board, member);</b>
 <b class="nc">&nbsp;        return new Response&lt;&gt;(HttpStatus.OK.value(),likeResult);</b>
@@ -143,8 +149,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        return new Response&lt;&gt;(HttpStatus.OK.value(),result);</b>
 &nbsp;    }
 &nbsp;    private Member getMember(){
-<b class="nc">&nbsp;        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
-<b class="nc">&nbsp;        String username = (String)authentication.getPrincipal();</b>
+<b class="fc">&nbsp;        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="fc">&nbsp;        String username = (String)authentication.getPrincipal();</b>
 <b class="nc">&nbsp;        Member member = memberRepository.findByUsername(username).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.NOT_FOUND));</b>
 <b class="nc">&nbsp;        return member;</b>
 &nbsp;    }
@@ -172,7 +178,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

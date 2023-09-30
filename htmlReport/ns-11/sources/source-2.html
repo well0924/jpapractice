@@ -40,40 +40,40 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">CategoryService</td>
 <td class="coverageStat">
   <span class="percent">
-    20%
+    100%
   </span>
   <span class="absValue">
-    (1/5)
+    (4/4)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    7.7%
+    100%
   </span>
   <span class="absValue">
-    (1/13)
+    (11/11)
   </span>
 </td>
 </tr>
   <tr>
-    <td class="name">CategoryService$$EnhancerBySpringCGLIB$$884d43da</td>
+    <td class="name">CategoryService$$EnhancerBySpringCGLIB$$c6a3a1a8</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    20%
+    100%
   </span>
   <span class="absValue">
-    (1/5)
+    (4/4)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    7.7%
+    100%
   </span>
   <span class="absValue">
-    (1/13)
+    (11/11)
   </span>
 </td>
 </tr>
@@ -106,34 +106,26 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    //카테고리 목록
 &nbsp;    public List&lt;CategoryDto&gt; categoryList() {
-<b class="nc">&nbsp;        List&lt;Category&gt; categories = categoryRepository.findAllOrderByParentIdAscNullsFirstCategoryIdAsc();</b>
-<b class="nc">&nbsp;        return CategoryDto.toDtoList(categories);</b>
+<b class="fc">&nbsp;        List&lt;Category&gt; categories = categoryRepository.findAllOrderByParentIdAscNullsFirstCategoryIdAsc();</b>
+<b class="fc">&nbsp;        return CategoryDto.toDtoList(categories);</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    //카테고리 등록
 &nbsp;    @Transactional
 &nbsp;    public void create(CategoryCreateRequest req) {
-<b class="nc">&nbsp;        Category parent = Optional.ofNullable(req.getParentId())</b>
-<b class="nc">&nbsp;                .map(id -&gt; categoryRepository.findById(id).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND)))</b>
-<b class="nc">&nbsp;                .orElse(null);</b>
+<b class="fc">&nbsp;        Category parent = Optional.ofNullable(req.getParentId())</b>
+<b class="fc">&nbsp;                .map(id -&gt; categoryRepository.findById(id).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND)))</b>
+<b class="fc">&nbsp;                .orElse(null);</b>
 &nbsp;
-<b class="nc">&nbsp;        categoryRepository.save(new Category(req.getName(),parent));</b>
-<b class="nc">&nbsp;    }</b>
+<b class="fc">&nbsp;        categoryRepository.save(new Category(req.getName(),parent));</b>
+<b class="fc">&nbsp;    }</b>
 &nbsp;
 &nbsp;    //카테고리 삭제
 &nbsp;    @Transactional
 &nbsp;    public void delete(Integer id) {
-<b class="nc">&nbsp;        if(notExistsCategory(id)){</b>
-<b class="nc">&nbsp;            throw new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND);</b>
-&nbsp;        }
-<b class="nc">&nbsp;        categoryRepository.deleteById(id);</b>
-<b class="nc">&nbsp;    }</b>
-&nbsp;
-&nbsp;    //카테고리 확인여부
-&nbsp;    private boolean notExistsCategory(Integer id) {
-<b class="nc">&nbsp;        return !categoryRepository.existsById(id);</b>
-&nbsp;    }
-&nbsp;
+<b class="fc">&nbsp;        Category category = categoryRepository.findById(id).orElseThrow(()-&gt;new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));</b>
+<b class="fc">&nbsp;        categoryRepository.deleteById(id);</b>
+<b class="fc">&nbsp;    }</b>
 &nbsp;}
 </code>
 </pre>
@@ -158,7 +150,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

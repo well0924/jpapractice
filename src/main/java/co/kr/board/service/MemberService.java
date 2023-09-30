@@ -67,11 +67,16 @@ public class MemberService {
 	 * 회원 목록(페이징)
 	 * 회원 목록 페이징 적용
 	 */
-	@Transactional(readOnly = true)
-	public Page<Member>findAll(Pageable pageable){
-		return repository.findAll(pageable);
-	}
+	@Transactional
+	public Page<MemberDto.MemeberResponseDto>findAll(Pageable pageable){
+		Page<Member>members = repository.findAll(pageable);
 
+		if(members.isEmpty()) {
+			new CustomExceptionHandler(ErrorCode.NOT_USER);
+		}
+
+		return members.map(member -> new MemeberResponseDto(member));
+	}
 	/*
 	* 회원 목록(페이징 + 검색)
 	* 어드민 페이지에서 회원아이디를 검색하는 기능
@@ -79,11 +84,6 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public Page<MemberDto.MemeberResponseDto>findByAll(String searchVal,Pageable pageable){
 		Page<MemberDto.MemeberResponseDto>result = repository.findByAllSearch(searchVal,pageable);
-		//결과물이 없는경우
-		if(result.isEmpty()){
-			new CustomExceptionHandler(ErrorCode.NOT_SEARCH);
-		}
-
 		return result;
 	}
 	/*
@@ -155,7 +155,8 @@ public class MemberService {
 
     	Authentication authentication = jwtTokenProvider.getAuthentication(request.getRefreshToken());
 		String userpk = jwtTokenProvider.getUserPK(request.getRefreshToken());
-
+		log.info(userpk);
+		log.info(authentication);
         if (!authentication.getName().equals(userpk)) {
             throw new CustomExceptionHandler(ErrorCode.REFRESH_TOKEN_AUTHENTICATION_VALID);
         }
@@ -165,7 +166,7 @@ public class MemberService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-
+		log.info(authority);
 		redisService.checkRefreshToken(userpk, request.getRefreshToken());
 
         TokenDto tokenDto = jwtTokenProvider.createTokenDto(userpk,Role.valueOf(authority));

@@ -131,9 +131,8 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;        List&lt;Board&gt;content = jpaQueryFactory</b>
 <b class="nc">&nbsp;               .select(qBoard)</b>
 <b class="nc">&nbsp;               .from(qBoard)</b>
-<b class="nc">&nbsp;               .where(</b>
-<b class="nc">&nbsp;                       titleCt(searchVal).or(contentCt(searchVal))</b>
-&nbsp;               )
+<b class="nc">&nbsp;                .leftJoin(qBoard.writer, qMember)</b>
+<b class="nc">&nbsp;               .where(titleCt(searchVal).or(contentCt(searchVal)))</b>
 <b class="nc">&nbsp;               .orderBy(qBoard.id.desc())</b>
 <b class="nc">&nbsp;               .offset(pageable.getOffset())</b>
 <b class="nc">&nbsp;               .limit(pageable.getPageSize())</b>
@@ -194,7 +193,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

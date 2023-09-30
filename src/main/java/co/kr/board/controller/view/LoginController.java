@@ -76,7 +76,7 @@ public class LoginController {
 		
 		ModelAndView mv = new ModelAndView();
 		
-		Page<Member>list= service.findAll(pageable);
+		Page<MemberDto.MemeberResponseDto>list= service.findAll(pageable);
 				
 		mv.addObject("memberlist", list);
 		mv.setViewName("admin/index");

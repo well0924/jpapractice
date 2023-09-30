@@ -1,5 +1,6 @@
 package co.kr.board.testmember;
 
+import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Role;
 import co.kr.board.domain.Dto.MemberDto;
@@ -11,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -48,14 +52,16 @@ public class MemberApiControllerTest {
     @WithMockUser(username = "well",roles = "ADMIN")
     public void memberListApiTest()throws Exception{
         List<MemberDto.MemeberResponseDto> list = Arrays.asList(responseDto());
+        Page<MemberDto.MemeberResponseDto>pagelist= new PageImpl<>(list);
+        given(memberService.findAll(any(Pageable.class))).willReturn(pagelist);
 
-        when(memberService.findAll()).thenReturn(list);
-
-        mvc.perform(get("/api/login/list").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(
+                get("/api/login/list")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        verify(memberService).findAll();
+        verify(memberService).findAll(any(Pageable.class));
     }
     
     @Test
@@ -209,6 +215,8 @@ public class MemberApiControllerTest {
         verify(memberService).memberdelete(any());
     }
 
+
+
     //회원조회 dto
     private Member memberDto(){
         return Member.builder()
@@ -249,4 +257,11 @@ public class MemberApiControllerTest {
                 .build();
     }
 
+    private LoginDto loginDto(){
+        return LoginDto
+                .builder()
+                .username("well4149")
+                .password("qwer4149!!")
+                .build();
+    }
 }

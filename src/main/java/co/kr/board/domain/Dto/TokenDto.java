@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class TokenDto implements Serializable {
 	private String accessToken;
     private String refreshToken;
-    private Long ExpirationTime;
+    private Long AccessExpirationTime;
+    private Long RefreshExpirationTime;
 
 }

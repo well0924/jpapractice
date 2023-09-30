@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import co.kr.board.domain.Board;
+import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.domain.Member;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,13 +40,12 @@ public class BoardControllerTest {
 
 	@DisplayName("[view]게시판 목록 화면-성공")
 	@Test
-	@WithMockUser(username = "well",authorities = "ROLE_ADMIN")
 	public void CotrollerViewTest()throws Exception{
 		//given
-		//given(boardService.findAllPage(any(Pageable.class))).willReturn(Page.empty());
+		given(boardService.findAllPage(any(Pageable.class),eq(categoryDto().getName()))).willReturn(Page.empty());
 		//when&then
 		mockMvc
-		.perform(get("/page/board/list")
+		.perform(get("/page/board/list/"+categoryDto().getName())
 		.contentType(MediaType.TEXT_HTML))
 		.andExpect(status().isOk())
 		.andExpect(view().name("board/boardlist"))
@@ -53,7 +55,6 @@ public class BoardControllerTest {
 	}
 
 	@Test
-	@WithMockUser
 	@DisplayName("[view]게시글 단일 조회-성공")
 	public void controllerDetailViewTest()throws Exception{
 		int boardId = 4;
@@ -113,6 +114,7 @@ public class BoardControllerTest {
 				.boardContents("test")
 				.boardTitle("testTitle")
 				.readcount(0)
+				.category(categoryDto())
 				.member(memberDto())
 				.createdat(LocalDateTime.now()).build();
 
@@ -131,6 +133,15 @@ public class BoardControllerTest {
 				.useremail("well123@Test.com")
 				.role(Role.ROLE_ADMIN)
 				.createdAt(LocalDateTime.now())
+				.build();
+	}
+
+	private Category categoryDto(){
+		return Category
+				.builder()
+				.id(1)
+				.name("freeboard")
+				.parent(null)
 				.build();
 	}
 }

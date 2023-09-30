@@ -40,18 +40,18 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">Category</td>
 <td class="coverageStat">
   <span class="percent">
-    16.7%
+    83.3%
   </span>
   <span class="absValue">
-    (1/6)
+    (5/6)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    11.1%
+    88.9%
   </span>
   <span class="absValue">
-    (1/9)
+    (8/9)
   </span>
 </td>
 </tr>
@@ -75,45 +75,45 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$0XA8MZbo</td>
+    <td class="name">Category$HibernateProxy$7D4zzaBB</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$6a2PDkws</td>
+    <td class="name">Category$HibernateProxy$9MwSQ86a</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$6GoDcPLS</td>
+    <td class="name">Category$HibernateProxy$D6jmT9t2</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$C3SsFH7R</td>
+    <td class="name">Category$HibernateProxy$gBXLqkvx</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$mIQyZuN8</td>
+    <td class="name">Category$HibernateProxy$I65bmCkK</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$Ux979YXf</td>
+    <td class="name">Category$HibernateProxy$J7noxp2P</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$wDY2BWrS</td>
+    <td class="name">Category$HibernateProxy$Ke7ygVx4</td>
   </tr>
   <tr>
-    <td class="name">Category$HibernateProxy$y4YtTOKa</td>
+    <td class="name">Category$HibernateProxy$wOvQ24QV</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
 <td class="coverageStat">
   <span class="percent">
-    14.3%
+    71.4%
   </span>
   <span class="absValue">
-    (1/7)
+    (5/7)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    10%
+    80%
   </span>
   <span class="absValue">
-    (1/10)
+    (8/10)
   </span>
 </td>
 </tr>
@@ -142,20 +142,20 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    @Id
 &nbsp;    @Column(name = &quot;category_id&quot;)
 &nbsp;    @GeneratedValue(strategy = GenerationType.IDENTITY)
-<b class="nc">&nbsp;    private Integer id;</b>
+<b class="fc">&nbsp;    private Integer id;</b>
 &nbsp;    @Column(length = 50,nullable = false)
-<b class="nc">&nbsp;    private String name;</b>
+<b class="fc">&nbsp;    private String name;</b>
 &nbsp;
 &nbsp;    @ManyToOne(fetch = FetchType.LAZY)
 &nbsp;    @JoinColumn(name=&quot;parent_id&quot;)
 &nbsp;    @OnDelete(action = OnDeleteAction.CASCADE)
-<b class="nc">&nbsp;    private Category parent;</b>
+<b class="fc">&nbsp;    private Category parent;</b>
 &nbsp;
 <b class="nc">&nbsp;    @Builder</b>
-<b class="nc">&nbsp;    public Category(String name, Category parent) {</b>
-<b class="nc">&nbsp;        this.name = name;</b>
-<b class="nc">&nbsp;        this.parent = parent;</b>
-<b class="nc">&nbsp;    }</b>
+<b class="fc">&nbsp;    public Category(String name, Category parent) {</b>
+<b class="fc">&nbsp;        this.name = name;</b>
+<b class="fc">&nbsp;        this.parent = parent;</b>
+<b class="fc">&nbsp;    }</b>
 &nbsp;}
 </code>
 </pre>
@@ -180,7 +180,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 01:00</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

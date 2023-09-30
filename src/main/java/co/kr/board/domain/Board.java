@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 @Getter
 @Entity
 @ToString(callSuper = true)
@@ -41,23 +42,25 @@ public class Board extends BaseTime implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     //회원
-    @ManyToOne(fetch =FetchType.LAZY)
+    @ManyToOne(fetch =FetchType.EAGER)
     @JoinColumn(name="useridx")
     private Member writer;
     //댓글
     @ToString.Exclude
-    @OneToMany(mappedBy = "board", fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
     private List<Comment> commentlist = new ArrayList<>();
     //파일첨부(게시글을 삭제하면 파일도 삭제)
     //orphanRemoval을 true로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
     //orphanRemoval과 CasecadeType.REMOVE 차이점 알아보기.
     @ToString.Exclude
-    @OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true)
+    @OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private List<AttachFile>attachFiles = new ArrayList<>();
     //좋아요
-    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Like> likes = new HashSet<>();
     //카테고리
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

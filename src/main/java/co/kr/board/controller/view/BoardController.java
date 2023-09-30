@@ -5,8 +5,6 @@ import javax.validation.Valid;
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.repository.CategoryRepository;
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Dto.AttachDto;
 import co.kr.board.service.FileService;
 import org.springframework.data.domain.Page;
@@ -51,6 +49,10 @@ public class BoardController {
 		Page<BoardDto.BoardResponseDto> list =null;
 		//페이징 기능
 		list= service.findAllPage(pageable,categoryName);
+		//검색어가 있으면 검색.
+		if(searchVal!=null){
+			list= service.findAllSearch(searchVal,pageable);
+		}
 
 		mv.addObject("list", list);
 		mv.addObject("category",category);
@@ -72,8 +74,6 @@ public class BoardController {
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
-		
-		log.info(fileList);
 
 		mv.addObject("fileList",fileList);
 		mv.addObject("detail", board);
@@ -100,11 +100,8 @@ public class BoardController {
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
 
-		log.info(fileList);
-
 		mv.addObject("fileList",fileList);
-
-		mv.addObject("modify", dto);
+		mv.addObject("modify", board);
 		mv.setViewName("board/modifyboard");
 		
 		return mv;

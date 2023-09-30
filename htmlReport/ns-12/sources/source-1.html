@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > CategoryRepository</title>
+  <title>Coverage Report > AttachRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,14 +21,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">co.kr.board.repository</a>
 </div>
 
-<h1>Coverage Summary for Class: CategoryRepository (co.kr.board.repository)</h1>
+<h1>Coverage Summary for Class: AttachRepository (co.kr.board.repository)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">CategoryRepository</td>
+  <td class="name">AttachRepository</td>
 </tr>
 
 </table>
@@ -40,22 +40,17 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.repository;
 &nbsp;
-&nbsp;import co.kr.board.domain.Category;
+&nbsp;import co.kr.board.domain.AttachFile;
 &nbsp;import org.springframework.data.jpa.repository.JpaRepository;
 &nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.query.Param;
 &nbsp;
 &nbsp;import java.util.List;
 &nbsp;
-&nbsp;public interface CategoryRepository extends JpaRepository&lt;Category,Integer&gt;{
-&nbsp;    @Query(&quot;select c &quot; +
-&nbsp;            &quot;from &quot; +
-&nbsp;            &quot;Category c &quot; +
-&nbsp;            &quot;left join c.parent p &quot; +
-&nbsp;            &quot;order by &quot; +
-&nbsp;            &quot;p.id asc nulls first, c.id asc&quot;)
-&nbsp;    List&lt;Category&gt; findAllOrderByParentIdAscNullsFirstCategoryIdAsc();
-&nbsp;
-&nbsp;    Category findByName(String categoryName);
+&nbsp;public interface AttachRepository extends JpaRepository&lt;AttachFile,Integer&gt; {
+&nbsp;    //파일 목록
+&nbsp;    @Query(&quot;select a from AttachFile a where a.board.id = :id&quot;)
+&nbsp;    List&lt;AttachFile&gt;findAttachFilesBoardId(@Param(&quot;id&quot;)Integer boardId)throws Exception;
 &nbsp;}
 </code>
 </pre>
@@ -80,7 +75,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html id="htmlId">
 <head>
-  <title>Coverage Report > MemberRepository</title>
+  <title>Coverage Report > CommentRepository</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -21,7 +21,7 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">co.kr.board.repository</a>
 </div>
 
-<h1>Coverage Summary for Class: MemberRepository (co.kr.board.repository)</h1>
+<h1>Coverage Summary for Class: CommentRepository (co.kr.board.repository)</h1>
 
 <table class="coverageStats">
 
@@ -29,16 +29,13 @@ Current scope:     <a href="../../index.html">all classes</a>
   <th class="name">Class</th>
 </tr>
   <tr>
-    <td class="name">MemberRepository$MockitoMock$315329657</td>
+    <td class="name">CommentRepository$MockitoMock$2081561180</td>
   </tr>
   <tr>
-    <td class="name">MemberRepository$MockitoMock$315329657$auxiliary$G2YFe5gK</td>
+    <td class="name">CommentRepository$MockitoMock$2081561180$auxiliary$K1VHZXw3</td>
   </tr>
   <tr>
-    <td class="name">MemberRepository$MockitoMock$315329657$auxiliary$p9W9UJHu</td>
-  </tr>
-  <tr>
-    <td class="name">MemberRepository$MockitoMock$315329657$auxiliary$qTVXIyCI</td>
+    <td class="name">CommentRepository$MockitoMock$2081561180$auxiliary$zCLG5bGd</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
@@ -52,28 +49,19 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;package co.kr.board.repository;
 &nbsp;
-&nbsp;import java.util.Optional;
+&nbsp;import java.util.List;
 &nbsp;
-&nbsp;import co.kr.board.repository.QueryDsl.MemberCustomRepository;
-&nbsp;import org.springframework.data.domain.Page;
-&nbsp;import org.springframework.data.domain.Pageable;
-&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.Query;
+&nbsp;import org.springframework.data.repository.CrudRepository;
+&nbsp;import org.springframework.data.repository.query.Param;
 &nbsp;
-&nbsp;import co.kr.board.domain.Member;
+&nbsp;import co.kr.board.domain.Comment;
 &nbsp;
-&nbsp;public interface MemberRepository extends JpaRepository&lt;Member, Integer&gt;, MemberCustomRepository {
-&nbsp;	//시큐리티 회원 조회 o.k
-&nbsp;	Optional&lt;Member&gt;findByUsername(String username);
-&nbsp;	//아이디 중복여부 o.k
-&nbsp; 	Boolean existsByUsername(String userename);
-&nbsp; 	//이메일 중복여부 o.k
-&nbsp; 	Boolean existsByUseremail(String useremail);
-&nbsp;	//회원 아이디 찾기 o.k
-&nbsp;	Optional&lt;Member&gt; findByMembernameAndUseremail(String membername,String useremail);
-&nbsp;	//회원 삭제 o.k
-&nbsp;	void deleteByUsername(String username);
-&nbsp;	//회원목록(페이징) o.k
-&nbsp;	Page&lt;Member&gt;findAll(Pageable pageable);
+&nbsp;public interface CommentRepository extends CrudRepository&lt;Comment, Integer&gt;{
+&nbsp;	
+&nbsp;	@Query(&quot;select c from Comment c where c.board.id = :id&quot;)
+&nbsp;	List&lt;Comment&gt;findCommentsBoardId(@Param(&quot;id&quot;) Integer boardId)throws Exception;
+&nbsp;	
 &nbsp;}
 </code>
 </pre>
@@ -98,7 +86,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

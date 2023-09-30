@@ -44,7 +44,7 @@ public class JwtTokenProvider {
 	        claims.put("roles",roles);// 정보 저장 (key-value)
 	        long now = (new Date()).getTime();
 	        Date accessTime = new Date(now+tokenValidTime);
-
+			Date refreshTime = new Date(now+refreshtokenValidTime);
 	        //토큰 생성
 	        String accessToke = Jwts
 	                .builder()
@@ -64,7 +64,8 @@ public class JwtTokenProvider {
 	        return TokenDto.builder()
 	                .accessToken(accessToke)
 	                .refreshToken(refreshToken)
-	                .ExpirationTime(accessTime.getTime())
+	                .AccessExpirationTime(accessTime.getTime())
+					.RefreshExpirationTime(refreshTime.getTime())
 	                .build();
 	    }
 
@@ -100,7 +101,4 @@ public class JwtTokenProvider {
 			}
 			return true;
 	    }
-		public static Long getExpireTime(String token) {
-			return Jwts.parser().parseClaimsJws(token).getBody().getExpiration().getTime();
-		}
 }

@@ -45,28 +45,4 @@ public class RedisService {
             throw new CustomExceptionHandler(ErrorCode.TOKEN_REFRESH_EXPIRED);
         }
     }
-
-    //로그아웃시에 기존의 액세스 토큰을 로그아웃된 토큰으로 만료되었음을 표시하게 하기위한 메소드
-    public void setBlackList(String key, Object o, Long second) {
-        stringRedisTemplate.opsForValue().set(REDIS_KEY_PREFIX + key, o.toString(), Duration.ofMillis(second));
-    }
-
-    //토큰이 탈취되어 잘못된 인증을 시도하는 접근이 있는지 확인하는 메소드
-    public boolean hasKeyBlackList(String key) {
-        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(REDIS_KEY_PREFIX + key));
-    }
-
-    //레디스에 저장되어있는 데이터를 가져오는 메소드
-    public String getData(String key){
-        ValueOperations<String,String> valueOperations = stringRedisTemplate.opsForValue();
-        return valueOperations.get(key);
-    }
-
-    //이미 생성되어있거나 생성되어있지 않은 데이터를 만료기한까지 설정해 저장하는 메소드
-    public void setDataExpire(String key,String value,long duration){
-        ValueOperations<String,String> valueOperations = stringRedisTemplate.opsForValue();
-        Duration expireDuration = Duration.ofMillis(duration);
-        valueOperations.set(key,value,expireDuration);
-    }
-
 }

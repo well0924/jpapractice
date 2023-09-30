@@ -56,31 +56,31 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 </tr>
   <tr>
-    <td class="name">LikeService$$EnhancerBySpringCGLIB$$e7909d0f</td>
+    <td class="name">LikeService$$EnhancerBySpringCGLIB$$25e6fadd</td>
   </tr>
   <tr>
-    <td class="name">LikeService$$EnhancerBySpringCGLIB$$e7909d0f$$FastClassBySpringCGLIB$$e84c51cb</td>
+    <td class="name">LikeService$$EnhancerBySpringCGLIB$$25e6fadd$$FastClassBySpringCGLIB$$182222f0</td>
   </tr>
   <tr>
     <td class="name">LikeService$$FastClassBySpringCGLIB$$77666eb8</td>
   </tr>
   <tr>
-    <td class="name">LikeService$MockitoMock$2004817054</td>
+    <td class="name">LikeService$MockitoMock$2129487598</td>
   </tr>
   <tr>
-    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$7Q3jf5W6</td>
+    <td class="name">LikeService$MockitoMock$2129487598$auxiliary$9aiCoy0A</td>
   </tr>
   <tr>
-    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$Hh6UYiMO</td>
+    <td class="name">LikeService$MockitoMock$2129487598$auxiliary$M2hBnHBh</td>
   </tr>
   <tr>
-    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$pJGOGnYj</td>
+    <td class="name">LikeService$MockitoMock$2129487598$auxiliary$rI2eMj0O</td>
   </tr>
   <tr>
-    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$SR1CwvUw</td>
+    <td class="name">LikeService$MockitoMock$2129487598$auxiliary$RZ1gRoGp</td>
   </tr>
   <tr>
-    <td class="name">LikeService$MockitoMock$2004817054$auxiliary$xZc5xXnw</td>
+    <td class="name">LikeService$MockitoMock$2129487598$auxiliary$SzKf3Vu0</td>
   </tr>
 <tr>
   <td class="name"><strong>Total</strong></td>
@@ -138,10 +138,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;    */
 &nbsp;    @Transactional
 &nbsp;    public String createLikeBoard(Board board,Member member){
-<b class="nc">&nbsp;        board.increaseLikeCount();</b>
-<b class="nc">&nbsp;        Like like = new Like(board,member);</b>
-<b class="nc">&nbsp;        repository.save(like);</b>
-<b class="nc">&nbsp;        return likeMessage;</b>
+<b class="fc">&nbsp;        board.increaseLikeCount();</b>
+<b class="fc">&nbsp;        Like like = new Like(board,member);</b>
+<b class="fc">&nbsp;        repository.save(like);</b>
+<b class="fc">&nbsp;        return likeMessage;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    /*
@@ -152,10 +152,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;     */
 &nbsp;    @Transactional
 &nbsp;    public String removeLikeBoard(Board board,Member member){
-<b class="fc">&nbsp;        Like likeBoard = repository.findByMemberAndBoard(member,board).orElseThrow(()-&gt;{throw new CustomExceptionHandler(ErrorCode.LIKE_NOT_FOUND);});</b>
-<b class="fc">&nbsp;        board.decreaseLikeCount();</b>
-<b class="fc">&nbsp;        repository.delete(likeBoard);</b>
-<b class="fc">&nbsp;        return likeCancelMessage;</b>
+<b class="nc">&nbsp;        Like likeBoard = repository.findByMemberAndBoard(member,board).orElseThrow(()-&gt;{throw new CustomExceptionHandler(ErrorCode.LIKE_NOT_FOUND);});</b>
+<b class="nc">&nbsp;        board.decreaseLikeCount();</b>
+<b class="nc">&nbsp;        repository.delete(likeBoard);</b>
+<b class="nc">&nbsp;        return likeCancelMessage;</b>
 &nbsp;    }
 &nbsp;
 &nbsp;    /*
@@ -192,7 +192,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

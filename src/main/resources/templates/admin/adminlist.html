@@ -17,9 +17,11 @@ layout:decorator="/layout/mainlayout">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
 </head>
 <body>
+<!--헤더부분-->
 <th:block th:replace="/layout/header :: headerfragment"></th:block>
+<!--사이드 바-->
+<th:block th:replace="/layout/sidebar :: sidebarfragment"></th:block>
 어드민 페이지 입니다.
-
 <table class="table">
   <thead>
     <tr>
@@ -46,6 +48,10 @@ layout:decorator="/layout/mainlayout">
     </tr>
   </tbody>
 </table>
+<!--최근 작성한 글 5개-->
+<div>
+
+</div>
 <th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

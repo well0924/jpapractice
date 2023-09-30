@@ -127,6 +127,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;		Page&lt;BoardDto.BoardResponseDto&gt; list =null;</b>
 &nbsp;		//페이징 기능
 <b class="nc">&nbsp;		list= service.findAllPage(pageable,categoryName);</b>
+&nbsp;		//검색어가 있으면 검색.
+<b class="nc">&nbsp;		if(searchVal!=null){</b>
+<b class="nc">&nbsp;			list= service.findAllSearch(searchVal,pageable);</b>
+&nbsp;		}
 &nbsp;
 <b class="nc">&nbsp;		mv.addObject(&quot;list&quot;, list);</b>
 <b class="nc">&nbsp;		mv.addObject(&quot;category&quot;,category);</b>
@@ -148,8 +152,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;		BoardDto.BoardResponseDto board = service.getBoard(boardId);</b>
 &nbsp;		//파일 첨부목록
 <b class="nc">&nbsp;		List&lt;AttachDto&gt; fileList = fileService.filelist(boardId);</b>
-&nbsp;		
-<b class="nc">&nbsp;		log.info(fileList);</b>
 &nbsp;
 <b class="nc">&nbsp;		mv.addObject(&quot;fileList&quot;,fileList);</b>
 <b class="nc">&nbsp;		mv.addObject(&quot;detail&quot;, board);</b>
@@ -175,8 +177,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;		BoardDto.BoardResponseDto board = service.getBoard(boardId);</b>
 &nbsp;		//파일 첨부목록
 <b class="nc">&nbsp;		List&lt;AttachDto&gt; fileList = fileService.filelist(boardId);</b>
-&nbsp;
-<b class="nc">&nbsp;		log.info(fileList);</b>
 &nbsp;
 <b class="nc">&nbsp;		mv.addObject(&quot;fileList&quot;,fileList);</b>
 &nbsp;
@@ -211,7 +211,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

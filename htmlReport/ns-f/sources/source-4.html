@@ -43,26 +43,26 @@ Current scope:     <a href="../../index.html">all classes</a>
   <td class="name">CategoryDto</td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    100%
   </span>
   <span class="absValue">
-    (0/1)
+    (1/1)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    50%
   </span>
   <span class="absValue">
-    (0/12)
+    (6/12)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    0%
+    53.8%
   </span>
   <span class="absValue">
-    (0/13)
+    (7/13)
   </span>
 </td>
 </tr>
@@ -85,20 +85,20 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;@Setter</b>
 <b class="nc">&nbsp;@ToString</b>
 <b class="nc">&nbsp;@NoArgsConstructor</b>
-<b class="nc">&nbsp;@AllArgsConstructor</b>
+<b class="fc">&nbsp;@AllArgsConstructor</b>
 &nbsp;public class CategoryDto {
 <b class="nc">&nbsp;    private Integer id;</b>
-<b class="nc">&nbsp;    private String name;</b>
+<b class="fc">&nbsp;    private String name;</b>
 <b class="nc">&nbsp;    private List&lt;CategoryDto&gt; children;</b>
 &nbsp;
 &nbsp;    public static List&lt;CategoryDto&gt; toDtoList(List&lt;Category&gt; categories) {
-<b class="nc">&nbsp;        NestedConvertHelper helper = NestedConvertHelper.newInstance(</b>
+<b class="fc">&nbsp;        NestedConvertHelper helper = NestedConvertHelper.newInstance(</b>
 &nbsp;                categories,
-<b class="nc">&nbsp;                c -&gt; new CategoryDto(c.getId(), c.getName(), new ArrayList&lt;&gt;()),</b>
-<b class="nc">&nbsp;                c -&gt; c.getParent(),</b>
-<b class="nc">&nbsp;                c -&gt; c.getId(),</b>
+<b class="fc">&nbsp;                c -&gt; new CategoryDto(c.getId(), c.getName(), new ArrayList&lt;&gt;()),</b>
+<b class="fc">&nbsp;                c -&gt; c.getParent(),</b>
+<b class="fc">&nbsp;                c -&gt; c.getId(),</b>
 <b class="nc">&nbsp;                d -&gt; d.getChildren());</b>
-<b class="nc">&nbsp;        return helper.convert();</b>
+<b class="fc">&nbsp;        return helper.convert();</b>
 &nbsp;    }
 &nbsp;}
 </code>
@@ -124,7 +124,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

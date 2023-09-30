@@ -51,18 +51,18 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    33.3%
+    62.5%
   </span>
   <span class="absValue">
-    (3/9)
+    (5/8)
   </span>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    11.9%
+    61%
   </span>
   <span class="absValue">
-    (5/42)
+    (25/41)
   </span>
 </td>
 </tr>
@@ -115,33 +115,33 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;	    
 &nbsp;	    // JWT 토큰 생성
 &nbsp;	    public TokenDto createTokenDto(String userPk,Role roles)throws ExpiredJwtException{
-<b class="nc">&nbsp;	        Claims claims = Jwts.claims().setSubject(userPk);// JWT payload에 저장되는 정보 단위</b>
+<b class="fc">&nbsp;	        Claims claims = Jwts.claims().setSubject(userPk);// JWT payload에 저장되는 정보 단위</b>
 &nbsp;
-<b class="nc">&nbsp;	        claims.put(&quot;roles&quot;,roles);// 정보 저장 (key-value)</b>
-<b class="nc">&nbsp;	        long now = (new Date()).getTime();</b>
-<b class="nc">&nbsp;	        Date accessTime = new Date(now+tokenValidTime);</b>
+<b class="fc">&nbsp;	        claims.put(&quot;roles&quot;,roles);// 정보 저장 (key-value)</b>
+<b class="fc">&nbsp;	        long now = (new Date()).getTime();</b>
+<b class="fc">&nbsp;	        Date accessTime = new Date(now+tokenValidTime);</b>
 &nbsp;
 &nbsp;	        //토큰 생성
 &nbsp;	        String accessToke = Jwts
-<b class="nc">&nbsp;	                .builder()</b>
-<b class="nc">&nbsp;	                .setClaims(claims)</b>
-<b class="nc">&nbsp;	                .setExpiration(accessTime)// set Expire Time</b>
-<b class="nc">&nbsp;	                .signWith(SignatureAlgorithm.HS256,secretKey)// 사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅</b>
-<b class="nc">&nbsp;	                .compact();</b>
+<b class="fc">&nbsp;	                .builder()</b>
+<b class="fc">&nbsp;	                .setClaims(claims)</b>
+<b class="fc">&nbsp;	                .setExpiration(accessTime)// set Expire Time</b>
+<b class="fc">&nbsp;	                .signWith(SignatureAlgorithm.HS256,secretKey)// 사용할 암호화 알고리즘과 signature에 들어갈 secret 값 세팅</b>
+<b class="fc">&nbsp;	                .compact();</b>
 &nbsp;
 &nbsp;	        //refresh 토큰 생성
 &nbsp;	        String refreshToken = Jwts
-<b class="nc">&nbsp;	                .builder()</b>
-<b class="nc">&nbsp;	                .setClaims(claims)</b>
-<b class="nc">&nbsp;	                .setExpiration(new Date(now+refreshtokenValidTime))</b>
-<b class="nc">&nbsp;	                .signWith(SignatureAlgorithm.HS256,secretKey)</b>
-<b class="nc">&nbsp;	                .compact();</b>
+<b class="fc">&nbsp;	                .builder()</b>
+<b class="fc">&nbsp;	                .setClaims(claims)</b>
+<b class="fc">&nbsp;	                .setExpiration(new Date(now+refreshtokenValidTime))</b>
+<b class="fc">&nbsp;	                .signWith(SignatureAlgorithm.HS256,secretKey)</b>
+<b class="fc">&nbsp;	                .compact();</b>
 &nbsp;
-<b class="nc">&nbsp;	        return TokenDto.builder()</b>
-<b class="nc">&nbsp;	                .accessToken(accessToke)</b>
-<b class="nc">&nbsp;	                .refreshToken(refreshToken)</b>
-<b class="nc">&nbsp;	                .ExpirationTime(accessTime.getTime())</b>
-<b class="nc">&nbsp;	                .build();</b>
+<b class="fc">&nbsp;	        return TokenDto.builder()</b>
+<b class="fc">&nbsp;	                .accessToken(accessToke)</b>
+<b class="fc">&nbsp;	                .refreshToken(refreshToken)</b>
+<b class="fc">&nbsp;	                .ExpirationTime(accessTime.getTime())</b>
+<b class="fc">&nbsp;	                .build();</b>
 &nbsp;	    }
 &nbsp;
 &nbsp;	    // JWT 토큰에서 인증 정보 조회
@@ -152,7 +152,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;	    // 토큰에서 회원 정보 추출
 &nbsp;	    public String getUserPK(String token) {
-<b class="nc">&nbsp;	        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();</b>
+<b class="fc">&nbsp;	        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();</b>
 &nbsp;	    }
 &nbsp;
 &nbsp;	    // Request의 Header에서 token 값을 가져옵니다. &quot;X-AUTH-TOKEN&quot;: &quot;TOKEN 값&quot;
@@ -176,9 +176,6 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="nc">&nbsp;			}</b>
 <b class="nc">&nbsp;			return true;</b>
 &nbsp;	    }
-&nbsp;		public static Long getExpireTime(String token) {
-<b class="nc">&nbsp;			return Jwts.parser().parseClaimsJws(token).getBody().getExpiration().getTime();</b>
-&nbsp;		}
 &nbsp;}
 </code>
 </pre>
@@ -203,7 +200,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2023-03-15 00:59</div>
+    <div style="float:right;">generated on 2023-03-16 23:50</div>
 </div>
 </body>
 </html>

@@ -46,4 +46,5 @@ public class RedisCrudTest {
         redisService.deleteValues(key);
         assertThat(key).isNotNull();
     }
+
 }
