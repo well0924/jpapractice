@@ -12,37 +12,38 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Entity
 @ToString(callSuper = true)
-@Table(name="board")
+@Table(name="board",indexes = {
+        @Index(columnList = "board_id"),
+        @Index(columnList = "board_title"),
+        @Index(columnList = "board_contents")
+})
 @RequiredArgsConstructor
 public class Board extends BaseTime implements Serializable {
-    //redis에 객체를 저장을 하면 내부적으로 직렬화가 되어서 저장이 된다.
-    //entity 객체중 lazy로 로딩이 되는 경우에는 @Proxy(lazy = false)를 선언해줘야 한다.
+    //redis 에 객체를 저장을 하면 내부적으로 직렬화가 되어서 저장이 된다.
+    //entity 객체중 lazy 로 로딩이 되는 경우에는 @Proxy(lazy = false)를 선언해줘야 한다.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="board_id")
+    @Column(name="board_id",nullable = false)
     private Integer id;
-    @Column(name = "board_title")
+    @Column(name = "board_title",nullable = false)
     private String boardTitle;
-    @Column(name = "board_contents")
+    @Column(name = "board_contents",nullable = false)
     private String boardContents;
-    @Column(name = "board_author")
+    @Column(name = "board_author",nullable = false)
     private String boardAuthor;
-    @Column(name = "read_count")
+    @Column(name = "read_count",nullable = false)
     private Integer readCount;
     @Column(nullable = false)
     private Integer liked;//추천수
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     //회원
-    @ManyToOne(fetch =FetchType.EAGER)
+    @ManyToOne(fetch =FetchType.EAGER,cascade = CascadeType.ALL)
     @JoinColumn(name="useridx")
     private Member writer;
     //댓글
@@ -50,8 +51,8 @@ public class Board extends BaseTime implements Serializable {
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
     private List<Comment> commentlist = new ArrayList<>();
     //파일첨부(게시글을 삭제하면 파일도 삭제)
-    //orphanRemoval을 true로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
-    //orphanRemoval과 CasecadeType.REMOVE 차이점 알아보기.
+    //orphanRemoval 를 true 로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
+    //orphanRemoval 과 CaseCadeType.REMOVE 차이점 알아보기.
     @ToString.Exclude
     @OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private List<AttachFile>attachFiles = new ArrayList<>();
@@ -61,10 +62,24 @@ public class Board extends BaseTime implements Serializable {
     private Set<Like> likes = new HashSet<>();
     //카테고리
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
+    //해시태그
+    @JoinTable(
+            name = "article_hashtag",
+            joinColumns = @JoinColumn(name = "board_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
+    )
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
+    private Set<HashTag> hashtags = new LinkedHashSet<>();
+
+    public void setHashtags(Set<HashTag> hashtags) {
+        this.hashtags = hashtags;
+    }
+
 
     @Builder
     public Board(Integer boardId,String boardTitle,String boardAuthor,String boardContents,Integer readcount,Category category,LocalDateTime createdat,Member member) {
@@ -102,5 +117,16 @@ public class Board extends BaseTime implements Serializable {
     //좋아요 취소
     public void decreaseLikeCount(){
         this.liked -=1;
+    }
+    //해시태그 추가
+    public void addHashTag(HashTag hashTag){
+        this.getHashtags().add(hashTag);
+    }
+    public void addHashTags(Collection<HashTag>hashTags){
+        this.getHashtags().addAll(hashTags);
+    }
+    //해시태그 삭제
+    public void clearHashTag(){
+        this.getHashtags().clear();
     }
 }

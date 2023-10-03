@@ -3,14 +3,7 @@ package co.kr.board.domain;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -19,15 +12,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.Proxy;
 
 @Getter
-@Setter
 @Entity
 @Builder
-@ToString
-@Table(name="member")
+@Table(name="member",indexes = {
+		@Index(columnList = "id"),
+		@Index(columnList = "userid"),
+		@Index(columnList = "membername"),
+		@Index(columnList = "useremail")
+})
 @Proxy(lazy = false)
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -36,16 +31,20 @@ public class Member extends BaseTime implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
+	@Setter
 	@Column(name="userid",nullable = false)
 	private String username;
 
+	@Setter
 	@Column(nullable = false,length = 500)
 	private String password;
-	
+
+	@Setter
 	@Column(length = 200)
 	private String membername;
-	
+
+	@Setter
 	@Column(nullable = false,length = 200)
 	private String useremail;
 	

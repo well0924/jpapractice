@@ -3,26 +3,20 @@ package co.kr.board.domain;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import co.kr.board.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@Table(name="reply")
+@Table(name="reply",indexes = {
+		@Index(columnList = "reply_writer"),
+		@Index(columnList = "reply_contents")
+})
 @RequiredArgsConstructor
 public class Comment implements Serializable {
 	

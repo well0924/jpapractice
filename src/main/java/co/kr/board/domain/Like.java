@@ -1,7 +1,5 @@
 package co.kr.board.domain;
 
-import co.kr.board.domain.Member;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -10,9 +8,11 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "likes")
+@Table(name = "likes",indexes = {
+        @Index(columnList = "id"),
+        @Index(columnList = "likeStatus")
+})
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Like {
     @Id

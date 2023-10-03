@@ -16,7 +16,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Category {
 
-    //카테고리의 경우에는 self join을 사용한다.
+    //카테고리는 self join 을 사용해서 구현을 했다.
     @Id
     @Column(name = "category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
