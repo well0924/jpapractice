@@ -1,17 +1,12 @@
 package co.kr.board.testboard;
 
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.Dto.CategoryDto;
-import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.domain.Dto.TokenDto;
 import co.kr.board.repository.CategoryRepository;
-import co.kr.board.repository.RefreshTokenRepository;
 import co.kr.board.service.BoardService;
 import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.domain.Member;
@@ -25,9 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockPart;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -137,8 +130,7 @@ public class BoardApiControllerTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         given(memberRepository.findByUsername(authentication.getName())).willReturn(Optional.of(memberDto()));
 
-        mockMvc.perform(multipart("/api/board/save")
-                        .part())
+        mockMvc.perform(multipart("/api/board/save"))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }

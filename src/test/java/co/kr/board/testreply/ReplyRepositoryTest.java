@@ -1,6 +1,6 @@
 package co.kr.board.testreply;
 
-import co.kr.board.TestQueryDslConfig;
+import co.kr.board.Config.TestQueryDslConfig;
 import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.repository.CommentRepository;
 import org.assertj.core.api.Assertions;

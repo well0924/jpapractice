@@ -1,4 +1,4 @@
-package co.kr.board;
+package co.kr.board.Config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.boot.test.context.TestConfiguration;
