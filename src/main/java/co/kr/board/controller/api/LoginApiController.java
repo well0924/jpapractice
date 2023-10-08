@@ -48,15 +48,15 @@ public class LoginApiController {
 	
 	//회원가입 인증 이메일
 	@PostMapping("/sendEmail/{email}")
-	public ResponseEntity<?>sendEmail(@PathVariable(value = "email") String userEmail)throws Exception{
+	public Response<String>sendEmail(@PathVariable(value = "email") String userEmail)throws Exception{
 		String epw =emailService.sendSimpleMessage(userEmail);
-		return new ResponseEntity<>("인증번호를 보냈습니다.",HttpStatus.OK);
+		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.");
 	}
 
 	//회원 비밀번호 재수정 인증 이메일
 	@PostMapping("/temporary-password/{email}")
-	public ResponseEntity<?>sendPwd(@PathVariable(value = "email") String userEmail) throws Exception{
+	public Response<String>sendPwd(@PathVariable(value = "email") String userEmail) throws Exception{
 		String tpw = emailService.sendTemporaryPasswordMessage(userEmail);
-		return new ResponseEntity<>("인증번호를 보냈습니다.",HttpStatus.OK);
+		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.");
 	}
 }
