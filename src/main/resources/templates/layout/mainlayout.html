@@ -5,11 +5,27 @@ xmlns:th="http://www.thymeleaf.org"
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
-<title></title>
 </head>
-<body>
-<th:block th:replace="/layout/header :: headerfragment"></th:block>
-<th:block layout:fragment= "conetents"></th:block>
-<th:block th:replace="/layout/footer :: footerfragment"></th:block>
+<body id="page-top">
+<div id="wrapper">
+    <!--side bar-->
+    <th:block th:replace="/layout/sidebar :: sidebarfragment"></th:block>
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id ="content">
+            <!--top bar-->
+            <th:block th:replace="/layout/Topbar :: topbarfragment"></th:block>
+            <!--main contents-->
+            <th:block layout:fragment= "contents"></th:block>
+        </div>
+        <!--footer-->
+        <th:block th:replace="/layout/footer :: footerfragment"></th:block>
+    </div>
+    <!--End of Content Wrapper-->
+</div>
+<!--End of Page Wrapper-->
+<!--common modal & button-->
+<th:block th:replace="/layout/commonfragment::commonfragment"></th:block>
+<!--javascript cnd-->
+<th:block th:replace="/layout/script :: scriptfragment"></th:block>
 </body>
 </html>
