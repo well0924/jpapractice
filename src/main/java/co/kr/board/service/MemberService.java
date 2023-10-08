@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -136,11 +137,14 @@ public class MemberService {
 				.value(tokenDto.getRefreshToken())
 				.build();
 
+		//redis에 토큰값을 저장
 		redisService.setValues(memberDetail.getUsername(), refreshToken.getValue());
 
 		return TokenResponse.builder()
 				.accessToken(tokenDto.getAccessToken())
 				.refreshToken(tokenDto.getRefreshToken())
+				.AccessExpirationTime(tokenDto.getAccessExpirationTime())
+				.RefreshExpirationTime(tokenDto.getRefreshExpirationTime())
 				.build();
     }
 
@@ -167,6 +171,7 @@ public class MemberService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 		log.info(authority);
+		
 		redisService.checkRefreshToken(userpk, request.getRefreshToken());
 
         TokenDto tokenDto = jwtTokenProvider.createTokenDto(userpk,Role.valueOf(authority));
@@ -176,7 +181,7 @@ public class MemberService {
 				.key(authentication.getName())
 				.value(tokenDto.getRefreshToken())
 				.build();
-
+		//토큰값을 레디스에 저장
 		redisService.setValues(userpk,refreshToken.getValue());
 
 		return TokenResponse
@@ -185,6 +190,18 @@ public class MemberService {
 				.refreshToken(tokenDto.getRefreshToken())
 				.build();
     }
+
+	/*
+	 * 로그아웃
+	 */
+	@Transactional
+	public void logout(){
+		//Token에서 로그인한 사용자 정보 get해 로그아웃 처리
+		Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(redisService.getValues(member.getMembername())!=null){
+			redisService.deleteValues(member.getMembername());//토큰 삭제
+		}
+	}
 
 	/*
 	 * 회원가입 기능
@@ -208,8 +225,8 @@ public class MemberService {
 	 * 회원 삭제
 	 */
 	@Transactional
-	public void memberdelete(String username){
-		 repository.deleteByUsername(username);
+	public void memberdelete(Integer userIdx){
+		 repository.deleteById(userIdx);
 	}
 
 	/*
