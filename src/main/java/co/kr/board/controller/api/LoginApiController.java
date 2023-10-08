@@ -1,20 +1,16 @@
 package co.kr.board.controller.api;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 
+import co.kr.board.config.Email.EmailService;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.TokenRequest;
 import co.kr.board.domain.Dto.TokenResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import co.kr.board.config.Exception.dto.Response;
-import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.service.MemberService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,105 +20,43 @@ import lombok.extern.log4j.Log4j2;
 @AllArgsConstructor
 @RequestMapping("/api/login/*")
 public class LoginApiController {
+
 	private final MemberService service;
 
-	@GetMapping("/logincheck/{id}")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Boolean>idCheck(@PathVariable(value="id") String username){
-				
-		Boolean checkresult = service.checkmemberIdDuplicate(username);
-			
-		if(checkresult.equals(true)) {//아이디 중복
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),true);
-		}else{//사용가능한 아이디
-			return	new Response<>(HttpStatus.OK.value(),false);
-		}
-	}
-	
-	@GetMapping("/emailcheck/{email}")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Boolean>emailCheck(@PathVariable(value="email")@Email String useremail){
-		Boolean checkresult = service.checkmemberEmailDuplicate(useremail);
-		
-		if(checkresult.equals(true)) {//아이디 중복
-			return new Response<>(HttpStatus.BAD_REQUEST.value(),false);
-		}else {//사용가능한 아이디
-			return	new Response<>(HttpStatus.OK.value(),true);
-		}
-	}
-	//페이징
-	@GetMapping("/list")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<MemberDto.MemeberResponseDto>>memberList(@PageableDefault(sort = "id",direction = Sort.Direction.DESC,size = 10) Pageable pageable){
-		Page<MemberDto.MemeberResponseDto>list= service.findAll(pageable);
-		return new Response<>(HttpStatus.OK.value(),list);
-	}
+	private final EmailService emailService;
 
-	@GetMapping("/list/search")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<MemberDto.MemeberResponseDto>>memberSearchList(
-			@RequestParam(value = "searchVal",required = false) String searchVal,
-			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
-
-		Page<MemberDto.MemeberResponseDto>list = service.findByAll(searchVal,pageable);
-
-		return new Response<>(HttpStatus.OK.value(),list);
-	}
-
-	@GetMapping("/detailmember/{idx}/member")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<MemberDto.MemeberResponseDto>memberDetail(@PathVariable(value="idx")Integer useridx){
-		
-		MemberDto.MemeberResponseDto dto = service.getMember(useridx);
-				
-		return new Response<>(HttpStatus.OK.value(),dto);
-	}
-	
-	@PostMapping("/memberjoin")
-	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Integer>memberJoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
-		int joinresult = service.memberjoin(dto);
-		return new Response<>(HttpStatus.OK.value(),joinresult);
-	}
-	
-	@DeleteMapping("/memberdelete/{idx}/member")
-	public Response<String>memberDelete(@PathVariable(value="idx")String username){
-		service.memberdelete(username);
-		return new Response<>(HttpStatus.OK.value(),"delete");
-	}
-	
-	@PutMapping("/memberupdate/{idx}/member")
-	public Response<Integer>memberUpdate(
-			@PathVariable(value="idx")Integer useridx,
-			@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult){
-		int updateresult = service.memberupdate(useridx, dto);
-		return new Response<>(HttpStatus.OK.value(),updateresult);
-	}
-	
-	@PostMapping("/userfind/{name}/{email}")
-	public Response<?>userFindId(
-			@PathVariable(value="name")String membername,
-			@PathVariable(value="email")String useremail){
-		String userid = service.findByMembernameAndUseremail(membername, useremail);
-		return new Response<>(HttpStatus.OK.value(),userid);
-	}
-
-	@PutMapping("/passwordchange/{name}")
-	public Response<Integer>passwordChange(@PathVariable(value = "name")String username,
-										   @RequestBody MemberDto.MemberRequestDto dto){
-		int result = service.passwordchange(username,dto);
-		return new Response<>(HttpStatus.OK.value(),result);
-	}
-
+	//로그인
 	@PostMapping("/signup")
     public Response <TokenResponse> memberJwtLogin(@Valid @RequestBody LoginDto loginDto){
         TokenResponse tokenResponse = service.signin(loginDto);
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
 
+	//토큰 재발급
     @PostMapping("/reissue")
     public Response<TokenResponse>jwtReissue(@Valid @RequestBody TokenRequest tokenDto){
         TokenResponse tokenResponse = service.reissue(tokenDto);
 		return new Response<>(HttpStatus.OK.value(),tokenResponse);
     }
+
+	//로그아웃
+	@PostMapping("/logout")
+	public ResponseEntity<?>logout(HttpServletRequest servletRequest){
+		service.logout();
+		return ResponseEntity.ok().build();
+	}
+	
+	//회원가입 인증 이메일
+	@PostMapping("/sendEmail/{email}")
+	public ResponseEntity<?>sendEmail(@PathVariable(value = "email") String userEmail)throws Exception{
+		String epw =emailService.sendSimpleMessage(userEmail);
+		return new ResponseEntity<>("인증번호를 보냈습니다.",HttpStatus.OK);
+	}
+
+	//회원 비밀번호 재수정 인증 이메일
+	@PostMapping("/temporary-password/{email}")
+	public ResponseEntity<?>sendPwd(@PathVariable(value = "email") String userEmail) throws Exception{
+		String tpw = emailService.sendTemporaryPasswordMessage(userEmail);
+		return new ResponseEntity<>("인증번호를 보냈습니다.",HttpStatus.OK);
+	}
 }
