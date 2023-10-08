@@ -19,7 +19,6 @@ layout:decorator="/layout/mainlayout">
 </style>
 </head>
 <body>
-<th:block th:replace="/layout/header :: headerfragment"></th:block>
 <div class="row">
 	<div class="col-sm-3"></div>
 	<div class="col-sm-6">
@@ -46,11 +45,11 @@ layout:decorator="/layout/mainlayout">
 		    </form>
 		  </div>
 		  <div class="card-footer text-muted">
-		    <a th:href="@{/page/login/memberjoin}">회원가입</a>
+		    <a th:href="@{/page/member/memberjoin}">회원가입</a>
 		    <br></br>
-		    <a th:href="@{/page/login/finduserid}">아이디 찾기</a>
+		    <a th:href="@{/page/member/finduserid}">아이디 찾기</a>
 		    <br></br>
-		    <a th:href="@{/page/login/finduserpw}">비밀번호찾기</a>
+		    <a th:href="@{/page/member/finduserpw}">비밀번호찾기</a>
 		  </div>
 		</div>
 	</div>
