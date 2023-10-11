@@ -4,7 +4,6 @@ import co.kr.board.Config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.Dto.BoardNextPrevious;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -59,19 +58,6 @@ public class BoardRepositoryTest {
     }
 
     @Test
-    @DisplayName("게시글 다음글.이전글 테스트")
-    public void boardNextPreviousTest(){
-        List<BoardNextPrevious> nextPrevious = boardRepository.findPreviousNextBoard(5);
-        System.out.println("게시글 수:"+nextPrevious.size());
-        System.out.println("목록:"+nextPrevious.toArray());
-        System.out.println(nextPrevious.get(0).getId());
-        System.out.println(nextPrevious.get(0).getBoardTitle());
-        System.out.println(nextPrevious.get(1).getId());
-        System.out.println(nextPrevious.get(1).getBoardTitle());
-        assertThat(nextPrevious).isNotNull();
-    }
-
-    @Test
     @DisplayName("최근에 작성한 게시글 5개")
     public void findTop5BoardListTest(){
         List<BoardDto.BoardResponseDto>list = boardRepository.findTop5ByOrderByBoardIdDescCreatedAtDesc();
@@ -81,4 +67,11 @@ public class BoardRepositoryTest {
         assertThat(list).hasSize(5);
     }
 
+    @Test
+    @DisplayName("게시글 이전글/다음글 출력")
+    public void findNextPreviousBoard(){
+        List<BoardDto.BoardResponseDto>result = boardRepository.findNextPrevioustBoard(386);
+        assertThat(result).isNotNull();
+        assertThat(result).hasSize(2);
+    }
 }

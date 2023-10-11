@@ -20,15 +20,15 @@ public class CategoryService {
 
     //카테고리 목록
     public List<CategoryDto> categoryList() {
-        List<Category> categories = categoryRepository.findAllOrderByParentIdAscNullsFirstCategoryIdAsc();
-        return CategoryDto.toDtoList(categories);
+        return categoryRepository.categoryList();
     }
 
     //카테고리 등록
     @Transactional
     public void create(CategoryCreateRequest req) {
         Category parent = Optional.ofNullable(req.getParentId())
-                .map(id -> categoryRepository.findById(id).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND)))
+                .map(id -> categoryRepository.findById(id)
+                        .orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND)))
                 .orElse(null);
 
         categoryRepository.save(new Category(req.getName(),parent));
@@ -37,7 +37,12 @@ public class CategoryService {
     //카테고리 삭제
     @Transactional
     public void delete(Integer id) {
-        Category category = categoryRepository.findById(id).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
-        categoryRepository.deleteById(id);
+        Category category = categoryRepository
+                .findById(id)
+                .orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
+
+        if(category!=null){
+            categoryRepository.deleteById(id);
+        }
     }
 }

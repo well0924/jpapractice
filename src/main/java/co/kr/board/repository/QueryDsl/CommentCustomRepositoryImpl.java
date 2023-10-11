@@ -26,6 +26,17 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
         this.qCategory = QCategory.category;
     }
 
+    //댓글 목록
+    @Override
+    public List<CommentDto.CommentResponseDto> findCommnentList(Integer boardId) {
+        List<Comment>commentList = jpaQueryFactory
+                .select(qComment)
+                .from(qComment)
+                .where(qComment.board.id.eq(boardId))
+                .fetch();
+        return commentList.stream().map(CommentDto.CommentResponseDto::new).collect(Collectors.toList());
+    }
+
     //최근에 작성한 댓글 5개
     @Override
     public List<CommentDto.CommentResponseDto> findTop5ByOrderByReplyIdCreatedAtDesc() {
@@ -35,8 +46,8 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
                 .orderBy(qComment.id.desc(),qComment.createdAt.desc())
                 .limit(5)
                 .fetch();
-
-        return list.stream().map(comment->new CommentDto.CommentResponseDto(comment)).collect(Collectors.toList());
+        return list.stream().map(CommentDto.CommentResponseDto::new).collect(Collectors.toList());
     }
+
 
 }

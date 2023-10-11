@@ -38,6 +38,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
+    public final SetPath<HashTag, QHashTag> hashtags = this.<HashTag, QHashTag>createSet("hashtags", HashTag.class, QHashTag.class, PathInits.DIRECT2);
+
     public final NumberPath<Integer> id = createNumber("id", Integer.class);
 
     public final NumberPath<Integer> liked = createNumber("liked", Integer.class);

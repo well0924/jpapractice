@@ -35,22 +35,28 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         qCategory = QCategory.category;
     }
 
-    //게시글 검색
+    @Override
+    public Page<BoardDto.BoardResponseDto> findAllBoardList(String categoryName, Pageable pageable) {
+        List<Board>boardList = jpaQueryFactory
+                .select(qBoard)
+                .from(qBoard)
+                .fetch();
+
+        return null;
+    }
+
+    //게시글 검색 + 정렬
     @Override
     public Page<BoardDto.BoardResponseDto> findByAllSearch(String searchVal, Pageable pageable) {
         List<Board>content = getBoardMemberDtos(searchVal,pageable);
 
-        List<BoardDto.BoardResponseDto>contents = new ArrayList<>();
+        List<BoardDto.BoardResponseDto>contents = content
+                                                .stream()
+                                                .map(BoardDto.BoardResponseDto::new)
+                                                .collect(Collectors.toList());
 
         long count = getCount(searchVal,pageable);
 
-        for(Board article : content){
-            BoardDto.BoardResponseDto responseDto = BoardDto.BoardResponseDto
-                    .builder()
-                    .board(article)
-                    .build();
-            contents.add(responseDto);
-        }
         return new PageImpl<>(contents,pageable,count);
     }
 
@@ -61,33 +67,71 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         List<Board>myarticle = getMyArticle(username,pageable);
         long count = getMyArticleCount(username);
 
-        List<BoardDto.BoardResponseDto>list = new ArrayList<>();
+        List<BoardDto.BoardResponseDto>list = myarticle
+                .stream()
+                .map(board->new BoardDto.BoardResponseDto(board))
+                .collect(Collectors.toList());
 
-        for(Board article:myarticle){
-            BoardDto.BoardResponseDto responseDto = BoardDto.BoardResponseDto
-                    .builder()
-                    .board(article)
-                    .build();
-            list.add(responseDto);
-        }
         return new PageImpl<>(list,pageable,count);
     }
     
-    //최근에 작성한 글
+    //최근에 작성한 글(5개)
     @Override
     public List<BoardDto.BoardResponseDto> findTop5ByOrderByBoardIdDescCreatedAtDesc() {
+
         List<Board>boardList = jpaQueryFactory
                 .select(qBoard)
                 .from(qBoard)
                 .orderBy(qBoard.createdAt.desc(),qBoard.id.desc())
                 .limit(5)
                 .fetch();
-        return boardList.stream().map(board -> new BoardDto.BoardResponseDto(board)).collect(Collectors.toList());
+
+        return boardList.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
+    }
+    
+    //게시글 이전글/다음글 조회
+    @Override
+    public List<BoardDto.BoardResponseDto> findNextPrevioustBoard(Integer id) {
+        List<Board>boardResponseDtos = jpaQueryFactory
+                .select(qBoard)
+                .from(qBoard)
+                .where( qBoard.id
+                        .in(findNextBoard(id),
+                            findPreviousBoard(id)
+                        )
+                )
+                .orderBy(qBoard.id.desc())
+                .fetch();
+
+        return boardResponseDtos.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
+    }
+
+    //게시글 다음글
+    private Integer findNextBoard(Integer boardId){
+
+        return jpaQueryFactory
+                .select(qBoard.id)
+                .from(qBoard)
+                .where(qBoard.id.lt(boardId))
+                .orderBy(qBoard.id.desc())
+                .limit(1)
+                .fetchOne();
+    }
+
+    //게시글 이전글 
+    private Integer findPreviousBoard(Integer boardId){
+        return jpaQueryFactory
+                .select(qBoard.id)
+                .from(qBoard)
+                .where(qBoard.id.goe(boardId))
+                .orderBy(qBoard.id.asc())
+                .limit(1)
+                .fetchOne();
     }
 
     //내가 작성한 글 목록
     private List<Board>getMyArticle(String username,Pageable pageable){
-        List<Board>list =jpaQueryFactory
+        return jpaQueryFactory
                 .select(qBoard)
                 .from(qBoard)
                 .leftJoin(qBoard.writer,qMember)
@@ -96,24 +140,21 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetch();
-        return list;
     }
 
     //회원이 작성한 글 개수
     private Long getMyArticleCount(String username){
-        Long count = jpaQueryFactory
+        return jpaQueryFactory
                 .select(qBoard.count())
                 .from(qBoard)
                 .leftJoin(qBoard.writer,qMember)
                 .where(qMember.username.eq(username))
                 .fetchOne();
-        return count;
     }
 
-    //글목록 조회
+    //글목록 조회+정렬
     private List<Board>getBoardMemberDtos(String searchVal, Pageable pageable){
-
-        List<Board>content = jpaQueryFactory
+        return jpaQueryFactory
                 .select(qBoard)
                 .from(qBoard)
                 .leftJoin(qBoard.writer, qMember)
@@ -122,14 +163,11 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-
-        return content;
     }
 
     //검색 결과물 갯수
     private Long getCount(String searchVal,Pageable pageable){
-
-        Long count = jpaQueryFactory
+        return jpaQueryFactory
                 .select(qBoard.count())
                 .from(qBoard)
                 .leftJoin(qBoard.writer,qMember)
@@ -138,8 +176,6 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetchOne();
-
-        return count;
     }
 
     //게시글 제목

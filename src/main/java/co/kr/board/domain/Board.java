@@ -43,7 +43,7 @@ public class Board extends BaseTime implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     //회원
-    @ManyToOne(fetch =FetchType.EAGER,cascade = CascadeType.ALL)
+    @ManyToOne(fetch =FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="useridx")
     private Member writer;
     //댓글

@@ -3,9 +3,6 @@ package co.kr.board.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import javax.transaction.Transactional;
-
 import co.kr.board.domain.Board;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
@@ -18,6 +15,7 @@ import co.kr.board.domain.Comment;
 import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.repository.CommentRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -34,22 +32,10 @@ public class CommentService {
 	 */
 	@Transactional
 	public List<CommentDto.CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
-		
 		Optional<Board> detail = boardrepository.findById(id);
-		
-		Board board = detail.get();
-		
-		List<Comment>comment = repository.findCommentsBoardId(id);
 		List<CommentDto.CommentResponseDto> list = new ArrayList<>();
-		
-		for(Comment co : comment) {
-			CommentDto.CommentResponseDto dto = CommentDto
-					.CommentResponseDto
-					.builder()
-					.comment(co)
-					.build();
-			
-			list.add(dto);
+		if(detail.isPresent()){
+			list = repository.findCommnentList(id);
 		}
 		return list;
 	}
@@ -71,8 +57,7 @@ public class CommentService {
 		
 		//게시판에서 글 조회 -> 글이 없으면 Exception
 		Board board = boardrepository.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
-		
-		
+
 		Comment reply = Comment.builder()
 				.board(board)
 				.member(principal)
@@ -107,6 +92,7 @@ public class CommentService {
 		if(!userid.equals(replywriter)) {
 			throw new CustomExceptionHandler(ErrorCode.COMMENT_DELETE_DENIED);
 		}
+
 		repository.deleteById(replyId);
 	}
 	
@@ -129,7 +115,6 @@ public class CommentService {
 		Comment comment = repository.findById(replyId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 		
 		String userid= principal.getUsername();
-		
 		String replywriter= comment.getReplyWriter();
 		
 		if(!userid.equals(replywriter)) {
@@ -140,4 +125,13 @@ public class CommentService {
 		
 		return comment.getId();
 	}
+
+	/*
+	 * 최근에 작성한 댓글 5개 출력하기.
+	 */
+	@Transactional(readOnly = true)
+	public List<CommentDto.CommentResponseDto>commentTop5() throws Exception {
+		return repository.findTop5ByOrderByReplyIdCreatedAtDesc();
+	}
+
 }

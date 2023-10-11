@@ -1,15 +1,13 @@
 package co.kr.board.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
 @Getter
+@ToString
 @Entity
 @Builder
 @NoArgsConstructor
@@ -25,7 +23,7 @@ public class Category {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="parent_id")
+    @JoinColumn(name="parent_id",referencedColumnName = "category_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category parent;
 
