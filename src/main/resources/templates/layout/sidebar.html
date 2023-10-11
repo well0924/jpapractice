@@ -20,9 +20,18 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-      <a class="nav-link" href="index.html">
-        <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>게시글 수[ ]</span></a>
+      <th:block th:if="${count} == null">
+        <a class="nav-link">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>관리자 페이지</span>
+        </a>
+      </th:block>
+      <th:block th:if="${count} != null">
+        <a class="nav-link">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>게시글 수[ [[${count}]] ]</span>
+        </a>
+      </th:block>
     </li>
 
     <!-- Divider -->
@@ -39,13 +48,11 @@
       <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
          aria-expanded="true" aria-controls="collapseTwo">
         <i class="fas fa-fw fa-cog"></i>
-        <span>Components</span>
+        <span>카테고리</span>
       </a>
       <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
-          <h6 class="collapse-header">Custom Components:</h6>
           <a class="collapse-item" href="">Buttons</a>
-          <a class="collapse-item" href="">Cards</a>
         </div>
       </div>
     </li>
@@ -58,11 +65,16 @@
       최근 작성한 글
     </div>
     <!-- Nav Item - Pages Collapse Menu -->
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="#" aria-expanded="true" aria-controls="collapseTwo">
+    <li class="nav-item" th:each="list:${top5}">
+        <input type="hidden" name="boardId" th:value="${list.boardId}">
+        <input type="hidden" name="categoryId" th:value="${list.categoryId}">
+        <p class="text-center mb-2">
+          <strong>[[${list.boardContents}]]</strong>
+        </p>
+      <!-- <a class="nav-link collapsed" href="#" aria-expanded="true" aria-controls="collapseTwo">
         <i class="fas fa-fw fa-cog"></i>
-        <span>test article</span>
-      </a>
+        <span>[[${list.boardContents}]]</span>
+      </a>-->
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
@@ -76,11 +88,11 @@
     </div>
 
     <!-- Sidebar Message -->
-    <!--<div class="sidebar-card d-none d-lg-flex">
+    <div class="sidebar-card d-none d-lg-flex">
       <img class="sidebar-card-illustration mb-2" src="/img/undraw_rocket.svg" alt="...">
       <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
       <a class="btn btn-success btn-sm" href="">Upgrade to Pro!</a>
-    </div>-->
+    </div>
   </ul>
   <!-- End of Sidebar -->
 </th:block>
