@@ -5,13 +5,16 @@ import co.kr.board.domain.Dto.BoardDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -34,33 +37,77 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         qLike = QLike.like;
         qCategory = QCategory.category;
     }
-
+    
+    //게시글 카테고리 목록
     @Override
     public Page<BoardDto.BoardResponseDto> findAllBoardList(String categoryName, Pageable pageable) {
-        List<Board>boardList = jpaQueryFactory
-                .select(qBoard)
+        List<BoardDto.BoardResponseDto>boardList = jpaQueryFactory
+                .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
                 .from(qBoard)
+                .leftJoin(qBoard.writer,qMember)
+                .on(qBoard.id.eq(qBoard.writer.id))
+                .leftJoin(qBoard.category,qCategory)
+                .on(qCategory.id.eq(qBoard.category.id))
+                .leftJoin(qBoard.likes,qLike)
+                .on(qLike.board.id.eq(qBoard.id))
+                .where(categoryName(categoryName))//카테고리명
+                .orderBy(getAllOrderSpecifiers(pageable.getSort())
+                        .toArray(OrderSpecifier[]::new))
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
                 .fetch();
 
-        return null;
+        //게시물 갯수
+        Long listCount = jpaQueryFactory
+                .select(qBoard.count())
+                .from(qBoard)
+                .leftJoin(qBoard.writer,qMember)
+                .on(qBoard.id.eq(qBoard.writer.id))
+                .leftJoin(qBoard.category,qCategory)
+                .on(qCategory.id.eq(qBoard.category.id))
+                .leftJoin(qBoard.likes,qLike)
+                .on(qLike.board.id.eq(qBoard.id))
+                .where(categoryName(categoryName))//카테고리
+                .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                .fetchOne();
+
+        return new PageImpl<>(boardList,pageable,listCount);
     }
 
-    //게시글 검색 + 정렬
+    //게시글 목록 검색 + 정렬 + 페이징
     @Override
-    public Page<BoardDto.BoardResponseDto> findByAllSearch(String searchVal, Pageable pageable) {
-        List<Board>content = getBoardMemberDtos(searchVal,pageable);
+    public Page<BoardDto.BoardResponseDto> findByAllSearch(String searchVal, SearchType searchType, Pageable pageable) {
+        JPQLQuery<BoardDto.BoardResponseDto>list = jpaQueryFactory
+                .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
+                .from(qBoard)
+                .leftJoin(qBoard.writer,qMember)
+                .on(qBoard.id.eq(qBoard.writer.id))
+                .leftJoin(qBoard.category,qCategory)
+                .on(qCategory.id.eq(qBoard.category.id))
+                .distinct();
 
-        List<BoardDto.BoardResponseDto>contents = content
-                                                .stream()
-                                                .map(BoardDto.BoardResponseDto::new)
-                                                .collect(Collectors.toList());
+        JPQLQuery<BoardDto.BoardResponseDto>middleQuery = switch (searchType){
+            //제목
+            case TITLE -> list.where(titleCt(searchVal));
+            //작성자
+            case AUTHOR -> list.where(authorCt(searchVal));
+            //내용
+            case CONTENTS -> list.where(contentCt(searchVal));
+            //ALL
+            default ->list.where(titleCt(searchVal).or(authorCt(searchVal)).or(contentCt(searchVal)));
+        };
 
-        long count = getCount(searchVal,pageable);
-
-        return new PageImpl<>(contents,pageable,count);
+        return PageableExecutionUtils
+                .getPage(middleQuery
+                        .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                        .offset(pageable.getOffset())
+                        .limit(pageable.getPageSize())
+                        .fetch(),
+                        pageable,
+                        middleQuery::fetchCount);
     }
 
-    //내가 작성한 글
+    //내가 작성한 글 o.k
     @Override
     public Page<BoardDto.BoardResponseDto> findByAllContents(String username, Pageable pageable) {
 
@@ -69,13 +116,13 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
 
         List<BoardDto.BoardResponseDto>list = myarticle
                 .stream()
-                .map(board->new BoardDto.BoardResponseDto(board))
+                .map(BoardDto.BoardResponseDto::new)
                 .collect(Collectors.toList());
 
         return new PageImpl<>(list,pageable,count);
     }
     
-    //최근에 작성한 글(5개)
+    //최근에 작성한 글(5개) o.k
     @Override
     public List<BoardDto.BoardResponseDto> findTop5ByOrderByBoardIdDescCreatedAtDesc() {
 
@@ -89,7 +136,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         return boardList.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
     }
     
-    //게시글 이전글/다음글 조회
+    //게시글 이전글/다음글 조회 o.k
     @Override
     public List<BoardDto.BoardResponseDto> findNextPrevioustBoard(Integer id) {
         List<Board>boardResponseDtos = jpaQueryFactory
@@ -129,7 +176,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .fetchOne();
     }
 
-    //내가 작성한 글 목록
+    //회원이 작성한 글 목록
     private List<Board>getMyArticle(String username,Pageable pageable){
         return jpaQueryFactory
                 .select(qBoard)
@@ -152,37 +199,20 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .fetchOne();
     }
 
-    //글목록 조회+정렬
-    private List<Board>getBoardMemberDtos(String searchVal, Pageable pageable){
-        return jpaQueryFactory
-                .select(qBoard)
-                .from(qBoard)
-                .leftJoin(qBoard.writer, qMember)
-                .where(titleCt(searchVal).or(contentCt(searchVal)))
-                .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+    //카테고리 이름
+    BooleanBuilder categoryName(String categoryName){
+        return nullSafeBuilder(()->qCategory.name.containsIgnoreCase(categoryName));
     }
-
-    //검색 결과물 갯수
-    private Long getCount(String searchVal,Pageable pageable){
-        return jpaQueryFactory
-                .select(qBoard.count())
-                .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .where(titleCt(searchVal).or(contentCt(searchVal)))
-                .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-                .fetchOne();
-    }
-
     //게시글 제목
     BooleanBuilder titleCt(String searchVal) {return nullSafeBuilder(() -> qBoard.boardTitle.contains(searchVal));}
 
     //게시글 내용
     BooleanBuilder contentCt(String searchVal) {return nullSafeBuilder(() -> qBoard.boardContents.contains(searchVal));}
+
+    //게시글 작성자
+    BooleanBuilder authorCt(String searchVal){
+        return nullSafeBuilder(()->qBoard.boardAuthor.containsIgnoreCase(searchVal));
+    }
     
     //게시글 정렬
     private List<OrderSpecifier> getAllOrderSpecifiers(Sort sort) {

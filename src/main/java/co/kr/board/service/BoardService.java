@@ -1,27 +1,27 @@
 package co.kr.board.service;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import co.kr.board.domain.AttachFile;
-import co.kr.board.domain.Board;
-import co.kr.board.domain.Category;
+import co.kr.board.domain.*;
 import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.domain.Dto.BoardDto.BoardResponseDto;
 import co.kr.board.repository.CategoryRepository;
 import co.kr.board.domain.Dto.AttachDto;
 import co.kr.board.repository.AttachRepository;
+import co.kr.board.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-import co.kr.board.domain.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,71 +33,49 @@ public class BoardService{
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
+	private final MemberRepository memberRepository;
 	private final FileHandler fileHandler;
-
-	/*
-	 * 글 목록 전체 조회
-	 */
-	@Transactional(readOnly = true)
-	public List<BoardDto.BoardResponseDto>findAll(){
-	
-		List<Board> articlelist= repos.findAll();
-		
-		List<BoardDto.BoardResponseDto> list = new ArrayList<>();
-		
-		for(Board article : articlelist) {
-			BoardDto.BoardResponseDto boardDto = BoardDto.BoardResponseDto
-												.builder()											
-												.board(article)
-												.build();	
-			list.add(boardDto);
-		}	
-		return list;
-	}
 
     /*
 	* 글목록 전체 조회(페이징+카테고리)
-	* @Param Pageable
-	* 
+	* @Param Pageable 페이징 객체
+	* @param categoryName 카테고리 명
 	*/
 	@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto>findAllPage(Pageable pageable, String categoryName){
-		Page<Board>boards = repos.findAllByCategoryName(pageable,categoryName);
-		return boards.map(board->new BoardDto.BoardResponseDto(board));
+	public Page<BoardResponseDto>findAllPage(Pageable pageable, String categoryName){
+		return repos.findAllBoardList(categoryName,pageable);
 	}
 
 	/*
-	 * 페이징 + 검색기능
-	 * @Param searchVal,
-	 * @Param pageable
-	 *
-	 * 게시물에서 검색.
+	 * 페이징 + 검색기능 + 정렬
+	 * @Param searchVal : 검색어,
+	 * @Param pageable : 페이징 객체
+	 * 게시물 목록에서 검색.
 	 */
 	@Transactional(readOnly = true)
-	public Page<BoardDto.BoardResponseDto>findAllSearch(String searchVal, Pageable pageable){
-		Page<BoardDto.BoardResponseDto>list = repos.findByAllSearch(searchVal,pageable);
-		return list;
+	public Page<BoardResponseDto>findAllSearch(String searchVal,String searchType, Pageable pageable){
+		//Page<BoardResponseDto>list = repos.findByAllSearch(searchVal,pageable);
+		return repos.findByAllSearch(searchVal, SearchType.toSearch(searchType),pageable);
 	}
 
 	/*
 	* 글 등록 (파일 첨부)
-	* @Param BoardRequestDto 
-	* @Param Member
+	* @Param BoardRequestDto 게시글 요청 dto
+	* @Param Member 회원 객체
 	* 시큐리티 로그인 후 이용
 	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto, Member member ,Integer categoryId,List<MultipartFile>files)throws Exception{
+	public Integer boardsave(BoardDto.BoardRequestDto dto ,Integer categoryId,List<MultipartFile>files)throws Exception{
 
-		if(member == null) {
-			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
-		}
+		Member member = getMember();
 
-		Category category = categoryRepository.findById(categoryId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
+		Category category = categoryRepository.findById(categoryId)
+				.orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
 
 		Board board = Board
 				.builder()
-				.member(member)
+				.member(getMember())
 				.boardTitle(dto.getBoardTitle())
 				.boardAuthor(member.getUsername())
 				.boardContents(dto.getBoardContents())
@@ -106,67 +84,50 @@ public class BoardService{
 				.createdat(dto.getCreatedAt())
 				.build();
 
-		int InsertResult = repos.save(board).getId();
-
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 
 		log.info(fileList);
 
-		if(fileList == null || fileList.size() == 0){
-			return InsertResult;
-		}
-
-		if(!fileList.isEmpty()){
-			for(AttachFile attachFile : fileList){
-				board.addAttach(attachRepository.save(attachFile));
-			}
-		}
+		int InsertResult = repos.save(board).getId();
+		//파일 처리
+		AttachFile(InsertResult,fileList,board);
+		
 		return InsertResult;
 	}
 	
     /*
-    * 글 목록 단일 조회
+    * 글 목록 단일 조회 -> 수정 필요
     * @Param boardId
     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
 	@Transactional
-	public BoardDto.BoardResponseDto getBoard(Integer boardId){
-		
-		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
-
+	public BoardResponseDto getBoard(Integer boardId){
 		//글 조회
-		Board board = articlelist.get();
+		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId)
+				.orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 
 		//게시글 조회수 증가->중복 증가 방지필요
-		board.countUp();		
+		articlelist.get().countUp();
 		
 		return BoardDto.BoardResponseDto
 			   .builder()
-			   .board(board)
+			   .board(articlelist.get())
 			   .build();
 	}
 	
     /*
 	* 게시글 삭제 (파일 삭제 포함)
-	* @Param boardId
-	* @Param Member
+	* @Param boardId 게시물 번호
+	* @Param Member 회원 객체
 	* @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
 	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
-	public void deleteBoard(Integer boardId , Member member)throws Exception{
-		
-		if(member == null) {
-			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
-		}
-		Optional<Board> board = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
-		
-		String boardAuthor = board.get().getBoardAuthor();
-		String loginUser = member.getUsername();
-		
-		if(!boardAuthor.equals(loginUser)) {
-			throw new CustomExceptionHandler(ErrorCode.BOARD_DELETE_DENIED);
-		}
+	public void deleteBoard(Integer boardId)throws Exception{
+
+		Member member = getMember();
+
+		Board board = validateMember(boardId,member);
 
 		List<AttachDto>list = fileService.filelist(boardId);
 
@@ -179,56 +140,33 @@ public class BoardService{
 				file.delete();
 			}
 		}
-		repos.deleteById(board.get().getId());
+		repos.deleteById(board.getId());
 	}
 	
     /*
 	* 글 수정 기능 (파일 첨부)
-	* @Param BoardRequestDto 
-	* @Param boardId
-	* @Param Member
+	* @Param BoardRequestDto 게시물 요청 dto 
+	* @Param boardId 게시물 번호
+	* @Param Member 회원 객체
 	* @Exception : 로그인을 하지 않은경우 ONLY_USER
 	* @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL 
 	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	*/
 	@Transactional
-	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,Member member,List<MultipartFile>files)throws Exception{
-		if(member == null) {
-			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
-		}
-		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
-		
-		Board boardDetail = articlelist.get();
-		
-		String boardAuthor = boardDetail.getBoardAuthor();
-		String loginUser = member.getUsername();
+	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,List<MultipartFile>files)throws Exception{
+
+		Member member = getMember();
+
+		Board boardDetail =	validateMember(boardId,member);
 
 		boardDetail.updateBoard(dto);
-
-		if(!boardAuthor.equals(loginUser)) {
-			throw new CustomExceptionHandler(ErrorCode.BOARD_EDITE_DENIED);
-		}
 
 		int updateResult = boardDetail.getId();
 
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 
-		if(fileList == null || fileList.size() ==0){
-			return updateResult;
-		}
+		AttachFile(updateResult,fileList,boardDetail);
 
-		if(!fileList.isEmpty()){
-			for (int i=0;i<fileList.size();i++) {
-				String filePath = fileList.get(i).getFilePath();
-				File file = new File(filePath);
-				if(file.exists()){
-					file.delete();
-				}
-			}
-			for(AttachFile attachFile : fileList){
-				boardDetail.addAttach(attachRepository.save(attachFile));
-			}
-		}
 		return updateResult;
 	}
 
@@ -236,10 +174,93 @@ public class BoardService{
 	 * 회원이 작성한 글목록
 	 * @Param String username 회원의 아이디
 	 * @Param Pagaeable 페이징 객체
+	 * @retrun list
 	 */
 	@Transactional
-	public Page<BoardDto.BoardResponseDto>memberArticle(String username,Pageable pageable){
-		Page<BoardDto.BoardResponseDto>list = repos.findByAllContents(username,pageable);
-		return list;
+	public Page<BoardResponseDto>memberArticle(String username, Pageable pageable){
+		return repos.findByAllContents(username,pageable);
+	}
+
+	/*
+	 * 최근에 작성한 글(5개)
+	 */
+	@Transactional(readOnly = true)
+	public List<BoardResponseDto>findBoardTop5(){
+		return repos.findTop5ByOrderByBoardIdDescCreatedAtDesc();
+	}
+
+	/*
+	 * 게시글 전체 갯수
+	 */
+	@Transactional
+	public Integer articleCount(){
+		return repos.ArticleCount();
+	}
+
+	/*
+	 * 게시글 이전글/다음글 가져오기.
+	 * @param boardId 게시글 번호
+	 */
+	@Transactional(readOnly = true)
+	public List<BoardResponseDto>articleNextPreviousBoard(Integer boardId){
+		return repos.findNextPrevioustBoard(boardId);
+	}
+
+	/*
+	 * 회원 정보 가져오기.
+	 */
+	private Member getMember(){
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String)authentication.getPrincipal();
+		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+
+		if(member == null){
+			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
+		}
+		return member;
+	}
+
+	/*
+	 * 회원 정보 일치 확인
+	 * @param boardId 게시물 번호
+	 * @param Member 회원객체
+	 * @Exception : 로그인을 하지 않은경우 ONLY_USER
+	 */
+	public Board validateMember(Integer boardId,Member member){
+
+		Board board = repos.findById(boardId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
+
+		String boardWriter = board.getBoardAuthor();
+		String loginUser = member.getUsername();
+
+		if(boardWriter.equals(loginUser)){
+			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
+		}
+		return board;
+	}
+
+	/*
+	 * 파일 첨부 수정부분
+	 */
+	public int AttachFile(int result, List<AttachFile>files, Board board){
+
+		if(files == null || files.size() ==0){
+			return result;
+		}
+
+		if(!files.isEmpty()){
+			for (int i=0;i<files.size();i++) {
+				String filePath = files.get(i).getFilePath();
+				File file = new File(filePath);
+				if(file.exists()){
+					file.delete();
+				}
+			}
+			for(AttachFile attachFile : files){
+				board.addAttach(attachRepository.save(attachFile));
+			}
+		}
+		return result;
 	}
 }

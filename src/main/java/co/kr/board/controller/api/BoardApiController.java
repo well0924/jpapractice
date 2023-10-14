@@ -2,13 +2,9 @@ package co.kr.board.controller.api;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.config.redis.CacheKey;
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.Member;
-import co.kr.board.repository.MemberRepository;
+import co.kr.board.domain.SearchType;
 import org.apache.commons.io.FileUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -16,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +32,8 @@ import java.util.List;
 @RequestMapping("/api/board/*")
 public class BoardApiController {
 	private final BoardService service;
-	private final MemberRepository memberRepository;
 
+	//게시글 목록(카테고리 + 페이징 + 정렬)
 	@GetMapping("/list/{cname}")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>articleList(
@@ -51,15 +45,20 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
 
+	//게시글 검색(페이징+정렬)
 	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>searchList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,@RequestParam(required = false,value = "searchVal")String searchVal){
+	public Response<Page<BoardDto.BoardResponseDto>>searchList(
+			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable,
+			@RequestParam(required = false,value = "searchType") String searchType,
+			@RequestParam(required = false,value = "searchVal")String searchVal){
 
-		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(searchVal,pageable);
+		Page<BoardDto.BoardResponseDto>list = service.findAllSearch(searchVal, String.valueOf(SearchType.toSearch(searchType)),pageable);
 
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
-
+	
+	//게시글 조회
 	@GetMapping("/detail/{id}")
 	@ResponseStatus(code=HttpStatus.OK)
 	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
@@ -69,6 +68,7 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),detail);
 	}
 
+	//게시글 작성
 	@PostMapping(value = "/write")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(
@@ -78,21 +78,23 @@ public class BoardApiController {
 			@RequestParam(required = true,defaultValue = "2")int categoryId)throws Exception{
 
 		//url: localhost:8085/api/board/write?categoryId=2
-		Member member = getMember();
-		int insertResult = service.boardsave(dto,member,categoryId,files);
+		int insertResult = service.boardsave(dto,categoryId,files);
 
 		log.info("title: {},content: {},image:{}",dto.getBoardTitle(),dto.getBoardContents(),files);
 
 		return new Response<>(HttpStatus.OK.value(),insertResult);
 	}
+	
+	//게시글 삭제
 	@DeleteMapping("/delete/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId)throws Exception{
-		Member member = getMember();
-		service.deleteBoard(boardId,member);
+
+		service.deleteBoard(boardId);
 		return new Response<>(HttpStatus.OK.value(),200);
 	}
 	
+	//게시글 수정
 	@PatchMapping("/update/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>updateArticle(
@@ -100,12 +102,12 @@ public class BoardApiController {
 			@Valid @RequestPart(value = "boardupdate") BoardDto.BoardRequestDto dto, BindingResult bindingresult,
 			@RequestPart(value = "filelist",required = false)List<MultipartFile>fileList)throws Exception{
 
-		Member member = getMember();
-		int updateResult = service.updateBoard(boardId, dto,member,fileList);
+		int updateResult = service.updateBoard(boardId, dto,fileList);
 
 		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
-
+	
+	//내가 작성한 글 확인하기.
 	@GetMapping("/my-article/{id}")
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>memberArticle(@PathVariable("id") String username,Pageable pageable)throws Exception{
@@ -113,6 +115,14 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
 
+	//최근에 작성한 글
+	@GetMapping("/article-top5")
+	public Response<?>findArticleTop5(){
+		List<BoardDto.BoardResponseDto>list = service.findBoardTop5();
+		return new Response<>(HttpStatus.OK.value(),list);
+	}
+
+	//파일 다운로드
 	@GetMapping("/download")
 	public void download(HttpServletResponse response) throws IOException {
 
@@ -127,12 +137,5 @@ public class BoardApiController {
 		response.getOutputStream().write(fileByte);
 		response.getOutputStream().flush();
 		response.getOutputStream().close();
-	}
-
-	private Member getMember(){
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
-		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-		return member;
 	}
 }

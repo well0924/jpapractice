@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.domain.SearchType;
 import co.kr.board.repository.CategoryRepository;
 import co.kr.board.domain.Dto.AttachDto;
 import co.kr.board.service.FileService;
@@ -37,10 +38,12 @@ public class BoardController {
 	private final FileService fileService;
 	private final CategoryRepository categoryRepository;
 
+	//게시글 목록
 	@GetMapping("/list/{cname}")
 	public ModelAndView pageList(
 			@PathVariable(value = "cname",required = false) String categoryName,
 			@RequestParam(required = false,value = "searchVal") String searchVal,
+			@RequestParam(required = false,value = "searchType")String searchType,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
@@ -51,7 +54,7 @@ public class BoardController {
 		list= service.findAllPage(pageable,categoryName);
 		//검색어가 있으면 검색.
 		if(searchVal!=null){
-			list= service.findAllSearch(searchVal,pageable);
+			list= service.findAllSearch(searchVal, String.valueOf(SearchType.toSearch(searchType)),pageable);
 		}
 
 		mv.addObject("list", list);
@@ -74,9 +77,13 @@ public class BoardController {
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
+		//게시글 이전글/다음글
+		List<BoardDto.BoardResponseDto>nextPrevious = service.articleNextPreviousBoard(boardId);
 
+		mv.addObject("nextPrevious",nextPrevious);
 		mv.addObject("fileList",fileList);
 		mv.addObject("detail", board);
+
 		mv.setViewName("board/detailpage");
 		
 		return mv;
