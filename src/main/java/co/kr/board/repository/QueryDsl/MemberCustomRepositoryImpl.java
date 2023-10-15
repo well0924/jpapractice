@@ -10,9 +10,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static co.kr.board.domain.QMember.member;
 
@@ -29,44 +29,42 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
     public Page<MemberDto.MemeberResponseDto> findByAllSearch(String searchVal, Pageable pageable) {
 
         List<Member>content = getMemberDto(searchVal,pageable);
-        List<MemberDto.MemeberResponseDto>contents = new ArrayList<>();
 
         long count = getCount(searchVal);
 
-        for(Member memberlist : content){
-            MemberDto.MemeberResponseDto result = MemberDto.MemeberResponseDto.builder()
-                    .member(memberlist)
-                    .build();
-            contents.add(result);
-        }
-        return new PageImpl<>(contents,pageable,count);
+        return new PageImpl<>(content.stream().map(MemberDto.MemeberResponseDto::new).collect(Collectors.toList()),pageable,count);
     }
 
+    //회원 목록
     private List<Member> getMemberDto(String searchVal, Pageable pageable){
-        List<Member>content = jpaQueryFactory
+        return jpaQueryFactory
                 .select(member)
                 .from(member)
-                .where(userNameCt(searchVal))
+                .where(userNameCt(searchVal).or(userEmailCt(searchVal)))
                 .orderBy(member.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
-        return content;
     }
 
     //검색시 결과수
     private Long getCount(String searchVal){
-        Long count = jpaQueryFactory
+        return jpaQueryFactory
                 .select(member.count())
                 .from(member)
-                .where(userNameCt(searchVal))
+                .where(userNameCt(searchVal).or(userEmailCt(searchVal)))
+                .orderBy(member.id.desc())
                 .fetchOne();
-        return count;
     }
 
     //회원 아이디명
     BooleanBuilder userNameCt(String searchVal) {
         return nullSafeBuilder(() -> member.username.contains(searchVal));
+    }
+
+    //회원 이메일
+    BooleanBuilder userEmailCt(String searchVal){
+        return nullSafeBuilder(()->member.useremail.contains(searchVal));
     }
 
     //BooleanBuilder를 Safe하게 만들기 위해 만든 메소드
