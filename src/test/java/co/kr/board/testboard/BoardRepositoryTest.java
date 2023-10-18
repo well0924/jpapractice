@@ -4,6 +4,7 @@ import co.kr.board.Config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.domain.SearchType;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -73,5 +74,26 @@ public class BoardRepositoryTest {
         List<BoardDto.BoardResponseDto>result = boardRepository.findNextPrevioustBoard(386);
         assertThat(result).isNotNull();
         assertThat(result).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("게시글 목록")
+    public void boardListQueryDslTest(){
+        Pageable pageable  = Pageable.ofSize(5);
+        String categoryName = "";
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findAllBoardList(categoryName,pageable);
+        System.out.println("result::"+list.get().collect(Collectors.toList()));
+        assertThat(list).isNotNull();
+    }
+
+    @Test
+    @DisplayName("게시글 검색")
+    public void boardSearchTest(){
+        Pageable pageable = Pageable.ofSize(10);
+        String keyword = "well4149";
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findByAllSearch(keyword, SearchType.toSearch("boardAuthor"),pageable);
+        System.out.println(list.toList());
+        assertThat(list);
+        System.out.println("size::"+list.stream().count());
     }
 }
