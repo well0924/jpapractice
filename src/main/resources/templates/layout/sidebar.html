@@ -29,7 +29,7 @@
       <th:block th:if="${count} != null">
         <a class="nav-link">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>게시글 수[ [[${count}]] ]</span>
+          <span>전체 글[ [[${count}]] ]</span>
         </a>
       </th:block>
     </li>
@@ -38,25 +38,63 @@
     <hr class="sidebar-divider">
 
     <!-- Heading -->
-    <div class="sidebar-heading">
-      카테고리
-    </div>
-
-    <!-- Nav Item - Pages Collapse Menu -->
-    <!-- 블로그 카테고리 내용-->
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-         aria-expanded="true" aria-controls="collapseTwo">
-        <i class="fas fa-fw fa-cog"></i>
-        <span>카테고리</span>
-      </a>
-      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-        <div class="bg-white py-2 collapse-inner rounded">
-          <a class="collapse-item" href="">Buttons</a>
-        </div>
+    <div th:if="${categoryMenu}">
+      <div class="sidebar-heading">
+        카테고리
       </div>
-    </li>
-
+      <!-- Nav Item - Pages Collapse Menu -->
+      <!-- 블로그 카테고리 내용-->
+      <div th:each="menu:${categoryMenu}">
+        <li class="nav-item">
+            <a class="nav-link collapsed" th:href="@{/page/board/list/{cname}(cname=${menu.name})}" data-toggle="collapse"
+               th:attr="data-target=${'#collapseTwo'+menu.id}"
+              aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
+              <span th:text="${menu.name}"></span>
+            </a>
+        </li>
+        <li>
+          <div th:id="'collapseTwo'+${menu.id}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <div th:each="sub:${menu.children}">
+                <a class="collapse-item" th:href="@{/page/board/}">
+                  <span th:text="${sub.name}"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+      </div>
+    </div>
+    <!--관리자 페이지로 왔을때-->
+    <div th:if="${categoryMenu}==null">
+      <div class="sidebar-heading">
+        관리자
+      </div>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
+          <span th:href="@{/page/member/board/list}">게시글 관리</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
+          <span th:href="@{/page/member/category}">카테고리 관리</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
+          <span th:href="@{/page/member/comment/list}">댓글 관리</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
+          <span>방문자 통계</span>
+        </a>
+      </li>
+    </div>
     <!-- Divider -->
     <hr class="sidebar-divider">
 
@@ -64,17 +102,12 @@
     <div class="sidebar-heading">
       최근 작성한 글
     </div>
-    <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item" th:each="list:${top5}">
         <input type="hidden" name="boardId" th:value="${list.boardId}">
         <input type="hidden" name="categoryId" th:value="${list.categoryId}">
         <p class="text-center mb-2">
           <strong>[[${list.boardContents}]]</strong>
         </p>
-      <!-- <a class="nav-link collapsed" href="#" aria-expanded="true" aria-controls="collapseTwo">
-        <i class="fas fa-fw fa-cog"></i>
-        <span>[[${list.boardContents}]]</span>
-      </a>-->
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

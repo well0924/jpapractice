@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html
 xmlns="http://www.w3.org/1999/xhtml" 
-xmlns:th="http://www.thymeleaf.org" 
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:th="http://www.thymeleaf.org">
 <head>
 <th:block th:fragment="scriptfragment">
 <meta charset="UTF-8">
+
+<!--font-awesome-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 <!-- Custom styles for this template-->
@@ -14,19 +15,15 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!-- Bootstrap core JavaScript-->
     <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
     <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-
     <!-- Core plugin JavaScript-->
     <script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
-
     <!-- Custom scripts for all pages-->
     <script th:src="@{/js/sb-admin-2.min.js}"></script>
-
     <!-- Page level plugins -->
-    <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
-
+ <!--   <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>-->
     <!-- Page level custom scripts -->
-    <script th:src="@{/js/demo/chart-area-demo.js}"></script>
-    <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+ <!--   <script th:src="@{/js/demo/chart-area-demo.js}"></script>
+    <script th:src="@{/js/demo/chart-pie-demo.js}"></script>-->
 </th:block>
 </head>
 </html>

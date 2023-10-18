@@ -23,17 +23,15 @@ layout:decorate="~{layout/mainlayout}">
         <div class="row">
             <div class="col-lg-12 mb-4">
                 <!-- 작성 게시글 -->
-                <div class="card shadow mb-4">
+                <div class="card shadow mb-4" th:each="list:${list}">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">게시글 제목</h6>
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="${list.boardTitle}"></h6>
                     </div>
                     <div class="card-body">
-                        <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                            CSS bloat and poor page performance. Custom CSS classes are used to create
-                            custom components and custom utility classes.</p>
                         <!--게시글 상세조회-->
-                        <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                            unDraw &rarr;</a>
+                        <a th:href="@{/page/board/detail/{id}(id=${list.id})}">
+                            <p th:text="${list.boardContents}"></p>
+                        </a>
                     </div>
                 </div>
             </div>
