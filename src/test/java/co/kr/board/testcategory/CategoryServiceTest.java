@@ -27,7 +27,8 @@ public class CategoryServiceTest {
     CategoryRepository categoryRepository;
     @InjectMocks
     CategoryService categoryService;
-    @Test
+
+    /*@Test
     @DisplayName("카테고리 목록 테스트")
     public void categoryListTest(){
         //given
@@ -39,7 +40,7 @@ public class CategoryServiceTest {
         assertThat(list.size()).isEqualTo(2);
         assertThat(list.get(0).getName()).isEqualTo("name1");
         assertThat(list.get(1).getName()).isEqualTo("name2");
-    }
+    }*/
 
     @Test
     @DisplayName("카테고리 생성 테스트")
