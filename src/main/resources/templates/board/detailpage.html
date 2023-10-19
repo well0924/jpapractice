@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html 
 xmlns="http://www.w3.org/1999/xhtml"
-xmlns:th="http://www.thymeleaf.org">
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/mainlayout}">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,9 +11,9 @@ xmlns:th="http://www.thymeleaf.org">
 <meta name="description" content="">
 <meta name="author" content="">
 <title>게시글 조회화면</title>
-<th:block th:replace="/layout/script :: scriptfragment"></th:block>
 </head>
 <body>
+<th:block layout:fragment= "contents">
 <form>
   <fieldset>
     <legend>글 조회</legend>
@@ -24,6 +26,7 @@ xmlns:th="http://www.thymeleaf.org">
       <label for="boardAuthor" class="form-label mt-4">글 작성자</label>
       <p id="boardAuthor">[[${detail.boardAuthor}]]</p>
     </div>
+      <section class="mb-5"></section>
     <div class="form-group">
       <label for="boardContents" class="form-label mt-4">글 내용</label>
       <p id="boardContents">[[${detail.boardContents}]]</p>
@@ -43,9 +46,9 @@ xmlns:th="http://www.thymeleaf.org">
         <label for="board_file" class="form-label mt-4">파일첨부</label>
         <th:block th:each="attachfile:${fileList}">
             </br>
-            <span id="board_file">
-                [[${attachfile.originFileName}]]
-            </span>
+            <a th:href="@{|/api/file/${attachfile.originFileName}|}">
+                <span id="board_file" th:text="${attachfile.originFileName}"/>
+            </a>
         </th:block>
     </div>
     <button type="button" class="btn btn-primary" onclick='listpage()'>목록</button>
@@ -55,26 +58,26 @@ xmlns:th="http://www.thymeleaf.org">
 <br>
 </br>
 <div class="card mb-2">
-	<div class="card-header bg-light">
-	        <i class="fa fa-comment fa"></i> 댓글
-	</div>
-	<div class="card-body">
-		<ul class="list-group list-group-flush">
-		    <li class="list-group-item">
-		    	<label for="replycontents">댓글 내용</label>
-				<textarea class="form-control" id="replycontents" name="replyContents" rows="3"></textarea>
-				<div id="valid_replyContents"></div>
-				<button type="button" class="btn btn-dark mt-3" onclick="javascript:replyInsert();">post reply</button>
-		    </li>
-		</ul>
-	</div>
-</div>
-<!-- 댓글 화면 -->
-<div class="container">
-	<div id="replies"></div>
+    <div class="card-header bg-light">
+        <i class="fa fa-comment fa"></i> 댓글
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <label for="replycontents">댓글 내용</label>
+                <textarea class="form-control" id="replycontents" name="replyContents" rows="3"></textarea>
+                <div id="valid_replyContents"></div>
+                <button type="button" class="btn btn-dark mt-3" onclick="javascript:replyInsert();">post reply</button>
+            </li>
+        </ul>
+    </div>
 </div>
 <script type="text/javascript" th:src="@{/js/board/boarddetail.js}"></script>
 <script type="text/javascript" th:src="@{/js/reply/reply.js}"></script>
-<th:block th:replace="/layout/footer :: footerfragment"></th:block>
+<!-- 댓글 화면 -->
+<div class="container">
+    <div id="replies"></div>
+</div>
+</th:block>
 </body>
 </html>

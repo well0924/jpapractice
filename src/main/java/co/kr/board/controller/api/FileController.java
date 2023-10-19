@@ -4,12 +4,19 @@ import co.kr.board.config.Exception.dto.Response;
 import co.kr.board.domain.Dto.AttachDto;
 import co.kr.board.service.FileService;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -26,5 +33,17 @@ public class FileController {
     }
 
     //파일 다운로드
+    @GetMapping("/{file-name}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Resource> BoardFileDownload(@PathVariable("file-name")String fileName) throws IOException {
+        AttachDto getFile = fileService.getFile(fileName);
+        Path path = Paths.get(getFile.getFilePath());
+        Resource resource = new InputStreamResource(Files.newInputStream(path));
 
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment;filename=\"" + URLEncoder.encode(getFile.getOriginFileName(), "UTF-8") + "\"")
+                .body(resource);
+    }
 }

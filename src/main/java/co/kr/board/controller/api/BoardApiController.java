@@ -122,20 +122,4 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
 
-	//파일 다운로드
-	@GetMapping("/download")
-	public void download(HttpServletResponse response) throws IOException {
-
-		String path = "C:\\upload\\\\825443066852500..png";
-
-		byte[] fileByte = FileUtils.readFileToByteArray(new File(path));
-
-		response.setContentType("application/octet-stream");
-		response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode("tistory.png", "UTF-8")+"\";");
-		response.setHeader("Content-Transfer-Encoding", "binary");
-
-		response.getOutputStream().write(fileByte);
-		response.getOutputStream().flush();
-		response.getOutputStream().close();
-	}
 }

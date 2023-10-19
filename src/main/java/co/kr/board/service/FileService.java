@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -51,6 +52,20 @@ public class FileService {
     }
 
     
-    //파일 리소스 가져오기.
+    //파일 단일 조회하기.
+    @Transactional(readOnly = true)
+    public AttachDto getFile(String originFileName){
+        Optional<AttachFile>attachFile = Optional.ofNullable(attachRepository.findAttachFileByOriginFileName(originFileName)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND)));
+
+        AttachDto attachDto = AttachDto
+                .builder()
+                .filePath(attachFile.get().getFilePath())
+                .originFileName(attachFile.get().getOriginFileName())
+                .fileSize(attachFile.get().getFileSize())
+                .boardId(attachFile.get().getBoard().getId())
+                .build();
+        return attachDto;
+    }
 
 }
