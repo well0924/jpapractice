@@ -46,7 +46,8 @@
       <!-- 블로그 카테고리 내용-->
       <div th:each="menu:${categoryMenu}">
         <li class="nav-item">
-            <a class="nav-link collapsed" th:href="@{/page/board/list/{cname}(cname=${menu.name})}" data-toggle="collapse"
+            <a class="nav-link collapsed" data-toggle="collapse"
+               th:href="@{|/page/board/list/${menu.name}|}"
                th:attr="data-target=${'#collapseTwo'+menu.id}"
               aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
               <span th:text="${menu.name}"></span>
@@ -56,7 +57,7 @@
           <div th:id="'collapseTwo'+${menu.id}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
               <div th:each="sub:${menu.children}">
-                <a class="collapse-item" th:href="@{/page/board/}">
+                <a class="collapse-item" th:href="@{|/page/board/list/${sub.name}|}">
                   <span th:text="${sub.name}"></span>
                 </a>
               </div>
