@@ -11,7 +11,7 @@ function memberdelete(){
 	
 	if(isconfirm){
 		$.ajax({
-			url:'/api/login/memberdelete/'+id+'/member',
+			url:'/api/member/memberdelete/'+id+'/member',
 			type:'delete',
 			data:null,
 			contentType:'application/json; charset= utf-8'

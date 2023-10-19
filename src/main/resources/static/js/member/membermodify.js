@@ -18,14 +18,14 @@ function memberupdate(){
 	}
 	
 	$.ajax({
-		url:'/api/login/memberupdate/'+idx+'/member',
+		url:'/api/member/memberupdate/'+idx+'/member',
 		type:'put',
 		data:JSON.stringify(memberdate),
 		dataType:'json',
 		contentType:'application/json; charset=utf-8'
 	}).done(function(resp){
 		alert('정보가 수정이 되었습니다.');
-		location.href='/page/board/list';
+		history.back();
 	});
 }
 //회원 탈퇴
@@ -40,11 +40,11 @@ function memberdelete(){
 		contentType:'application/json; charset=utf-8'
 	}).done(function(resp){
 		alert("정보가 삭제 되었습니다.");
-		location.href='/page/board/list';
+		history.back();
 	});
 }
 //회원 목록
 function adminlist(){
-	location.href='/page/login/adminlist';
+	location.href='/page/member/adminlist';
 }
  

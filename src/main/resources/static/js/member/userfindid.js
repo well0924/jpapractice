@@ -31,7 +31,7 @@ function finduserid(){
 	if(validation()){
 		$.ajax({
 		
-			url:'/api/login/userfind/'+name+'/'+email,
+			url:'/api/member/userfind/'+name+'/'+email,
 			type:'post',
 			data:JSON.stringify(data),
 			dataType:'json',

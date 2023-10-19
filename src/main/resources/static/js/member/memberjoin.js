@@ -7,7 +7,7 @@ function usernameCheck(){
 	let userid = $('#userId').val();
 	
 		$.ajax({
-			url:'/api/login/logincheck/'+ userid,
+			url:'/api/member/logincheck/'+ userid,
 			type:'get',
 			dataType:'json',
 			contentType:'application/json; charset = utf-8'	
@@ -48,7 +48,7 @@ function useremailCheck(){
 	let email = $('#userEmail').val();
 	
 	$.ajax({
-		url:'/api/login/emailcheck/'+email,
+		url:'/api/member/emailcheck/'+email,
 		type:'get',
 		dataType:'json',
 		contentType:'application/json; charset = utf-8'
@@ -88,7 +88,7 @@ function signUp(){
 	};
 	
 	$.ajax({
-		url:'/api/login/memberjoin',
+		url:'/api/member/memberjoin',
 		type:'post',
 		data:JSON.stringify(joindate),
 		dataType:'json',
