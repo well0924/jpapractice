@@ -2,11 +2,11 @@ package co.kr.board.controller.view;
 
 import javax.validation.Valid;
 
-import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
+import co.kr.board.domain.Dto.CategoryDto;
 import co.kr.board.domain.SearchType;
-import co.kr.board.repository.CategoryRepository;
 import co.kr.board.domain.Dto.AttachDto;
+import co.kr.board.service.CategoryService;
 import co.kr.board.service.FileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,42 +28,51 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Controller
 @AllArgsConstructor
 @RequestMapping("/page/board")
 public class BoardController {
-	private final BoardService service;	
+
+	private final BoardService service;
 	private final FileService fileService;
-	private final CategoryRepository categoryRepository;
+	private final CategoryService categoryService;
 
 	//게시글 목록
 	@GetMapping("/list/{cname}")
 	public ModelAndView pageList(
-			@PathVariable(value = "cname",required = false) String categoryName,
+			@PathVariable(value = "cname") String categoryName,
 			@RequestParam(required = false,value = "searchVal") String searchVal,
 			@RequestParam(required = false,value = "searchType")String searchType,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
-
-		Category category = categoryRepository.findByName(categoryName);
-		Page<BoardDto.BoardResponseDto> list =null;
 		//페이징 기능
-		list= service.findAllPage(pageable,categoryName);
+		Page<BoardDto.BoardResponseDto> list = service.findAllPage(pageable,categoryName);
+		//게시글 갯수
+		Integer boardCount = service.articleCount();
+		//최근에 작성한 글(5개)
+		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
+		//카테고리 목록
+		List<CategoryDto>categoryDtoList = categoryService.categoryList();
+
 		//검색어가 있으면 검색.
 		if(searchVal!=null){
 			list= service.findAllSearch(searchVal, String.valueOf(SearchType.toSearch(searchType)),pageable);
 		}
-
+		log.info(list.get().collect(Collectors.toList()));
 		mv.addObject("list", list);
-		mv.addObject("category",category);
+		mv.addObject("cname",categoryName);
+		mv.addObject("count",boardCount);
 		mv.addObject("searchVal", searchVal);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());
 		mv.addObject("hasNext", list.hasNext());        
 		mv.addObject("hasPrev", list.hasPrevious());
+		mv.addObject("top5",top5);
+		mv.addObject("categoryMenu",categoryDtoList);
 
 		mv.setViewName("board/boardlist");
 		
@@ -72,43 +81,73 @@ public class BoardController {
 	
 	@GetMapping("/detail/{id}")
 	public ModelAndView detailPage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
-	
+
 		ModelAndView mv = new ModelAndView();
+		//게시글 갯수
+		Integer boardCount = service.articleCount();
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
 		//게시글 이전글/다음글
 		List<BoardDto.BoardResponseDto>nextPrevious = service.articleNextPreviousBoard(boardId);
+		//최근에 작성한 글(5개)
+		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
+		//카테고리 목록
+		List<CategoryDto>categoryDtoList = categoryService.categoryList();
 
+
+		mv.addObject("count",boardCount);
 		mv.addObject("nextPrevious",nextPrevious);
 		mv.addObject("fileList",fileList);
 		mv.addObject("detail", board);
+		mv.addObject("top5",top5);
+		mv.addObject("categoryMenu",categoryDtoList);
 
 		mv.setViewName("board/detailpage");
 		
 		return mv;
 	}
-	
+
 	@GetMapping("/write")
-	public ModelAndView writePage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,@AuthenticationPrincipal CustomUserDetails user){
-	
-		ModelAndView mv = new ModelAndView();	
-		
+	public ModelAndView writePage(@Valid @ModelAttribute BoardDto.BoardRequestDto dto,BindingResult binding,
+								  @AuthenticationPrincipal CustomUserDetails user){
+
+		ModelAndView mv = new ModelAndView();
+		//게시글 갯수
+		Integer boardCount = service.articleCount();
+		//최근에 작성한 글(5개)
+		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
+		//카테고리 목록
+		List<CategoryDto>categoryDtoList = categoryService.categoryList();
+
+		mv.addObject("count",boardCount);
+		mv.addObject("top5",top5);
+		mv.addObject("categoryMenu",categoryDtoList);
 		mv.setViewName("board/writeboard");
-	
+
 		return mv;
 	}
-	
+
 	@GetMapping("/modify/{id}")
-	public ModelAndView modifyPage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
-		
+	public ModelAndView modifyPage(@PathVariable(value="id")Integer boardId)throws Exception{
 		ModelAndView mv = new ModelAndView();
+		//게시글 조회
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
+		//게시글 갯수
+		Integer boardCount = service.articleCount();
+		//최근에 작성한 글(5개)
+		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
+		//카테고리 목록
+		List<CategoryDto>categoryDtoList = categoryService.categoryList();
 
+		mv.addObject("count",boardCount);
 		mv.addObject("fileList",fileList);
 		mv.addObject("modify", board);
+		mv.addObject("top5",top5);
+		mv.addObject("categoryMenu",categoryDtoList);
+
 		mv.setViewName("board/modifyboard");
 		
 		return mv;

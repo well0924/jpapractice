@@ -54,7 +54,6 @@ public class BoardService{
 	 */
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllSearch(String searchVal,String searchType, Pageable pageable){
-		//Page<BoardResponseDto>list = repos.findByAllSearch(searchVal,pageable);
 		return repos.findByAllSearch(searchVal, SearchType.toSearch(searchType),pageable);
 	}
 
@@ -70,6 +69,7 @@ public class BoardService{
 
 		Member member = getMember();
 
+		//카테고리 적용
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
 
