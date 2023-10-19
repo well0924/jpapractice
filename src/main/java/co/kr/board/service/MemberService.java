@@ -58,7 +58,6 @@ public class MemberService {
 									.builder()
 									.member(member)
 									.build();
-			
 			list.add(dto);
 		}
 		return list;
@@ -87,6 +86,7 @@ public class MemberService {
 		Page<MemberDto.MemeberResponseDto>result = repository.findByAllSearch(searchVal,pageable);
 		return result;
 	}
+
 	/*
 	 * 회원 정보 단일 조회
 	 * 관리자 페이지 또는 회원 수정 페이지에서 회원 정보조회
@@ -109,16 +109,18 @@ public class MemberService {
 				.build();
 	}
 
+
+
 	/*
 	 * 로그인 인증
-	 * 로그인페이지에서 로그인을 실행 jwt token값을 내놓는다.
-	 * @param LoginDto
+	 * 로그인페이지에서 로그인을 실행 jwt token값을 발행하고 권한에 맞게 실행을 한다.
+	 * @param LoginDto : 로그인에 필요한 dto
 	 * @param Exception: 회원이 없는 경우 해당 회원이 없습니다.
 	 * @param Exception: 비밀번호가 안맞는 경우의 Exception
 	 */
     @Transactional
     public TokenResponse signin(LoginDto dto){
-
+		//회원 조회
 		Optional<Member> memberAccount = repository.findByUsername(dto.getUsername());
 
 		if(!memberAccount.isPresent()){
@@ -126,7 +128,7 @@ public class MemberService {
 		}
 
 		Member memberDetail = memberAccount.get();
-
+		//비밀번호 확인 로직
 		passwordvalidation(memberDetail,dto);
 
 		TokenDto tokenDto=jwtTokenProvider.createTokenDto(memberDetail.getUsername(),memberDetail.getRole());
@@ -211,6 +213,7 @@ public class MemberService {
 	 */
 	@Transactional
 	public Integer memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
+		//비밀번호 암호화
 		dto.setPassword(encoder.encode(dto.getPassword()));
 
 		Member member = dtoToEntity(dto);
@@ -319,7 +322,10 @@ public class MemberService {
 
 		return memberDetail.get().getId();
 	}
-	//비밀번호 유효성 검사
+
+	/*
+	 * 비밀번호 유효성 검사
+	 */
     public void passwordvalidation(Member memberAccount,LoginDto dto){
         if(!encoder.matches(dto.getPassword(),memberAccount.getPassword())){
             throw new CustomExceptionHandler(ErrorCode.NOT_PASSWORD_MATCH);
