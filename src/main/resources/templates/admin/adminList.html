@@ -3,7 +3,6 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/mainlayout}">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,35 +19,106 @@
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">어드민 페이지</h1>
         </div>
-        <!-- Content Row -->
+        <!-- 방문자 수 통계 -->
         <div class="row">
 
         </div>
-        <!-- Content Row -->
-
-        <div class="row">
-
-        </div>
-
-        <!-- Content Row -->
+        <!-- 회원 목록 -->
         <div class="row">
             <div class="col-lg-12 mb-4">
-
-                <!-- 작성 게시글 -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>아이디</th>
+                            <th>이메일</th>
+                            <th>이름</th>
+                            <th>가입일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:unless="${#lists.isEmpty(memberlist)}" th:each="list : ${memberlist}">
+                            <td th:text="${list.useridx}"></td>
+                            <td th:text="${list.username}"></td>
+                            <td th:text="${list.useremail}"></td>
+                            <td th:text="${list.membername}"></td>
+                            <td th:text="${list.createdAt}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(memberlist)}">
+                           회원이 없습니다.
+                        </tr>
+                    </tbody>
+                </table>
+                <!---회원 목록 페이징-->
+                <div th:if="${!memberlist.isEmpty()}">
+                    <nav th:with="
+	        			pageNumber = ${memberlist.pageable.pageNumber},
+		        		pageSize = ${memberlist.pageable.pageSize},
+		        		totalPages= ${memberlist.totalPages},
+		        		startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+	        			tempEndPage=${startPage+pageSize - 1},
+                        endPage=(${tempEndPage < totalPages ? tempEndPage : totalPages})">
+                        <div class="d-none d-md-block">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${pageNumber < pageSize} ? 'disabled'">
+                                    <a class="page-link" th:href="@{/page/board/list(page= 0)}">First</a>
+                                </li>
+                                <li class="page-item" th:classappend="${memberlist.first} ? 'disabled'">
+                                    <a class="page-link" th:if="${memberlist.first} ? '#' " th:href="@{/page/member/adminList(page=${pageNumber - 1})}">previous</a>
+                                </li>
+                                <li class="page-item" th:each="page: ${#numbers.sequence(startPage,endPage)}"
+                                    th:classappend="${page == pageNumber + 1} ? 'active'">
+                                    <a class="page-link" th:href="@{/page/member/adminList(page=${page - 1})}">[[${page}]]</a>
+                                </li>
+                                <li class="page-item" th:classappend="${!memberlist.last} ? 'disabled'">
+                                    <a class="page-link" th:if="${memberlist.last} ? '#'"
+                                       th:href="@{/page/member/adminList(page=${pageNumber + 1})}">다음</a>
+                                </li>
+                                <li class="page-item" th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
+                                    <a class="page-link" th:if="${memberlist.last} ? '#' "
+                                       th:href="@{/page/member/adminList(page=${totalPages - 1})}">Last</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- 최근에 작성한 글,댓글 -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <!-- 최근에 작성한 게시글 -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">게시글 제목</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">최근에 작성한 게시글</h6>
                     </div>
-                    <div class="card-body">
-                        <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                            CSS bloat and poor page performance. Custom CSS classes are used to create
-                            custom components and custom utility classes.</p>
-                        <!--게시글 상세조회-->
-                        <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                            unDraw &rarr;</a>
+                    <div th:each="list:${top5}">
+                        <div class="card-body">
+                            <p th:text="${list.boardContents}"></p>
+                            <!--게시글 상세조회-->
+                            <a target="_blank" rel="nofollow">Browse Illustrations on unDraw &rarr;</a>
+                        </div>
                     </div>
                 </div>
             </div>
+            <!-- 최근에 작성한 글 end-->
+            <!-- 최근에 작성한 댓글-->
+            <div class="col-lg-6 mb-4">
+                <!-- 최근에 작성한 게시글 -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">최근에 작성한 댓글</h6>
+                    </div>
+                    <div th:each="comment:${comment}">
+                        <div class="card-body">
+                            <p th:text="${comment.replyContents}"></p>
+                            <!--댓글 상세조회-->
+                            <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on unDraw &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 최근에 작성한 댓글 end-->
         </div>
     </div>
     <!-- /.container-fluid -->
