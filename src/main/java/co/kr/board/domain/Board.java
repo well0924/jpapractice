@@ -45,21 +45,22 @@ public class Board extends BaseTime implements Serializable {
     //회원
     @ManyToOne(fetch =FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="useridx")
+    @ToString.Exclude
     private Member writer;
     //댓글
     @ToString.Exclude
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
-    private List<Comment> commentlist = new ArrayList<>();
+    private final List<Comment> commentlist = new ArrayList<>();
     //파일첨부(게시글을 삭제하면 파일도 삭제)
     //orphanRemoval 를 true 로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
     //orphanRemoval 과 CaseCadeType.REMOVE 차이점 알아보기.
     @ToString.Exclude
     @OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
-    private List<AttachFile>attachFiles = new ArrayList<>();
+    private final List<AttachFile>attachFiles = new ArrayList<>();
     //좋아요
     @ToString.Exclude
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Like> likes = new HashSet<>();
+    private final Set<Like> likes = new HashSet<>();
     //카테고리
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -75,11 +76,6 @@ public class Board extends BaseTime implements Serializable {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private Set<HashTag> hashtags = new LinkedHashSet<>();
-
-    public void setHashtags(Set<HashTag> hashtags) {
-        this.hashtags = hashtags;
-    }
-
 
     @Builder
     public Board(Integer boardId,String boardTitle,String boardAuthor,String boardContents,Integer readcount,Category category,LocalDateTime createdat,Member member) {
@@ -118,6 +114,7 @@ public class Board extends BaseTime implements Serializable {
     public void decreaseLikeCount(){
         this.liked -=1;
     }
+
     //해시태그 추가
     public void addHashTag(HashTag hashTag){
         this.getHashtags().add(hashTag);
