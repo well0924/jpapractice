@@ -18,6 +18,10 @@ layout:decorate="~{layout/mainlayout}">
   <fieldset>
     <legend>글 조회</legend>
     <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
+    <div>
+        <label for="categoryName" class="form-label mt-4">카테고리</label>
+        <p id="categoryName" th:text="${detail.categoryName}"></p>
+    </div>
     <div class="form-group">
       <label for="boardTitle" class="form-label mt-4">글 제목</label>
       <p id="boardTitle">[[${detail.boardTitle}]]</p>
@@ -51,12 +55,36 @@ layout:decorate="~{layout/mainlayout}">
             </a>
         </th:block>
     </div>
+    <!--게시글 이전글/다음글-->
+      <div class="list-group" th:each="board:${nextPrevious}">
+          <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId > detail.boardId}">
+              첫번째 글입니다.
+          </div>
+          <div th:if="${board.boardId < detail.boardId}">
+              <a th:href="@{'/page/board/detail/'+ ${board.boardId}}" class="list-group-item list-group-item-action">
+                  <span style="font-weight: bold;">이전글</span> │
+                  <div>
+                      <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
+                  </div>
+              </a>
+          </div>
+          <div th:if="${board.boardId > detail.boardId}">
+              <a th:href="@{'/page/board/detail/'+${board.boardId}}" class="list-group-item list-group-item-action">
+                  <span style="font-weight: bold;">다음글</span> │
+                  <div>
+                      <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
+                  </div>
+              </a>
+          </div>
+          <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId < detail.boardId}">
+              <p>마지막 글입니다.</p>
+          </div>
+      </div>
     <button type="button" class="btn btn-primary" onclick='listpage()'>목록</button>
     <button type="button" class="btn btn-primary" onclick='modifypage()'>수정페이지</button>
   </fieldset>
 </form>
 <br>
-</br>
 <div class="card mb-2">
     <div class="card-header bg-light">
         <i class="fa fa-comment fa"></i> 댓글
