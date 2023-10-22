@@ -36,10 +36,15 @@ public class BoardService{
 	private final MemberRepository memberRepository;
 	private final FileHandler fileHandler;
 
+	@Transactional(readOnly = true)
+	public Page<BoardResponseDto>findAll(Pageable pageable){
+		return repos.findAllBoardList(pageable);
+	}
+	
     /*
-	* 글목록 전체 조회(페이징+카테고리)
-	* @Param Pageable 페이징 객체
-	* @param categoryName 카테고리 명
+	 * 글목록 전체 조회(페이징+카테고리)
+	 * @Param Pageable 페이징 객체
+	 * @param categoryName 카테고리 명
 	*/
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllPage(Pageable pageable, String categoryName){
@@ -58,16 +63,18 @@ public class BoardService{
 	}
 
 	/*
-	* 글 등록 (파일 첨부)
-	* @Param BoardRequestDto 게시글 요청 dto
-	* @Param Member 회원 객체
-	* 시큐리티 로그인 후 이용
-	* @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
+	 * 글 등록 (파일 첨부)
+	 * @Param BoardRequestDto 게시글 요청 dto
+	 * @Param Member 회원 객체
+	 * 시큐리티 로그인 후 이용
+	 * @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
 	public Integer boardsave(BoardDto.BoardRequestDto dto ,Integer categoryId,List<MultipartFile>files)throws Exception{
 
 		Member member = getMember();
+
+		//해시태그 적용
 
 		//카테고리 적용
 		Category category = categoryRepository.findById(categoryId)
@@ -96,9 +103,9 @@ public class BoardService{
 	}
 	
     /*
-    * 글 목록 단일 조회 -> 수정 필요
-    * @Param boardId
-    * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
+     * 글 목록 단일 조회 -> 수정 필요
+     * @Param boardId
+     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
     */
 	@Transactional
 	public BoardResponseDto getBoard(Integer boardId){
@@ -108,19 +115,19 @@ public class BoardService{
 
 		//게시글 조회수 증가->중복 증가 방지필요
 		articlelist.get().countUp();
-		
+
 		return BoardDto.BoardResponseDto
 			   .builder()
 			   .board(articlelist.get())
 			   .build();
 	}
-	
-    /*
-	* 게시글 삭제 (파일 삭제 포함)
-	* @Param boardId 게시물 번호
-	* @Param Member 회원 객체
-	* @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
-	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
+
+	/*
+	 * 게시글 삭제 (파일 삭제 포함)
+	 * @Param boardId 게시물 번호
+	 * @Param Member 회원 객체
+	 * @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
+	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
 	public void deleteBoard(Integer boardId)throws Exception{
@@ -144,13 +151,13 @@ public class BoardService{
 	}
 	
     /*
-	* 글 수정 기능 (파일 첨부)
-	* @Param BoardRequestDto 게시물 요청 dto 
-	* @Param boardId 게시물 번호
-	* @Param Member 회원 객체
-	* @Exception : 로그인을 하지 않은경우 ONLY_USER
-	* @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL 
-	* @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
+	 * 글 수정 기능 (파일 첨부)
+	 * @Param BoardRequestDto 게시물 요청 dto
+	 * @Param boardId 게시물 번호
+	 * @Param Member 회원 객체
+	 * @Exception : 로그인을 하지 않은경우 ONLY_USER
+	 * @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL
+	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	*/
 	@Transactional
 	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,List<MultipartFile>files)throws Exception{
@@ -192,22 +199,41 @@ public class BoardService{
 	/*
 	 * 게시글 전체 갯수
 	 */
-	@Transactional
+	@Transactional(readOnly = true)
 	public Integer articleCount(){
 		return repos.ArticleCount();
 	}
 
 	/*
-	 * 게시글 이전글/다음글 가져오기.
-	 * @param boardId 게시글 번호
+	 * 게시글 카테고리별 갯수
 	 */
 	@Transactional(readOnly = true)
-	public List<BoardResponseDto>articleNextPreviousBoard(Integer boardId){
-		return repos.findNextPrevioustBoard(boardId);
+	public Integer categoryCount(String categoryName){
+		return repos.categoryCount(categoryName);
 	}
 
 	/*
-	 * 회원 정보 가져오기.
+	  * 게시글 이전글/다음글 가져오기.
+	  * @param boardId 게시글 번호
+	 */
+	@Transactional(readOnly = true)
+	public List<BoardResponseDto>articleNextPreviousBoard(Integer boardId){
+		return repos.findNextPreviousBoard(boardId);
+	}
+	
+	/*
+	 * 게시글 선택 삭제
+	 * @param boardId 게시글 번호들
+	 */
+	@Transactional
+	public void boardSelectDelete(List<String>boardId){
+		for(int i=0;i<boardId.size();i++){
+			repos.deleteAllById(boardId);
+		}
+	}
+
+	/*
+	  * 회원 정보 가져오기.
 	 */
 	private Member getMember(){
 
@@ -222,10 +248,10 @@ public class BoardService{
 	}
 
 	/*
-	 * 회원 정보 일치 확인
-	 * @param boardId 게시물 번호
-	 * @param Member 회원객체
-	 * @Exception : 로그인을 하지 않은경우 ONLY_USER
+	  * 회원 정보 일치 확인
+	  * @param boardId 게시물 번호
+	  * @param Member 회원객체
+	  * @Exception : 로그인을 하지 않은경우 ONLY_USER
 	 */
 	public Board validateMember(Integer boardId,Member member){
 
@@ -241,7 +267,7 @@ public class BoardService{
 	}
 
 	/*
-	 * 파일 첨부 수정부분
+	  * 파일 첨부 부분(작성,수정)
 	 */
 	public int AttachFile(int result, List<AttachFile>files, Board board){
 

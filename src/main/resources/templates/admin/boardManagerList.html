@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mainlayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 관리페이지</title>
+</head>
+<body>
+<th:block layout:fragment="contents">
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">게시글 관리</h1>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-bottom: 10px">
+            <!--정렬-->
+            <select class="form-select" id="boardSort" onchange="boardSortResult()" style="margin-right: 10px">
+                <option>정렬</option>
+                <option th:value="id">번호순</option>
+                <option th:value="boardAuthor">작성자</option>
+                <option th:value="createdAt">작성일</option>
+                <option th:value="readCount">조회수</option>
+            </select>
+            <a class="btn btn-primary" role="button" th:href="@{/page/board/write}">게시글 작성</a>
+        </div>
+        <!--게시글 검색-->
+        <div class="row" style="clear:right;width:500px;margin:auto;">
+            <div class="col-lg-12">
+                <div class="d-grid gap-2 d-md-flex justify-content-md" style="margin-bottom: 10px">
+                    <select class="form-select form-select-sm" name="searchType" id="searchType" style="margin-right: 10px;">
+                        <option>전체보기</option>
+                        <option th:value="boardTitle">제목</option>
+                        <option th:value="boardContents">내용</option>
+                        <option th:value="boardAuthor">작성자</option>
+                        <option th:value="all">전체</option>
+                    </select>
+                    <input type="text" class="form-control" name="keyword" id="boardkeyword" style="margin-right: 10px">
+                    <button class="btn btn-sm btn-primary" id="btnSearch" onclick="boardSearchResult()">검색</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- 작성 게시글 -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <!--체크박스를 누르기 전까지는 셀렉트박스는 disable상태-->
+                            <th scope="col">
+                                <input id="allCheckBox" type="checkbox" name="checked" onclick="allChecked(this)">
+                                <select id="boardStatus" disabled onchange="selectSwitch()">
+                                    <option>---------</option>
+                                    <option name="status" th:value="selectDelete">게시글 삭제</option>
+                                    <option name="status" th:value="secretMessage">비밀글로 변경</option>
+                                </select>
+                            </th>
+                            <th scope="col">번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">작성자</th>
+                            <th scope="col">작성일</th>
+                            <th scope="col">카테고리</th>
+                        </tr>
+                    </thead>
+                    <tbody th:unless="${#lists.isEmpty(list)}"th:each="list:${list}">
+                        <tr>
+                            <td>
+                                <input type="checkbox" id="selectCheck" name="checkboxed" th:value="${list.boardId}" onclick="checkBoxClicked()">
+                            </td>
+                            <td th:text="${list.boardId}"></td>
+                            <td>
+                                <a th:href="@{'/page/board/detail/'+${list.boardId}}" th:text="${list.boardTitle}"></a>
+                            </td>
+                            <td th:text="${list.boardAuthor}"></td>
+                            <td th:text="${list.createdAt}"></td>
+                            <td th:text="${list.categoryName}"></td>
+                        </tr>
+                        <th:block th:if="${#lists.isEmpty(list)}">
+                            <tr th:text="게시글이 없습니다.">
+                            </tr>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+            <!--페이징 처리-->
+            <div th:if="${!list.isEmpty()}">
+                <nav th:with="
+				pageNumber = ${list.pageable.pageNumber},
+				pageSize = ${list.pageable.pageSize},
+				totalPages= ${list.totalPages},
+				startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+				tempEndPage=${startPage+pageSize - 1},
+				endPage=(${tempEndPage < totalPages ? tempEndPage : totalPages})">
+                    <div class="d-none d-md-block">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item" th:classappend="${pageNumber < pageSize} ? 'disabled'">
+                                <a class="page-link" th:href="@{'/page/member/board/list'(page= 0)}">First</a>
+                            </li>
+                            <li class="page-item" th:classappend="${list.first} ? 'disabled'">
+                                <a class="page-link" th:if="${list.first} ? '#' " th:href="@{'/page/member/board/list'(page=${pageNumber - 1})}">previous</a>
+                            </li>
+                            <li class="page-item"
+                                th:each="page: ${#numbers.sequence(startPage,endPage)}"
+                                th:classappend="${page == pageNumber + 1} ? 'active'">
+                                <a class="page-link" th:href="@{'/page/member/board/list/'(page=${page - 1})}">[[${page}]]</a>
+                            </li>
+                            <li class="page-item" th:classappend="${!list.last} ? 'disabled'">
+                                <a class="page-link" th:if="${list.last} ? '#'" th:href="@{'/page/member/board/list'(page=${pageNumber + 1})}">다음</a>
+                            </li>
+                            <li class="page-item" th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
+                                <a class="page-link" th:if="${list.last} ? '#' " th:href="@{'/page/member/board/list'(page=${totalPages - 1})}">Last</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- search end -->
+            <script th:inline="javascript">
+                //검색
+                function boardSearchResult(){
+                    let searchVal = $('#boardkeyword').val();
+                    let searchType = $('#searchType').val();
+                    location.href='/page/member/board/list/?searchVal='+searchVal+"&searchType="+searchType;
+                }
+                //검색시 결과가 없는 경우에 결과가 없음을 보여줘야 함.
+
+                //정렬
+                function boardSortResult(){
+                    let sortType = $('#boardSort').val();
+                    location.href='/page/member/board/list?sort='+sortType+',DESC';
+                }
+
+                //체크박스 전체 선택 ->전체선택을 누르면 셀렉트 박스의 disable이 해제
+                function allChecked(selectAll){
+                    const check = document.getElementsByName('checkboxed');
+
+                    check.forEach((check)=>{
+                        check.checked = selectAll.checked;
+                        if(check.checked == true){
+                            document.getElementById('boardStatus').disabled=false;
+                        }else{
+                            document.getElementById('boardStatus').disabled = true;
+                        }
+                    });
+                }
+                //체크박스 개별 선택 ->누르면 셀렉트의 disable이 해제
+                function checkBoxClicked(){
+                    //체크박스 전체개수
+                    const allCount = $("input:checkbox[name=checkboxed]").length;
+                    //체크된 체크박스 전체개수
+                    const checkedCount = $("input:checkbox[name=checkboxed]:checked").length;
+                    console.log(allCount);
+                    console.log(checkedCount);
+
+                    const isChecked = $("input:checkbox[name=checkboxed]:checked").is(':checked');
+
+                    if(isChecked){ //클릭하면 셀렉트 박스 disabled 해제
+                        console.log(isChecked);
+                        $('#boardStatus').removeAttr('disabled');
+                    }else {
+                        $('#boardStatus').attr('disabled',true);
+                    }
+                }
+                //셀렉트 선택
+                function selectSwitch(){
+                    let result = {};
+
+                    const boardStatus = document.getElementById('boardStatus');
+
+                    result.boardStatus = boardStatus.options[boardStatus.selectedIndex].value;
+
+                    var status = result.boardStatus;
+
+                    console.log(status);
+
+                    switch (status) {
+                        case 'selectDelete': boardSelectDelete(); break;
+                        case 'secretMessage': convertSecretMessage(); break;
+                    }
+                }
+
+                //게시글 선택 삭제
+                function boardSelectDelete(){
+                    let boardArray = [];
+
+                    $("input:checkbox[name=checkboxed]:checked").each(function(){
+                        boardArray.push($(this).val());
+                        console.log(boardArray);
+                    });
+
+                    if(boardArray === ""){
+                        alert("삭제할 항목을 선택해주세요.");
+                        return false;
+                    }
+
+                    const confirmAlert = confirm('정말로 삭제하시겠습니까?');
+
+                    if(confirmAlert){
+                        $.ajax({
+                            url:'/api/board/select-delete',
+                            type:'post',
+                            dataType:'json',
+                            data:JSON.stringify(boardArray),
+                            contentType:'application/json'
+                        }).done(function(status){
+                            alert('삭제되었습니다.');
+                            location.href='/page/member/board/list';
+                        }).fail(function(err){
+                            console.log(err);
+                        });;
+                    }
+                }
+                //게시글 비밀글로 전환하기.
+                function convertSecretMessage(){
+                    console.log("/?????");
+                }
+            </script>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

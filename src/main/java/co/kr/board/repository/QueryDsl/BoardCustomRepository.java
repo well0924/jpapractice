@@ -9,6 +9,9 @@ import java.util.List;
 
 public interface BoardCustomRepository {
 
+    //게시글 목록(전체)
+    Page<BoardDto.BoardResponseDto>findAllBoardList(Pageable pageable);
+
     //게시글 목록(카테고리 및 정렬 기능)
     Page<BoardDto.BoardResponseDto>findAllBoardList(String categoryName,Pageable pageable);
 
@@ -22,5 +25,5 @@ public interface BoardCustomRepository {
     List<BoardDto.BoardResponseDto>findTop5ByOrderByBoardIdDescCreatedAtDesc();
 
     //게시글 이전글/다음글
-    List<BoardDto.BoardResponseDto>findNextPrevioustBoard(Integer id);
+    List<BoardDto.BoardResponseDto>findNextPreviousBoard(Integer id);
 }

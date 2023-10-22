@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +23,10 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
+
     QBoard qBoard;
     QMember qMember;
     QLike qLike;
@@ -37,8 +40,21 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         qLike = QLike.like;
         qCategory = QCategory.category;
     }
-    
-    //게시글 카테고리 목록
+
+    //게시글 목록(게시글 관리페이지)
+    @Override
+    public Page<BoardDto.BoardResponseDto> findAllBoardList(Pageable pageable) {
+        JPQLQuery<BoardDto.BoardResponseDto>list = jpaQueryFactory
+                .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
+                .from(qBoard)
+                .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset());
+
+        return PageableExecutionUtils.getPage(list.fetch(),pageable,list::fetchCount);
+    }
+
+    //게시글 카테고리 목록(카테고리 및 정렬)
     @Override
     public Page<BoardDto.BoardResponseDto> findAllBoardList(String categoryName, Pageable pageable) {
         List<BoardDto.BoardResponseDto>boardList = jpaQueryFactory
@@ -51,8 +67,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .leftJoin(qBoard.likes,qLike)
                 .on(qLike.board.id.eq(qBoard.id))
                 .where(categoryName(categoryName))//카테고리명
-                .orderBy(getAllOrderSpecifiers(pageable.getSort())
-                        .toArray(OrderSpecifier[]::new))
+                .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
                 .fetch();
@@ -138,7 +153,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     
     //게시글 이전글/다음글 조회 o.k
     @Override
-    public List<BoardDto.BoardResponseDto> findNextPrevioustBoard(Integer id) {
+    public List<BoardDto.BoardResponseDto> findNextPreviousBoard(Integer id) {
         List<Board>boardResponseDtos = jpaQueryFactory
                 .select(qBoard)
                 .from(qBoard)
@@ -153,7 +168,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         return boardResponseDtos.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
     }
 
-    //게시글 다음글
+    //게시글 다음글 o.k
     private Integer findNextBoard(Integer boardId){
 
         return jpaQueryFactory
@@ -165,7 +180,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .fetchOne();
     }
 
-    //게시글 이전글 
+    //게시글 이전글 o.k
     private Integer findPreviousBoard(Integer boardId){
         return jpaQueryFactory
                 .select(qBoard.id)
@@ -176,7 +191,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .fetchOne();
     }
 
-    //회원이 작성한 글 목록
+    //회원이 작성한 글 목록 o.k
     private List<Board>getMyArticle(String username,Pageable pageable){
         return jpaQueryFactory
                 .select(qBoard)
@@ -200,9 +215,8 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     }
 
     //카테고리 이름
-    BooleanBuilder categoryName(String categoryName){
-        return nullSafeBuilder(()->qCategory.name.containsIgnoreCase(categoryName));
-    }
+    BooleanBuilder categoryName(String categoryName){return nullSafeBuilder(()->qCategory.name.containsIgnoreCase(categoryName));}
+
     //게시글 제목
     BooleanBuilder titleCt(String searchVal) {return nullSafeBuilder(() -> qBoard.boardTitle.contains(searchVal));}
 
@@ -210,9 +224,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     BooleanBuilder contentCt(String searchVal) {return nullSafeBuilder(() -> qBoard.boardContents.contains(searchVal));}
 
     //게시글 작성자
-    BooleanBuilder authorCt(String searchVal){
-        return nullSafeBuilder(()->qBoard.boardAuthor.containsIgnoreCase(searchVal));
-    }
+    BooleanBuilder authorCt(String searchVal){return nullSafeBuilder(()->qBoard.boardAuthor.containsIgnoreCase(searchVal));}
     
     //게시글 정렬
     private List<OrderSpecifier> getAllOrderSpecifiers(Sort sort) {
@@ -220,11 +232,10 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
 
         sort.stream().forEach(order -> {
             Order direction = order.isAscending() ? Order.ASC : Order.DESC;
-
             String prop = order.getProperty();
-
+            log.info(prop);
             PathBuilder<Board> orderByExpression =  new PathBuilder<>(Board.class,"board");
-
+            log.info(direction);
             orders.add(new OrderSpecifier(direction,orderByExpression.get(prop)));
         });
 

@@ -1,11 +1,9 @@
 package co.kr.board.controller.api;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import co.kr.board.config.redis.CacheKey;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.SearchType;
-import org.apache.commons.io.FileUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,10 +18,6 @@ import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.List;
 
 @Log4j2
@@ -45,7 +39,7 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
 
-	//게시글 검색(페이징+정렬)
+	//게시글 검색(페이징+정렬+검색)
 	@GetMapping("/list/search")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>searchList(
@@ -122,4 +116,10 @@ public class BoardApiController {
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
 
+	//게시물 선택 삭제
+	@DeleteMapping("/select-delete")
+	public Response<?>boardSelectDelete(@RequestBody List<String> boardId){
+		service.boardSelectDelete(boardId);
+		return new Response<>(HttpStatus.NO_CONTENT.value(),null);
+	}
 }
