@@ -61,6 +61,7 @@
                             <th scope="col">작성자</th>
                             <th scope="col">작성일</th>
                             <th scope="col">카테고리</th>
+                            <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody th:unless="${#lists.isEmpty(list)}"th:each="list:${list}">
@@ -75,6 +76,7 @@
                             <td th:text="${list.boardAuthor}"></td>
                             <td th:text="${list.createdAt}"></td>
                             <td th:text="${list.categoryName}"></td>
+                            <td><button role="button" class="btn btn-sm btn-primary">글 수정</button></td>
                         </tr>
                         <th:block th:if="${#lists.isEmpty(list)}">
                             <tr th:text="게시글이 없습니다.">
