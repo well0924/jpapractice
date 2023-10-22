@@ -19,12 +19,26 @@ import lombok.extern.log4j.Log4j2;
 @AllArgsConstructor
 public class CustomUserDetailService implements UserDetailsService{
 	private final MemberRepository repository;
+
 	@Override
-	@Cacheable(value = CacheKey.USER, key = "#userPk", unless = "#result == null")
+	//캐시 설정
+	@Cacheable(key ="#userPk",value = CacheKey.USER)
 	public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
-		Optional<Member> member = Optional.ofNullable(repository.findByUsername(userPk).orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
-		Member userdetail = member.get();
-		return new CustomUserDetails(userdetail);
+
+		log.info("??::cache적용?");
+		log.info("userDetailService");
+
+		Optional<Member> member = Optional
+				.ofNullable(repository
+						.findByUsername(userPk)
+						.orElseThrow(()-> new UsernameNotFoundException("조회된 아이디가 없습니다.")));
+
+		if(member.isPresent()){
+			CustomUserDetails customUserDetails = new CustomUserDetails(member.get());
+			return customUserDetails;
+		}
+
+		return null;
 	}
 
 }
