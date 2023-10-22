@@ -42,6 +42,7 @@ public class mainController {
 		mv.addObject("count",boardCount);
 		mv.addObject("categoryMenu",categoryDtoList);
 		mv.addObject("list",boardList);
+		log.info(boardList.size());
 		log.info(categoryDtoList);
 		mv.setViewName("main/mainpage");
 

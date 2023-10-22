@@ -26,6 +26,7 @@ layout:decorate="~{layout/mainlayout}">
                 <div class="card shadow mb-4" th:each="list:${list}">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary" th:text="${list.boardTitle}"></h6>
+                        <p class="text-right" th:text="${list.createdAt}"></p>
                     </div>
                     <div class="card-body">
                         <!--게시글 상세조회-->
