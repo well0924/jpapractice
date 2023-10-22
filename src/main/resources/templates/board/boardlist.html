@@ -16,10 +16,16 @@
 <th:block layout:fragment= "contents">
     <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">게시글 목록</h1>
+            <h1 class="h3 mb-0 text-gray-800">[[${cname}]] ([[${categoryCount}]])</h1>
         </div>
 
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-bottom: 10px">
+            <select class="form-select" id="sort" onchange="boardSortResult()" style="margin-right: 10px">
+                <option th:value="id">번호순</option>
+                <option th:value="boardAuthor">작성자</option>
+                <option th:value="createdAt">작성일</option>
+                <option th:value="readCount">조회수</option>
+            </select>
             <a class="btn btn-primary" role="button" th:href="@{/page/board/write}">게시글 작성</a>
         </div>
 
@@ -31,6 +37,7 @@
                     <input type="hidden" id="categoryName" name="categoryName" th:value="${list.categoryName}">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary" th:text="${list.boardTitle}"></h6>
+                        <p class="text-right" th:text="${list.createdAt}"></p>
                     </div>
                     <div class="card-body">
                         <!--게시글 상세조회-->
@@ -101,6 +108,11 @@
                     location.href='/page/board/list/'+categoryName+'?searchVal='+searchVal+"&searchType="+searchType;
                 }
                 //검색시 결과가 없는 경우에 결과가 없음을 보여줘야 함.
+                function boardSortResult(){
+                    let sort = $('#sort').val();
+                    let categoryName = $('#categoryName').val();
+                    location.href='/page/board/list/'+categoryName+'?sort='+sort+',DESC';
+                }
             </script>
         </div>
     </div>

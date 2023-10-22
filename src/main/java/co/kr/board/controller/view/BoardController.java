@@ -49,23 +49,26 @@ public class BoardController {
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 		
 		ModelAndView mv = new ModelAndView();
+
 		//페이징 기능
 		Page<BoardDto.BoardResponseDto> list = service.findAllPage(pageable,categoryName);
-		//게시글 갯수
-		Integer boardCount = service.articleCount();
 		//최근에 작성한 글(5개)
 		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
 		//카테고리 목록
 		List<CategoryDto>categoryDtoList = categoryService.categoryList();
+		//게시글 갯수 & 카테고리 갯수
+		Integer boardCount = service.articleCount();
+		Integer categoryCount = service.categoryCount(categoryName);
 
 		//검색어가 있으면 검색.
 		if(searchVal!=null){
 			list= service.findAllSearch(searchVal, String.valueOf(SearchType.toSearch(searchType)),pageable);
 		}
-		log.info(list.get().collect(Collectors.toList()));
+
 		mv.addObject("list", list);
 		mv.addObject("cname",categoryName);
 		mv.addObject("count",boardCount);
+		mv.addObject("categoryCount",categoryCount);
 		mv.addObject("searchVal", searchVal);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());
@@ -83,8 +86,7 @@ public class BoardController {
 	public ModelAndView detailPage(@PathVariable(value="id")Integer boardId, BoardDto.BoardResponseDto dto)throws Exception{
 
 		ModelAndView mv = new ModelAndView();
-		//게시글 갯수
-		Integer boardCount = service.articleCount();
+
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
@@ -95,6 +97,8 @@ public class BoardController {
 		//카테고리 목록
 		List<CategoryDto>categoryDtoList = categoryService.categoryList();
 
+		//게시글 갯수 & 카테고리 갯수
+		Integer boardCount = service.articleCount();
 
 		mv.addObject("count",boardCount);
 		mv.addObject("nextPrevious",nextPrevious);

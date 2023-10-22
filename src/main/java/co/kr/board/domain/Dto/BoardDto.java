@@ -48,7 +48,7 @@ public class BoardDto {
         public BoardResponseDto(Board board) {
             this.boardId = board.getId();
             this.boardTitle = board.getBoardTitle();
-            this.boardAuthor = board.getWriter().getUsername();
+            this.boardAuthor = board.getBoardAuthor();
             this.boardContents = board.getBoardContents();
             this.readCount = board.getReadCount();
             this.liked = board.getLiked();
