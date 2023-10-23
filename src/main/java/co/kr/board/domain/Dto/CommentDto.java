@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import co.kr.board.domain.Comment;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,6 +51,7 @@ public class CommentDto {
 		private LocalDateTime createdAt;
 		
 		@Builder
+		@QueryProjection
 		public CommentResponseDto(Comment comment){
 			this.replyId = comment.getId();
 			this.boardId = comment.getBoard().getId();

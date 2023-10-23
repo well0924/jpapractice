@@ -1,10 +1,14 @@
 package co.kr.board.repository.QueryDsl;
 
 import co.kr.board.domain.Dto.CommentDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface CommentCustomRepository {
+    //댓글 목록(관리자 페이지)
+    Page<CommentDto.CommentResponseDto>findCommentList(Pageable pageable)throws Exception;
     //댓글 목록
     List<CommentDto.CommentResponseDto> findCommnentList(Integer boardId)throws Exception;
     //최근에 작성한 댓글

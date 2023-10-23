@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import co.kr.board.domain.Board;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +26,23 @@ public class CommentService {
 	private final CommentRepository repository;
 	
 	private final BoardRepository boardrepository;
-	
+
+	/*
+	 * 댓글 목록 (페이징)
+	 * @param pageable 페이징 객체
+	 * 어드민 페이지에서 댓글 목록을 페이징으로 출력
+	 */
+	@Transactional(readOnly = true)
+	public Page<CommentDto.CommentResponseDto>findCommentList(Pageable pageable)throws Exception{
+		return repository.findCommentList(pageable);
+	}
+
 	/*
 	 * 댓글 목록
 	 * @Param id
 	 * 게시글 조회화면에서 댓글 목록 출력 
 	 */
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<CommentDto.CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
 		Optional<Board> detail = boardrepository.findById(id);
 		List<CommentDto.CommentResponseDto> list = new ArrayList<>();
@@ -133,5 +145,14 @@ public class CommentService {
 	public List<CommentDto.CommentResponseDto>commentTop5() throws Exception {
 		return repository.findTop5ByOrderByReplyIdCreatedAtDesc();
 	}
-
+	
+	/*
+	 * 댓글 선택 삭제
+	 * @param commentId: 선택된 댓글 번호(List)
+	 */
+	public void commentSelectDelete(List<String>commentId){
+		for(int i = 0; i<commentId.size(); i++){
+			repository.deleteAllById(commentId);
+		}
+	}
 }

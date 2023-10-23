@@ -10,6 +10,10 @@ import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Member;
 import co.kr.board.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,7 +40,14 @@ public class CommentApiController {
 	private final CommentService service;
 	private final MemberRepository memberRepository;
 
-	//댓글목록
+	//목록(어드민)
+	@GetMapping("/list")
+	public Response<Page<CommentDto.CommentResponseDto>>commentList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size =10) Pageable pageable) throws Exception {
+		Page<CommentDto.CommentResponseDto> list = service.findCommentList(pageable);
+		return new Response<>(HttpStatus.OK.value(),list);
+	}
+
+	//댓글목록(게시글)
 	@GetMapping("/list/{id}")
 	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
 		List<CommentDto.CommentResponseDto>list = service.findCommentsBoardId(boardId);
@@ -66,7 +77,13 @@ public class CommentApiController {
 		return new Response<>(HttpStatus.OK.value(),"o.k");
 	}
 
-
+	@PostMapping("/select-delete")
+	public Response<?>commentSelectDelete(@RequestBody List<String>commentId)throws Exception{
+		service.commentSelectDelete(commentId);
+		return new Response<>(HttpStatus.NO_CONTENT.value(), null);
+	}
+	
+	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String username = (String)authentication.getPrincipal();
