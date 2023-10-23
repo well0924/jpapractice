@@ -15,10 +15,12 @@ public interface BoardRepository extends JpaRepository<Board, Integer>, BoardCus
 
 	//게시글 전체갯수
 	@Query(value = "select count(*) from Board b")
+
 	Integer ArticleCount();
 	//카테고리별 게시글 갯수
 	@Query(value = "select count(*) from Board b where b.category.name = :name")
 	Integer categoryCount(@Param("name") String categoryName);
+
 	//게시글 선택삭제
 	@Transactional
 	@Modifying
