@@ -2,8 +2,7 @@
 <html 
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,9 +10,9 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <meta name="description" content="">
 <meta name="author" content="">
 <title>글 수정 화면</title>
-<th:block th:replace="/layout/script :: scriptfragment"></th:block>
 </head>
 <body>
+<th:block layout:fragment= "contents">
 <form id="updateform" method="post">
   <fieldset>
     <legend>글 수정</legend>
@@ -34,6 +33,6 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   </fieldset>
 </form>
 <script type="text/javascript" th:src="@{/js/board/boardupdate.js}"></script>
-<th:block th:replace="/layout/footer :: footerfragment"></th:block>
+</th:block>
 </body>
 </html>
