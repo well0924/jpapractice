@@ -33,6 +33,7 @@ public class Board extends BaseTime implements Serializable {
     @Column(name = "board_title",nullable = false)
     private String boardTitle;
     @Column(name = "board_contents",nullable = false)
+    @Lob
     private String boardContents;
     @Column(name = "board_author",nullable = false)
     private String boardAuthor;
@@ -40,6 +41,8 @@ public class Board extends BaseTime implements Serializable {
     private Integer readCount;
     @Column(nullable = false)
     private Integer liked;//추천수
+    @Column(name = "board_pw",length = 10)
+    private String password;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
     //회원
@@ -78,7 +81,7 @@ public class Board extends BaseTime implements Serializable {
     private Set<HashTag> hashtags = new LinkedHashSet<>();
 
     @Builder
-    public Board(Integer boardId,String boardTitle,String boardAuthor,String boardContents,Integer readcount,Category category,LocalDateTime createdat,Member member) {
+    public Board(Integer boardId,String boardTitle,String boardAuthor,String boardContents,Integer readcount,String password,Category category,LocalDateTime createdat,Member member) {
         this.id = boardId;
         this.boardTitle = boardTitle;
         this.boardContents = boardContents;
@@ -86,6 +89,7 @@ public class Board extends BaseTime implements Serializable {
         this.readCount = readcount;
         this.category = category;
         this.liked = 0;
+        this.password = password;
         this.createdAt = LocalDateTime.now();
         this.writer = member;
     }
