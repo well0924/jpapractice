@@ -122,4 +122,11 @@ public class BoardApiController {
 		service.boardSelectDelete(boardId);
 		return new Response<>(HttpStatus.NO_CONTENT.value(),null);
 	}
+
+	//게시물 비밀번호 확인
+	@GetMapping("/password-check/{passowrd}/{id}")
+	public Response<?>boardPasswordCheck(@PathVariable String password,@PathVariable Integer boardId)throws Exception{
+		BoardDto.BoardResponseDto responseDto = service.passwordCheck(password,boardId);
+		return new Response<>(HttpStatus.OK.value(),responseDto);
+	}
 }

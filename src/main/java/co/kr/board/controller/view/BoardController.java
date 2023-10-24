@@ -157,5 +157,16 @@ public class BoardController {
 		return mv;
 	}
 	
-	
+	//비밀글 화면
+	@GetMapping("/passwordcheck")
+	public ModelAndView passwordCheckPage(Integer boardId){
+		ModelAndView mv = new ModelAndView();
+
+		BoardDto.BoardResponseDto dto = service.getBoard(boardId);
+
+		mv.addObject("detail",dto);
+
+		mv.setViewName("/board/passwordCheck");
+		return mv;
+	}
 }

@@ -46,6 +46,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final SetPath<Like, QLike> likes = this.<Like, QLike>createSet("likes", Like.class, QLike.class, PathInits.DIRECT2);
 
+    public final StringPath password = createString("password");
+
     public final NumberPath<Integer> readCount = createNumber("readCount", Integer.class);
 
     public final QMember writer;

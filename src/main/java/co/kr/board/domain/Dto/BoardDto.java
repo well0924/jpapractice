@@ -22,6 +22,7 @@ public class BoardDto {
         @NotBlank(message ="내용을 입력해주세요.")
         private String boardContents;
         private Integer readCount;
+        private String password;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
     }
@@ -40,6 +41,7 @@ public class BoardDto {
         private String boardAuthor;
         private Integer readCount;
         private Integer liked;
+        private String password;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
@@ -51,6 +53,7 @@ public class BoardDto {
             this.boardAuthor = board.getBoardAuthor();
             this.boardContents = board.getBoardContents();
             this.readCount = board.getReadCount();
+            this.password = board.getPassword();
             this.liked = board.getLiked();
             this.categoryName = board.getCategory().getName();
             this.categoryId = board.getCategory().getId();

@@ -86,6 +86,7 @@ public class BoardService{
 				.boardTitle(dto.getBoardTitle())
 				.boardAuthor(member.getUsername())
 				.boardContents(dto.getBoardContents())
+				.password(dto.getPassword())
 				.readcount(0)
 				.category(category)
 				.createdat(dto.getCreatedAt())
@@ -230,6 +231,14 @@ public class BoardService{
 		for(int i=0;i<boardId.size();i++){
 			repos.deleteAllById(boardId);
 		}
+	}
+
+	/*
+	 * 게시글 비밀번호 확인
+     */
+	@Transactional(readOnly = true)
+	public BoardDto.BoardResponseDto passwordCheck(String password, Integer boardId){
+		return repos.passwordCheck(password,boardId);
 	}
 
 	/*
