@@ -1,25 +1,19 @@
 package co.kr.board.config.redis;
 
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @AllArgsConstructor
 public class RedisService {
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-    private final String REDIS_KEY_PREFIX = "LOGOUT_";
-    private final String EXPIRED_DURATION = "EXPIRE_DURATION";
 	private final RedisTemplate<String, String> redisTemplate;
 
     //redis에 값저장
@@ -35,6 +29,11 @@ public class RedisService {
     //redis에서 값 제거
     public void deleteValues(String key) {
         redisTemplate.delete(key);
+    }
+
+    @Transactional
+    public void setValuesWithTimeout(String key, String value, long timeout){
+        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MILLISECONDS);
     }
 
     //refreshToken 값 확인하기.

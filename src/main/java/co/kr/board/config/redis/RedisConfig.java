@@ -11,6 +11,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -55,7 +56,8 @@ public class RedisConfig {
                 .disableCachingNullValues()//null value는 캐시를 안함.
                 .entryTtl(Duration.ofSeconds(CacheKey.DEFAULT_EXPIRE_SEC))//캐시의 기본 유효기간 설정
                 .computePrefixWith(CacheKeyPrefix.simple())
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));//redis 캐시 설정 방식을 StringRedisSerializer으로 설정
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));//redis 캐시 설정 방식을 StringRedisSerializer으로 설정
 
         //캐시키별  default 유효기간 설정
         Map<String,RedisCacheConfiguration> cacheConfigurations = new HashMap<>();

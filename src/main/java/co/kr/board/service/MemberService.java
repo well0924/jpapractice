@@ -1,7 +1,6 @@
 package co.kr.board.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -9,25 +8,16 @@ import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-import co.kr.board.config.redis.RedisService;
-import co.kr.board.config.security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Member;
-import co.kr.board.domain.RefreshToken;
 import co.kr.board.domain.Role;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.domain.Dto.MemberDto.MemeberResponseDto;
-import co.kr.board.domain.Dto.TokenDto;
-import co.kr.board.domain.Dto.TokenRequest;
-import co.kr.board.domain.Dto.TokenResponse;
 import co.kr.board.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 	private final MemberRepository  repository;
 	private final BCryptPasswordEncoder encoder;
-	private final JwtTokenProvider jwtTokenProvider;
-	private final RedisService redisService;
 	
 	/*
 	 * 회원 목록 
@@ -51,16 +39,7 @@ public class MemberService {
 		
 		List<Member>memberlist = repository.findAll();
 
-		List<MemberDto.MemeberResponseDto> list = new ArrayList<>();
-		
-		for(Member member : memberlist) {
-			MemeberResponseDto dto = MemberDto.MemeberResponseDto
-									.builder()
-									.member(member)
-									.build();
-			list.add(dto);
-		}
-		return list;
+		return memberlist.stream().map(member->new MemeberResponseDto(member)).collect(Collectors.toList());
 	}
 	
 	/*
@@ -83,8 +62,7 @@ public class MemberService {
 	*/
 	@Transactional(readOnly = true)
 	public Page<MemberDto.MemeberResponseDto>findByAll(String searchVal,Pageable pageable){
-		Page<MemberDto.MemeberResponseDto>result = repository.findByAllSearch(searchVal,pageable);
-		return result;
+		return repository.findByAllSearch(searchVal,pageable);
 	}
 
 	/*
@@ -109,102 +87,6 @@ public class MemberService {
 				.build();
 	}
 
-
-
-	/*
-	 * 로그인 인증
-	 * 로그인페이지에서 로그인을 실행 jwt token값을 발행하고 권한에 맞게 실행을 한다.
-	 * @param LoginDto : 로그인에 필요한 dto
-	 * @param Exception: 회원이 없는 경우 해당 회원이 없습니다.
-	 * @param Exception: 비밀번호가 안맞는 경우의 Exception
-	 */
-    @Transactional
-    public TokenResponse signin(LoginDto dto){
-		//회원 조회
-		Optional<Member> memberAccount = repository.findByUsername(dto.getUsername());
-
-		if(!memberAccount.isPresent()){
-			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
-		}
-
-		Member memberDetail = memberAccount.get();
-		//비밀번호 확인 로직
-		passwordvalidation(memberDetail,dto);
-
-		TokenDto tokenDto=jwtTokenProvider.createTokenDto(memberDetail.getUsername(),memberDetail.getRole());
-
-		RefreshToken refreshToken = RefreshToken
-				.builder()
-				.key(memberDetail.getUsername())
-				.value(tokenDto.getRefreshToken())
-				.build();
-
-		//redis에 토큰값을 저장
-		redisService.setValues(memberDetail.getUsername(), refreshToken.getValue());
-
-		return TokenResponse.builder()
-				.accessToken(tokenDto.getAccessToken())
-				.refreshToken(tokenDto.getRefreshToken())
-				.AccessExpirationTime(tokenDto.getAccessExpirationTime())
-				.RefreshExpirationTime(tokenDto.getRefreshExpirationTime())
-				.build();
-    }
-
-    /*
-    * 토큰 재발급
-    * 토큰 기간이 만료되기 전에 토큰을 재발급
-    * @Param : TokenRequest
-    * @Exception : RefreshToken이 일치하지 않는경우
-    */
-    @Transactional
-    public TokenResponse reissue(TokenRequest request){
-
-    	Authentication authentication = jwtTokenProvider.getAuthentication(request.getRefreshToken());
-		String userpk = jwtTokenProvider.getUserPK(request.getRefreshToken());
-		log.info(userpk);
-		log.info(authentication);
-        if (!authentication.getName().equals(userpk)) {
-            throw new CustomExceptionHandler(ErrorCode.REFRESH_TOKEN_AUTHENTICATION_VALID);
-        }
-
-        String authority = authentication
-                .getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-		log.info(authority);
-		
-		redisService.checkRefreshToken(userpk, request.getRefreshToken());
-
-        TokenDto tokenDto = jwtTokenProvider.createTokenDto(userpk,Role.valueOf(authority));
-
-		RefreshToken refreshToken = RefreshToken
-				.builder()
-				.key(authentication.getName())
-				.value(tokenDto.getRefreshToken())
-				.build();
-		//토큰값을 레디스에 저장
-		redisService.setValues(userpk,refreshToken.getValue());
-
-		return TokenResponse
-				.builder()
-				.accessToken(tokenDto.getAccessToken())
-				.refreshToken(tokenDto.getRefreshToken())
-				.build();
-    }
-
-	/*
-	 * 로그아웃
-	 */
-	@Transactional
-	public void logout(){
-		//Token에서 로그인한 사용자 정보 get해 로그아웃 처리
-		Member member = (Member) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if(redisService.getValues(member.getMembername())!=null){
-			redisService.deleteValues(member.getMembername());//토큰 삭제
-		}
-	}
-
 	/*
 	 * 회원가입 기능
 	 * @Param MemberDto.MemberRequestDto
@@ -212,7 +94,7 @@ public class MemberService {
 	 * @Exception:이메일이 중복이 되면 USEREMAIL_DUPLICATE 
 	 */
 	@Transactional
-	public Integer memberjoin(MemberDto.MemberRequestDto dto)throws Exception{
+	public Integer memberjoin(MemberDto.MemberRequestDto dto){
 		//비밀번호 암호화
 		dto.setPassword(encoder.encode(dto.getPassword()));
 

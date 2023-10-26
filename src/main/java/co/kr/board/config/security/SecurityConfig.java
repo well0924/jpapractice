@@ -53,7 +53,7 @@ public class SecurityConfig{
 				.ignoring()
 				.antMatchers("/images/**", "/js/**","/font/**", "/webfonts/**","/istatic/**",
 						"/main/**", "/webjars/**", "/dist/**", "/plugins/**", "/css/**","/favicon.ico","/h2-console/**","/css/**",
-						"/vendor/**","/scss/**");
+						"/vendor/**","/scss/**","/**");
 	}
 
 	@Bean
@@ -71,10 +71,11 @@ public class SecurityConfig{
 				.and()
 				.authorizeRequests()//요청 url에 따라서 권한설정하기.
 				.antMatchers("/api/member/*").permitAll()
+				.antMatchers(HttpMethod.GET,"/api/member/list/search").permitAll()
 				.antMatchers(HttpMethod.GET,"/api/member/list").access("hasRole('ROLE_ADMIN')")
 				.antMatchers(HttpMethod.GET,"/api/member/detailmember/{id}/member").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 				.antMatchers(HttpMethod.POST,"/api/login/*").permitAll()
-				.antMatchers("/api/board/*").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+				.antMatchers("/api/board/*").access("hasRole('ROLE_USER')")
 				.antMatchers("/page/**").permitAll()
 				.anyRequest()
 				.authenticated()
