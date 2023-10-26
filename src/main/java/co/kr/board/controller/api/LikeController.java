@@ -14,6 +14,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class LikeController {
     private final MemberRepository memberRepository;
     
     //좋아요+1기능
+    @Secured({"ROLE_ADMIN,ROLE_USER"})
     @PostMapping("/plus/{id}")
     public Response<String> likeBoard(@PathVariable(value = "id")Integer boardId){
         Member member = getMember();
@@ -33,7 +35,9 @@ public class LikeController {
         String likeResult =likeService.createLikeBoard(board, member);
         return new Response<>(HttpStatus.OK.value(),likeResult);
     }
+
     //좋아요-1기능
+    @Secured({"ROLE_ADMIN,ROLE_USER"})
     @PostMapping("/minus/{id}")
     public Response<String> minusBoard(@PathVariable(value = "id")Integer boardId){
         Member member = getMember();
@@ -41,9 +45,12 @@ public class LikeController {
         String likeResult = likeService.removeLikeBoard(board,member);
         return new Response<>(HttpStatus.OK.value(),likeResult);
     }
+
     //좋아요 중복기능
+    @Secured({"ROLE_ADMIN,ROLE_USER"})
     @GetMapping("/duplicated/{id}")
-    @Caching(cacheable = {@Cacheable(value = CacheKey.LIKE,key = "#boardId",unless = "#result == null")},evict = {@CacheEvict(value = CacheKey.LIKE,key = "#boardId")})
+    @Caching(cacheable = {@Cacheable(value = CacheKey.LIKE,key = "#boardId",unless = "#result == null")},
+            evict = {@CacheEvict(value = CacheKey.LIKE,key = "#boardId")})
     public Response<Boolean> likeDuplicated(@PathVariable(value = "id") Integer boardId){
         Member member = getMember();
         Board board = boardRepository.findById(boardId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
@@ -56,6 +63,7 @@ public class LikeController {
         }
         return new Response<>(HttpStatus.OK.value(),result);
     }
+
     private Member getMember(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (String)authentication.getPrincipal();

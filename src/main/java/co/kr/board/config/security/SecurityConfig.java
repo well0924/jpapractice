@@ -27,7 +27,7 @@ import org.springframework.security.web.firewall.HttpFirewall;
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true)
 @Order(SecurityProperties.DEFAULT_FILTER_ORDER)
 public class SecurityConfig{
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -73,9 +73,12 @@ public class SecurityConfig{
 				.antMatchers("/api/member/*").permitAll()
 				.antMatchers(HttpMethod.GET,"/api/member/list/search").permitAll()
 				.antMatchers(HttpMethod.GET,"/api/member/list").access("hasRole('ROLE_ADMIN')")
+				.antMatchers(HttpMethod.GET,"/page/member/board/list").access("hasRole('ROLE_ADMIN')")
+				.antMatchers(HttpMethod.GET,"/page/member/comment/list").access("hasRole('ROLE_ADMIN')")
 				.antMatchers(HttpMethod.GET,"/api/member/detailmember/{id}/member").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-				.antMatchers(HttpMethod.POST,"/api/login/*").permitAll()
-				.antMatchers("/api/board/*").access("hasRole('ROLE_USER')")
+				.antMatchers("/api/login/*").permitAll()
+				.antMatchers("/api/reply/*").permitAll()
+				.antMatchers("/api/board/*").access("hasRole('ROLE_USER') or hasRole('ROLE_USER')")
 				.antMatchers("/page/**").permitAll()
 				.anyRequest()
 				.authenticated()

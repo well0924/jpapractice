@@ -6,6 +6,7 @@ import co.kr.board.service.CategoryService;
 import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
+    @Secured({"ROLE_USER","ROLE_ADMIN"})
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     public Response<List<CategoryDto>>categoryList()throws Exception{
@@ -23,6 +25,7 @@ public class CategoryController {
         return new Response<>(HttpStatus.OK.value(),list);
     }
 
+    @Secured({"ROLE_USER","ROLE_ADMIN"})
     @PostMapping("/createcategory")
     @ResponseStatus(HttpStatus.CREATED)
     public Response<?> create(@RequestBody CategoryCreateRequest req){
@@ -30,6 +33,7 @@ public class CategoryController {
         return new Response<>(HttpStatus.OK.value(),200);
     }
 
+    @Secured({"ROLE_USER","ROLE_ADMIN"})
     @DeleteMapping("/deletecategory/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Response<?>categorydelete(@PathVariable(required = true,value = "id") Integer id){

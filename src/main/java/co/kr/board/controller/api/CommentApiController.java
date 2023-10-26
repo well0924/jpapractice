@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -41,6 +42,7 @@ public class CommentApiController {
 	private final MemberRepository memberRepository;
 
 	//목록(어드민)
+	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/list")
 	public Response<Page<CommentDto.CommentResponseDto>>commentList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size =10) Pageable pageable) throws Exception {
 		Page<CommentDto.CommentResponseDto> list = service.findCommentList(pageable);
@@ -48,6 +50,7 @@ public class CommentApiController {
 	}
 
 	//댓글목록(게시글)
+	@Secured({"ROLE_ADMIN,ROLE_USER"})
 	@GetMapping("/list/{id}")
 	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
 		List<CommentDto.CommentResponseDto>list = service.findCommentsBoardId(boardId);
@@ -55,6 +58,7 @@ public class CommentApiController {
 	}
 
 	//댓글 작성
+	@Secured({"ROLE_ADMIN,ROLE_USER"})
 	@PostMapping("/write/{id}")
 	public Response<?>replyWrite(@PathVariable(value="id")Integer boardId,
 								 @Valid @RequestBody CommentDto.CommentRequestDto dto,
@@ -68,6 +72,7 @@ public class CommentApiController {
 	}
 
 	//댓글 삭제
+	@Secured({"ROLE_ADMIN,ROLE_USER"})
 	@DeleteMapping("/delete/{id}")
 	public Response<?>replyDelete(@PathVariable(value="id")Integer replyId){
 
@@ -76,13 +81,15 @@ public class CommentApiController {
 
 		return new Response<>(HttpStatus.OK.value(),"o.k");
 	}
-
+	
+	//댓글 선택 삭제
+	@Secured({"ROLE_ADMIN,ROLE_USER"})
 	@PostMapping("/select-delete")
 	public Response<?>commentSelectDelete(@RequestBody List<String>commentId)throws Exception{
 		service.commentSelectDelete(commentId);
 		return new Response<>(HttpStatus.NO_CONTENT.value(), null);
 	}
-	
+
 	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
