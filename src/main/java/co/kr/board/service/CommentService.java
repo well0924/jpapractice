@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import co.kr.board.domain.Board;
+import co.kr.board.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.repository.BoardRepository;
@@ -26,6 +29,8 @@ public class CommentService {
 	private final CommentRepository repository;
 	
 	private final BoardRepository boardrepository;
+
+	private final MemberRepository memberRepository;
 
 	/*
 	 * 댓글 목록 (페이징)
@@ -154,5 +159,13 @@ public class CommentService {
 		for(int i = 0; i<commentId.size(); i++){
 			repository.deleteAllById(commentId);
 		}
+	}
+
+	//회원 인증
+	private Member getMember(){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = (String)authentication.getName().toString();
+		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
+		return member;
 	}
 }

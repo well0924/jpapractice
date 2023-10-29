@@ -50,7 +50,7 @@ public class CommentApiController {
 	}
 
 	//댓글목록(게시글)
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@GetMapping("/list/{id}")
 	public Response<List<CommentDto.CommentResponseDto>>getBoardComments(@PathVariable(value="id")Integer boardId)throws Exception{
 		List<CommentDto.CommentResponseDto>list = service.findCommentsBoardId(boardId);
@@ -58,21 +58,20 @@ public class CommentApiController {
 	}
 
 	//댓글 작성
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@PostMapping("/write/{id}")
 	public Response<?>replyWrite(@PathVariable(value="id")Integer boardId,
 								 @Valid @RequestBody CommentDto.CommentRequestDto dto,
 								 BindingResult bindingresult){
 
 		Member member = getMember();
-		log.info(member);
 		int insertResult = service.replysave(dto, member, boardId);
 		
 		return new Response<>(HttpStatus.OK.value(),insertResult);
 	}
 
 	//댓글 삭제
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@DeleteMapping("/delete/{id}")
 	public Response<?>replyDelete(@PathVariable(value="id")Integer replyId){
 
@@ -83,7 +82,7 @@ public class CommentApiController {
 	}
 	
 	//댓글 선택 삭제
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@PostMapping("/select-delete")
 	public Response<?>commentSelectDelete(@RequestBody List<String>commentId)throws Exception{
 		service.commentSelectDelete(commentId);
@@ -93,7 +92,7 @@ public class CommentApiController {
 	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
+		String username = (String)authentication.getName().toString();
 		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 		return member;
 	}
