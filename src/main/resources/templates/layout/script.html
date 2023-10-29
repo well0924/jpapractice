@@ -5,6 +5,7 @@ xmlns:th="http://www.thymeleaf.org">
 <head>
 <th:block th:fragment="scriptfragment">
 <meta charset="UTF-8">
+<!--jquery -->
 
 <!--font-awesome-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -24,6 +25,11 @@ xmlns:th="http://www.thymeleaf.org">
     <!-- Page level custom scripts -->
  <!--   <script th:src="@{/js/demo/chart-area-demo.js}"></script>
     <script th:src="@{/js/demo/chart-pie-demo.js}"></script>-->
+
+    <!--로그인 관련 js-->
+    <script th:src="@{/js/login/commonLogin.js}"></script>
+    <script th:src="@{/js/login/loginpage.js}"></script>
+    <script th:src="@{/js/login/logout.js}"></script>
 </th:block>
 </head>
 </html>

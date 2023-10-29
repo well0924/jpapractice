@@ -20,21 +20,26 @@ public class LoginApiController {
 	private final AuthService authService;
 	private final EmailService emailService;
 
-	private final long COOKIE_EXPIRATION = 7776000; // 90일
+	private final long COOKIE_EXPIRATION = 1209600;
 
 	//로그인 ->토큰 발행
 	@PostMapping("/signup")
     public ResponseEntity <TokenDto> memberJwtLogin(@Valid @RequestBody LoginDto loginDto){
-        TokenDto tokenResponse = authService.login(loginDto);
 
-		HttpCookie httpCookie = ResponseCookie.from("refresh-token", tokenResponse.getRefreshToken())
+		TokenDto tokenResponse = authService.login(loginDto);
+
+		// RT 쿠키에 저장하기.
+		HttpCookie RtHttpCookie = ResponseCookie.from("refresh-token", tokenResponse.getRefreshToken())
 				.maxAge(COOKIE_EXPIRATION)
 				.httpOnly(true)
+				.path("/")
 				.secure(true)
 				.build();
 
+		log.info("쿠키저장??::"+RtHttpCookie);
+
 		return ResponseEntity.ok()
-				.header(HttpHeaders.SET_COOKIE, httpCookie.toString())
+				.header(HttpHeaders.SET_COOKIE, RtHttpCookie.toString())
 				// AT 저장
 				.header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponse.getAccessToken())
 				.body(tokenResponse);
@@ -45,14 +50,16 @@ public class LoginApiController {
     public ResponseEntity<?>jwtReissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
 								 @RequestHeader("Authorization") String requestAccessToken){
         TokenDto tokenResponse = authService.reissue(requestAccessToken,requestRefreshToken);
-		log.info(tokenResponse);
+
 		if (tokenResponse != null) { // 토큰 재발급 성공
 			// RT 저장
 			ResponseCookie responseCookie = ResponseCookie.from("refresh-token", tokenResponse.getRefreshToken())
 					.maxAge(COOKIE_EXPIRATION)
 					.httpOnly(true)
 					.secure(true)
+					.path("/")
 					.build();
+
 			return ResponseEntity
 					.status(HttpStatus.OK)
 					.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
@@ -66,6 +73,7 @@ public class LoginApiController {
 					.maxAge(0)
 					.path("/")
 					.build();
+
 			return ResponseEntity
 					.status(HttpStatus.UNAUTHORIZED)
 					.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
