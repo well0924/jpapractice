@@ -26,8 +26,8 @@ public class JwtTokenProvider implements InitializingBean{
 	    private final CustomUserDetailService userDetailsService;
 		private final RedisService redisService;
 		private static final String AUTHORITIES_KEY = "role";
-		private static final String EMAIL_KEY = "email";
-		private static final String url = "https://localhost:8080";
+		private static final String USERID_KEY = "userId";
+		private static final String url = "https://localhost:8085";
 		private final String secretKey;
 		private static Key signingKey;
 		private final Long accessTokenValidityInMilliseconds;
@@ -64,7 +64,7 @@ public class JwtTokenProvider implements InitializingBean{
 					.setExpiration(new Date(now + accessTokenValidityInMilliseconds))
 					.setSubject("access-token")
 					.claim(url, true)
-					.claim(EMAIL_KEY, username)
+					.claim(USERID_KEY, username)
 					.claim(AUTHORITIES_KEY, authorities)
 					.signWith(signingKey, SignatureAlgorithm.HS512)
 					.compact();
@@ -80,9 +80,6 @@ public class JwtTokenProvider implements InitializingBean{
 			return new TokenDto(accessToken, refreshToken);
 		}
 
-	    // JWT 토큰에서 인증 정보 조회
-
-
 	    // 토큰에서 회원 정보 추출
 		public Claims getClaims(String token) {
 			try {
@@ -97,8 +94,8 @@ public class JwtTokenProvider implements InitializingBean{
 		}
 
 		public Authentication getAuthentication(String token) {
-			String email = getClaims(token).get(EMAIL_KEY).toString();
-			CustomUserDetails userDetailsImpl = (CustomUserDetails) userDetailsService.loadUserByUsername(email);
+			String username = getClaims(token).get(USERID_KEY).toString();
+			CustomUserDetails userDetailsImpl = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
 			return new UsernamePasswordAuthenticationToken(userDetailsImpl, "", userDetailsImpl.getAuthorities());
 		}
 
