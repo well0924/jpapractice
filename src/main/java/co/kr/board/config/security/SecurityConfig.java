@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +18,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import co.kr.board.config.security.auth.CustomUserDetailService;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 
@@ -33,7 +31,6 @@ public class SecurityConfig{
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final CustomUserDetailService customUserDetailService;
 
 	//비밀번호 암호화
 	@Bean
@@ -76,9 +73,10 @@ public class SecurityConfig{
 				.antMatchers(HttpMethod.GET,"/page/member/board/list").access("hasRole('ROLE_ADMIN')")
 				.antMatchers(HttpMethod.GET,"/page/member/comment/list").access("hasRole('ROLE_ADMIN')")
 				.antMatchers(HttpMethod.GET,"/api/member/detailmember/{id}/member").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+				.antMatchers("/api/board/*").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+				.antMatchers("/api/reply/*").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+				.antMatchers("/api/like/*").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 				.antMatchers("/api/login/*").permitAll()
-				.antMatchers("/api/reply/*").permitAll()
-				.antMatchers("/api/board/*").access("hasRole('ROLE_USER') or hasRole('ROLE_USER')")
 				.antMatchers("/page/**").permitAll()
 				.anyRequest()
 				.authenticated()
