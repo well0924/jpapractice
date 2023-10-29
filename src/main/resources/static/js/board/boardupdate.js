@@ -3,8 +3,7 @@
  */
 //글 수정기능
 function modifypost(){
-	let token = localStorage.getItem('X-AUTH-TOKEN');
-	let refresh = localStorage.getItem('refreshToken');
+	let token = localStorage.getItem('Authorization');
 
 	let id = $('#boardid').val();
 	let title = $('#boardtitle').val();
@@ -25,8 +24,7 @@ function modifypost(){
 		type:'patch',
 		data:formdate,
 		headers: {
-			'X-AUTH-TOKEN':token,
-			'refreshToken':refresh
+			'Authorization':'Bearer '+token
 		},
 		contentType: false,  
         processData: false,
@@ -61,8 +59,7 @@ function modifypost(){
 
 //글삭제o.k
 function deletepost(){
-	let token = localStorage.getItem('X-AUTH-TOKEN');
-	let refresh = localStorage.getItem('refreshToken');
+	let token = localStorage.getItem('Authorization');
 	let id = $('#boardid').val();
 	
 	$.ajax({
@@ -70,9 +67,7 @@ function deletepost(){
 		url:'/api/board/delete/'+id,
 		type:'delete',
 		headers:{
-			'X-AUTH-TOKEN':token,
-			'refreshToken':refresh
-		},
+			'Authorization':'Bearer '+token},
 		data: null,
 		contentType:'application/json; charset=utf-8'
 	

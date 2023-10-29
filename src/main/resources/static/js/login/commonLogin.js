@@ -85,5 +85,10 @@ function loginSuccessProc(tokenId){
     }
 }
 //로컬스토리지에 저장된 토큰의 유효기간 확인
+function validTokenExpiredTime(){
 
+}
 //유효기간이 얼마 안남았을 경우에 토큰을 재발급
+function reissueToken(){
+
+}

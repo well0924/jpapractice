@@ -10,24 +10,26 @@ $(document).ready(function(){
 function getCommentlist(){
 	
 	let boardid = $('#boardid').val();
-	
+	let token = localStorage.getItem('Authorization');
+	let result = JSON.parse(token);
 	console.log(boardid);
 	
 	$.ajax({
 		url:'/api/reply/list/'+boardid,
+		headers:{'Authorization':'Bearer '+result.value},
 		type:'get',
 		dataType:'json',
 		contentType:'application/json; charset=utf-8'
 	}).done(function(resp){
 	
 		let html = "";
-		
 		var count = resp.data.length;
-
+		console.log(count);
+		console.log(resp.data);
 		//게시물이 있는 경우
 		if(resp.data.length > 0){
 			for(let i = 0; i<resp.data.length; i++){
-				 
+
 				 html +='<div class="commentArea" style="border-bottom:1px solid darkgray; margin-bottom: 15px;">';
 				 	html +='<div class="commentInfo'+resp.data[i].replyId+'">';
 				 	html +='댓글번호:'+resp.data[i].replyId+'/작성자:'+resp.data[i].replyWriter;
@@ -58,7 +60,8 @@ function getCommentlist(){
 
 //댓글 작성 o.k
 function replyInsert(){
-	let token = localStorage.getItem('X-AUTH-TOKEN');
+	let token = localStorage.getItem('Authorization');
+	let result = JSON.parse(token);
 	let content=$('#replycontents').val();
 	let boardid=$('#boardid').val();
 
@@ -71,7 +74,7 @@ function replyInsert(){
 		url:'/api/reply/write/'+boardid,
 		type:'post',
 		headers:{
-			'X-AUTH-TOKEN':token,
+			'Authorization':'Bearer '+result.value,
 		},
 		data:JSON.stringify(data),
 		dataType:'json',
@@ -100,7 +103,8 @@ function replyInsert(){
 }
 //댓글 삭제o.k
 function commentDelete(replyId){
-	let token = localStorage.getItem('X-AUTH-TOKEN');
+	let token = localStorage.getItem('Authorization');
+	let result = JSON.parse(token);
 	let Isconfirm = confirm('삭제하겠습니까?');
 	
 	if(Isconfirm){
@@ -108,7 +112,7 @@ function commentDelete(replyId){
 			url:'/api/reply/delete/'+replyId,
 			type:'delete',
 			headers:{
-				'X-AUTH-TOKEN':token,
+				'Authorization':'Bearer '+result.value,
 			},
 			dataType:'json',
 			contentType:'application/json; charset=utf-8'
@@ -135,13 +139,12 @@ function commentUpdate(replyId,replyContents){
 	console.log("????????");
 	var html = '';
 	
-	html +='<div class="commentcontent'+replyId+'">'; 
+	html+='<div class="commentcontent'+replyId+'">';
      	html += '<input type="text" name="replyContents" id="contents"></input>';
  		html +='<div>';
- 			html +='<button type="button" class="btn btn-primary" onclick="commentUpdate('+replyId+',\''+replyContents+'\')";>'+'수정'+'</button>';	                
+ 			html+='<button type="button" class="btn btn-primary" onclick="commentUpdate('+replyId+',\''+replyContents+'\')";>'+'수정'+'</button>';	                
  		html +='</div>';
-	html +='</div>';               
-	             	
+	html +='</div>';
 
 	$('.commentconetent'+replyId).html(html);	
 }

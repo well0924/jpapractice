@@ -2,38 +2,26 @@
  * 글 작성 페이지 js
  */
  
-//메인페이지 이동
+//게시글 목록으로 이동하기.
 function main(){
-	location.href="/page/board/list";
+	let categoryName = "";
+	location.href="/page/board/list/"+categoryName;
+	history.back();
 }
-//토큰 재발급
-function tokenReissue(){
-	let token = localStorage.getItem('X-AUTH-TOKEN');
-	let refreshToken = localStorage.getItem('refreshToken');
 
-	const tokenData = {
-		accessToken : token,
-		refreshToken : refreshToken
-	}
-
-	$.ajax({
-		url:'/api/login/reissue',
-		type:'post',
-		dataType: 'application/json; charset=utf-8',
-		data: tokenData
-	}).done(function(resp){
-		localStorage.setItem('X-AUTH-TOKEN',resp.accessToken);
-		localStorage.setItem('refreshToken',resp.refreshToken);
-	});
-}
 //글 작성기능 o.k
 function savepost(){
-	let token = localStorage.getItem('X-AUTH-TOKEN');
-	let refresh = localStorage.getItem('refreshToken');
+	//로컬 스토리지에 저장된 at
+	let token = localStorage.getItem('Authorization');
+	let result = JSON.parse(token);
+	let formdate = new FormData();
+
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
-	let formdate = new FormData();
-	let date = {boardTitle :title,boardContents : contents};
+	let categoryId = $('#categoryId').val();
+	let password = $('#pw').val();
+	let date = {boardTitle :title,boardContents : contents,password : password};
+
 	let inputFiles = $('#attachfiles');
 	let files = inputFiles[0].files;
 	let filecount = 4;
@@ -53,12 +41,11 @@ function savepost(){
 	formdate.append("boardsave",new Blob([JSON.stringify(date)], {type: "application/json"}));	
 		
 		$.ajax({		
-			url:'/api/board/write',
+			url:'/api/board/write?categoryId='+categoryId,
 			type:'post',
 			data: formdate,
 			headers:{
-				'X-AUTH-TOKEN':token,
-				'refreshToken':refresh
+				'Authorization': 'Bearer '+result.value,
 			},
 			contentType: false,  
             processData: false,
@@ -66,7 +53,6 @@ function savepost(){
      		enctype: 'multipart/form-data',    
             dataType: "json",
 		}).done(function(resp){
-
 				if(resp.status== 400){
 					
 					if(resp.data.hasOwnProperty('valid_boardTitle')){
