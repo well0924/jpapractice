@@ -72,7 +72,7 @@ public class AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String authorities = getAuthorities(authentication);
-        log.info("???::"+authorities);
+
         // 토큰 재발급 및 Redis 업데이트
         redisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
         TokenDto tokenDto = jwtTokenProvider.createToken(principal, authorities);
