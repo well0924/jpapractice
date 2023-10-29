@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 import co.kr.board.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import co.kr.board.domain.Role;
+import co.kr.board.domain.Const.Role;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
 

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
+import co.kr.board.domain.Const.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.*;

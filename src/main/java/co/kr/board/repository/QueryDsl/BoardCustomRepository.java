@@ -1,7 +1,7 @@
 package co.kr.board.repository.QueryDsl;
 
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.SearchType;
+import co.kr.board.domain.Const.SearchType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

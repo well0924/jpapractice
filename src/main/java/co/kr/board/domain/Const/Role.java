@@ -1,4 +1,4 @@
-package co.kr.board.domain;
+package co.kr.board.domain.Const;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -4,7 +4,7 @@ import javax.validation.Valid;
 
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CategoryDto;
-import co.kr.board.domain.SearchType;
+import co.kr.board.domain.Const.SearchType;
 import co.kr.board.domain.Dto.AttachDto;
 import co.kr.board.service.CategoryService;
 import co.kr.board.service.FileService;
@@ -28,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Controller

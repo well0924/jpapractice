@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import co.kr.board.domain.*;
+import co.kr.board.domain.Const.SearchType;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.BoardDto.BoardResponseDto;
 import co.kr.board.repository.CategoryRepository;
@@ -33,6 +34,7 @@ public class BoardService{
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
+
 	private final MemberRepository memberRepository;
 	private final FileHandler fileHandler;
 
@@ -247,7 +249,8 @@ public class BoardService{
 	private Member getMember(){
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getPrincipal();
+		String username = (String)authentication.getName().toString();
+		log.info(username);
 		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 
 		if(member == null){

@@ -1,6 +1,7 @@
 package co.kr.board.repository.QueryDsl;
 
 import co.kr.board.domain.*;
+import co.kr.board.domain.Const.SearchType;
 import co.kr.board.domain.Dto.BoardDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;

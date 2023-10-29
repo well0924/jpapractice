@@ -3,7 +3,7 @@ package co.kr.board.controller.api;
 import javax.validation.Valid;
 import co.kr.board.config.redis.CacheKey;
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.SearchType;
+import co.kr.board.domain.Const.SearchType;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -34,7 +34,7 @@ public class BoardApiController {
 	@GetMapping("/list/{cname}")
 	@ResponseStatus(code=HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>articleList(
-			@PathVariable(value = "cname",required = true) String categoryName,
+			@PathVariable(value = "cname") String categoryName,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10)Pageable pageable){
 				
 		Page<BoardDto.BoardResponseDto> list = service.findAllPage(pageable,categoryName);
@@ -58,7 +58,7 @@ public class BoardApiController {
 	
 	//게시글 조회
 	@GetMapping("/detail/{id}")
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code=HttpStatus.OK)
 	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
@@ -69,13 +69,13 @@ public class BoardApiController {
 
 	//게시글 작성
 	@PostMapping(value = "/write")
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Response<Integer>writeArticle(
 			@RequestPart(value="filelist",required = false) List<MultipartFile> files,
 			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
-			@RequestParam(required = true,defaultValue = "2")int categoryId)throws Exception{
+			@RequestParam(defaultValue = "2")int categoryId)throws Exception{
 
 		//url: localhost:8085/api/board/write?categoryId=2
 		int insertResult = service.boardsave(dto,categoryId,files);
@@ -87,18 +87,17 @@ public class BoardApiController {
 	
 	//게시글 삭제
 	@DeleteMapping("/delete/{id}")
-	@CacheEvict(value = CacheKey.BOARD)
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@CacheEvict(value = CacheKey.BOARD,key = "#boardId")
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId)throws Exception{
-
 		service.deleteBoard(boardId);
 		return new Response<>(HttpStatus.OK.value(),200);
 	}
 	
 	//게시글 수정
 	@PatchMapping("/update/{id}")
-	@Secured("{ROLE_ADMIN,ROLE_USER}")
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>updateArticle(
 			@PathVariable(value="id")Integer boardId,
@@ -112,9 +111,9 @@ public class BoardApiController {
 	
 	//내가 작성한 글 확인하기.
 	@GetMapping("/my-article/{id}")
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
-	public Response<?>memberArticle(@PathVariable("id") String username,Pageable pageable)throws Exception{
+	public Response<?>memberArticle(@PathVariable("id") String username,Pageable pageable){
 		Page<BoardDto.BoardResponseDto>list = service.memberArticle(username,pageable);
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
@@ -137,8 +136,8 @@ public class BoardApiController {
 
 	//게시물 비밀번호 확인
 	@GetMapping("/password-check/{password}/{id}")
-	@Secured({"ROLE_ADMIN,ROLE_USER"})
-	public Response<?>boardPasswordCheck(@PathVariable String password,@PathVariable Integer boardId)throws Exception{
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
+	public Response<?>boardPasswordCheck(@PathVariable("password") String password,@PathVariable("id") Integer boardId){
 		BoardDto.BoardResponseDto responseDto = service.passwordCheck(password,boardId);
 		return new Response<>(HttpStatus.OK.value(),responseDto);
 	}

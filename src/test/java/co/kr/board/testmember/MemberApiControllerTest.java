@@ -2,7 +2,7 @@ package co.kr.board.testmember;
 
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Member;
-import co.kr.board.domain.Role;
+import co.kr.board.domain.Const.Role;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.service.MemberService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +31,6 @@ import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -56,7 +55,7 @@ public class MemberApiControllerTest {
         given(memberService.findAll(any(Pageable.class))).willReturn(pagelist);
 
         mvc.perform(
-                get("/api/login/list")
+                get("/api/member/list")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -70,7 +69,7 @@ public class MemberApiControllerTest {
     public void memberDetailTest()throws Exception{
         given(memberService.getMember(any())).willReturn(responseDto());
 
-        mvc.perform(get("/api/login/detailmember/{id}/member",requestDto().getUseridx())
+        mvc.perform(get("/api/member/detailmember/{id}/member",requestDto().getUseridx())
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -85,7 +84,7 @@ public class MemberApiControllerTest {
 
         given(memberService.memberjoin(any())).willReturn(responseDto().getUseridx());
 
-        mvc.perform(MockMvcRequestBuilders.post("/api/login/memberjoin")
+        mvc.perform(MockMvcRequestBuilders.post("/api/member/memberjoin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDto()))
                         .characterEncoding(StandardCharsets.UTF_8))
@@ -104,7 +103,7 @@ public class MemberApiControllerTest {
         given(memberService.findByMembernameAndUseremail(memberDto().getMembername(),memberDto().getUseremail()))
                 .willReturn(memberDto().getUsername());
 
-        mvc.perform(post("/api/login/userfind/{name}/{email}", requestDto().getMembername(),requestDto().getUseremail())
+        mvc.perform(post("/api/member/userfind/{name}/{email}", requestDto().getMembername(),requestDto().getUseremail())
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
@@ -119,7 +118,7 @@ public class MemberApiControllerTest {
     public void givenDuplicateUserId_whenCheckMemberIdDuplicate_thenDuplicatedUserId()throws Exception{
         given(memberService.checkmemberIdDuplicate(requestDto().getUsername())).willReturn(true);
 
-        mvc.perform(get("/api/login/logincheck/{id}",requestDto().getUsername())
+        mvc.perform(get("/api/member/logincheck/{id}",requestDto().getUsername())
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
@@ -133,7 +132,7 @@ public class MemberApiControllerTest {
     public void givenUserId_whenCheckMemberIdDuplicate_thenNotDuplicateUserId()throws Exception{
         given(memberService.checkmemberIdDuplicate("well23")).willReturn(false);
 
-        mvc.perform(get("/api/login/logincheck/{id}","well123")
+        mvc.perform(get("/api/member/logincheck/{id}","well123")
                 .characterEncoding(StandardCharsets.UTF_8)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -146,7 +145,7 @@ public class MemberApiControllerTest {
     public void givenDuplicateUserEmail_whenCheckMemberEmailDuplicate_thenDuplicateUserEmail()throws Exception{
         given(memberService.checkmemberEmailDuplicate(requestDto().getUseremail())).willReturn(true);
 
-        mvc.perform(get("/api/login/emailcheck/{email}",requestDto().getUseremail())
+        mvc.perform(get("/api/member/emailcheck/{email}",requestDto().getUseremail())
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
@@ -160,7 +159,7 @@ public class MemberApiControllerTest {
     public void givenUserEmail_whenCheckMemberEmailDuplicate_thenUserEmail()throws Exception{
         given(memberService.checkmemberEmailDuplicate("well41491@test.com")).willReturn(false);
 
-        mvc.perform(get("/api/login/emailcheck/{email}","well41491@test.com")
+        mvc.perform(get("/api/member/emailcheck/{email}","well41491@test.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding(StandardCharsets.UTF_8))
                 .andExpect(status().isOk())
@@ -176,7 +175,7 @@ public class MemberApiControllerTest {
         given(memberService.getMember(1)).willReturn(responseDto());
         given(memberService.passwordchange("well",requestDto())).willReturn(1);
 
-        mvc.perform(MockMvcRequestBuilders.put("/api/login/passwordchange/{name}","well")
+        mvc.perform(MockMvcRequestBuilders.put("/api/member/passwordchange/{name}","well")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDto()))
                         .characterEncoding(StandardCharsets.UTF_8))
@@ -192,7 +191,7 @@ public class MemberApiControllerTest {
 
         mvc.perform(
                 MockMvcRequestBuilders
-                .put("/api/login/memberupdate/{id}/member",1)
+                .put("/api/member/memberupdate/{id}/member",1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto())))
                 .andExpect(status().isOk())
@@ -207,7 +206,7 @@ public class MemberApiControllerTest {
     public void userDeleteApiTest()throws Exception{
 
         mvc.perform(MockMvcRequestBuilders
-                        .delete("/api/login/memberdelete/{idx}/member",requestDto().getUseridx())
+                        .delete("/api/member/memberdelete/{idx}/member",requestDto().getUseridx())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
