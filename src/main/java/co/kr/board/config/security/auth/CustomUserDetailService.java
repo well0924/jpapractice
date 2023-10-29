@@ -22,12 +22,9 @@ public class CustomUserDetailService implements UserDetailsService{
 
 	@Override
 	//캐시 설정
-	@Cacheable(key ="#userPk",value = CacheKey.USER)
+	@Cacheable(key ="#userPk",value = CacheKey.USER,unless = "#result == null")
 	public UserDetails loadUserByUsername(String userPk) throws UsernameNotFoundException {
-
-		log.info("??::cache적용?");
 		log.info("userDetailService");
-
 		Optional<Member> member = Optional
 				.ofNullable(repository
 						.findByUsername(userPk)
@@ -37,8 +34,7 @@ public class CustomUserDetailService implements UserDetailsService{
 			CustomUserDetails customUserDetails = new CustomUserDetails(member.get());
 			return customUserDetails;
 		}
-
-		return null;
+		return new CustomUserDetails(member.get());
 	}
 
 }
