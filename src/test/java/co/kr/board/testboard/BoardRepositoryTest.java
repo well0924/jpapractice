@@ -1,10 +1,8 @@
 package co.kr.board.testboard;
 
 import co.kr.board.Config.TestQueryDslConfig;
-import co.kr.board.domain.Board;
-import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.SearchType;
+import co.kr.board.domain.Const.SearchType;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -46,19 +44,6 @@ public class BoardRepositoryTest {
     }
 
     @Test
-    @DisplayName("게시글 목록(카테고리 및 페이징)")
-    public void boardListTest(){
-        Category category = categoryRepository.findById(1).orElseThrow();
-        String categoryName = category.getName();
-        Pageable pageable  = Pageable.ofSize(5);
-        Page<Board> list = boardRepository.findAllByCategoryName(pageable,categoryName);
-        BoardDto.BoardResponseDto result = new BoardDto.BoardResponseDto();
-
-        System.out.println("목록::"+list.get().map(board->new BoardDto.BoardResponseDto(board)).collect(Collectors.toList()));
-        assertThat(list).isNotNull();
-    }
-
-    @Test
     @DisplayName("최근에 작성한 게시글 5개")
     public void findTop5BoardListTest(){
         List<BoardDto.BoardResponseDto>list = boardRepository.findTop5ByOrderByBoardIdDescCreatedAtDesc();
@@ -71,7 +56,7 @@ public class BoardRepositoryTest {
     @Test
     @DisplayName("게시글 이전글/다음글 출력")
     public void findNextPreviousBoard(){
-        List<BoardDto.BoardResponseDto>result = boardRepository.findNextPrevioustBoard(386);
+        List<BoardDto.BoardResponseDto>result = boardRepository.findNextPreviousBoard(386);
         assertThat(result).isNotNull();
         assertThat(result).hasSize(2);
     }
@@ -95,5 +80,14 @@ public class BoardRepositoryTest {
         System.out.println(list.toList());
         assertThat(list);
         System.out.println("size::"+list.stream().count());
+    }
+
+    @Test
+    @DisplayName("게시글 전체 목록")
+    public void adminBoardList(){
+        Pageable pageable = Pageable.ofSize(5);
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findAllBoardList(pageable);
+        System.out.println(list.toList());
+        assertThat(list).isNotNull();
     }
 }
