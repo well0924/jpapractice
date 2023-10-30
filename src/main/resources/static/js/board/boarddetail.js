@@ -48,42 +48,11 @@ function addDuplicatedLike(){
 	}).done(function(resp){
 		console.log(resp);
 		console.log(resp.data);
-		if(resp.data==true){
-			addLike(id);
+		if(resp.data== true){
+			alert("좋아요 취소");
 		}
-		if(resp.data==false){
-			minusLike(id);
+		if(resp.data== false){
+			alert("좋아요 추가");
 		}
-	});
-}
-
-//좋아요 +1
-function addLike(id){
-	let token = localStorage.getItem('Authorization');
-	let result = JSON.parse(token);
-	$.ajax({
-		url:'/api/like/plus/'+id,
-		type: 'post',
-		headers: {'Authorization': 'Bearer '+result.value},
-		dataTye: 'json',
-		contentType: 'application/json; charset = utf-8'
-	}).done(function(resp){
-		console.log(resp);
-		alert('좋아요가 추가되었습니다.');
-	});
-}
-//좋아요 -1
-function minusLike(id){
-	let token = localStorage.getItem('Authorization');
-	let result = JSON.parse(token);
-	$.ajax({
-		url:'/api/like/minus/'+id,
-		type:'post',
-		headers: {'Authorization': 'Bearer '+result.value},
-		dataTye:'json',
-		contentType:'application/json; charset=utf-8'
-	}).done(function(resp){
-		console.log(resp);
-		alert('좋아요가 취소 되었습니다.');
 	});
 }
