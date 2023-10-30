@@ -95,6 +95,11 @@ layout:decorator="/layout/mainlayout">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400">메인 페이지</i>
                         </a>
                     </div>
+                    <div id="mypage" style="display: none">
+                        <a class="dropdown-item" th:href="@{/page/main/mypage}">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400">마이 페이지</i>
+                        </a>
+                    </div>
                     <div class="loginPage">
                         <a class="dropdown-item" th:href="@{/page/login/loginpage}">
                             <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400">로그인</i>

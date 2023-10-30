@@ -24,6 +24,7 @@ window.onload= function (){
             $('#loginPage').css("disabled","none");//로그인 숨기기
             $('#main').css("display","block");//메인 페이지 오픈
             $('.logout').css("display","block");//로그아웃 오픈
+            $('#mypage').css("display","block")//마이페이지 오픈
         }
     }else{//토큰이 없는 경우
         console.log('익명');
