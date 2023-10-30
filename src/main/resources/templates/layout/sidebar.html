@@ -26,6 +26,7 @@
           <span>관리자 페이지</span>
         </a>
       </th:block>
+      <!--회원으로 들어왔을 때-->
       <th:block th:if="${count} != null">
         <a class="nav-link">
           <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -42,8 +43,7 @@
       <div class="sidebar-heading">
         카테고리
       </div>
-      <!-- Nav Item - Pages Collapse Menu -->
-      <!-- 블로그 카테고리 내용-->
+      <!-- 블로그 카테고리 내용 (회원)-->
       <div th:each="menu:${categoryMenu}">
         <li class="nav-item">
             <a class="nav-link collapsed" data-toggle="collapse"
