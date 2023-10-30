@@ -186,7 +186,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
         return jpaQueryFactory
                 .select(qBoard.id)
                 .from(qBoard)
-                .where(qBoard.id.goe(boardId))
+                .where(qBoard.id.gt(boardId))
                 .orderBy(qBoard.id.asc())
                 .limit(1)
                 .fetchOne();

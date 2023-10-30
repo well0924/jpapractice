@@ -43,7 +43,7 @@ layout:decorate="~{layout/mainlayout}">
        <label for="board_like">
            <button id="board_like" onclick="addDuplicatedLike()">좋아요</button>
            </br>
-           <p>[[${detail.liked}]]</p>
+           <div id="likecount"></div>
        </label>
     </div>
     <div class="form-group">
@@ -100,6 +100,8 @@ layout:decorate="~{layout/mainlayout}">
         </ul>
     </div>
 </div>
+<!--jquery-->
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" th:src="@{/js/board/boarddetail.js}"></script>
 <script type="text/javascript" th:src="@{/js/reply/reply.js}"></script>
 <!-- 댓글 화면 -->
