@@ -45,31 +45,37 @@ public class Board extends BaseTime implements Serializable {
     private String password;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdAt;
+
     //회원
     @ManyToOne(fetch =FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="useridx")
     @ToString.Exclude
     private Member writer;
+
     //댓글
     @ToString.Exclude
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
     private final List<Comment> commentlist = new ArrayList<>();
+
     //파일첨부(게시글을 삭제하면 파일도 삭제)
     //orphanRemoval 를 true 로 설정을 하면 게시글을 삭제시 파일도 같이 삭제
     //orphanRemoval 과 CaseCadeType.REMOVE 차이점 알아보기.
     @ToString.Exclude
     @OneToMany(mappedBy = "board",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
     private final List<AttachFile>attachFiles = new ArrayList<>();
+
     //좋아요
     @ToString.Exclude
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private final Set<Like> likes = new HashSet<>();
+
     //카테고리
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
+
     //해시태그
     @JoinTable(
             name = "article_hashtag",
@@ -88,21 +94,24 @@ public class Board extends BaseTime implements Serializable {
         this.boardAuthor = member.getUsername();
         this.readCount = readcount;
         this.category = category;
-        this.liked = 0;
+        this.liked = likes.size();
         this.password = password;
         this.createdAt = LocalDateTime.now();
         this.writer = member;
     }
+
     //게시글 조회수 증가
     public void countUp() {
         this.readCount ++;
     }
+
     //게시글 수정
     public void updateBoard(BoardDto.BoardRequestDto dto) {
         this.boardTitle = dto.getBoardTitle();
         this.boardContents =dto.getBoardContents();
         this.createdAt = LocalDateTime.now();
     }
+
     //첨부 파일 추가
     public void addAttach(AttachFile attachFile){
         this.attachFiles.add(attachFile);
