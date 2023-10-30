@@ -31,6 +31,7 @@ public class Like {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
+    //좋아요를 눌렀는지 확인
     private boolean likeStatus;
 
     public Like(Board board,Member member){

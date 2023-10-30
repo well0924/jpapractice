@@ -58,4 +58,10 @@ public class LikeController {
         return new Response<>(HttpStatus.OK.value(),result);
     }
 
+    @GetMapping("/count/{id}")
+    public Response<?>likeCount(@PathVariable("id") Integer boardId){
+        Integer count = likeService.LikeCount(boardId);
+        log.info(count);
+        return new Response<>(HttpStatus.OK.value(),count);
+    }
 }
