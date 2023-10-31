@@ -14,74 +14,88 @@ layout:decorate="~{layout/mainlayout}">
 </head>
 <body>
 <th:block layout:fragment= "contents">
-<form>
+<form class="card">
   <fieldset>
     <legend>글 조회</legend>
-    <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
-    <div>
-        <label for="categoryName" class="form-label mt-4">카테고리</label>
-        <p id="categoryName" th:text="${detail.categoryName}"></p>
+    <div class="card-header d-flex justify-content-between">
+      <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
+      <label for="boardid">번호 : [[${detail.boardId}]]</label>
+      <label>작성일 : [[${detail.createdAt}]]</label>
     </div>
-    <div class="form-group">
-      <label for="boardTitle" class="form-label mt-4">글 제목</label>
-      <p id="boardTitle">[[${detail.boardTitle}]]</p>
+    <div class="card-header d-flex justify-content-between">
+      <label>
+          작성자 : [[${detail.boardAuthor}]]
+      </label>
+      <div class="d-flex justify-content-end">
+        <div id="readCount" style="margin-right: 2px">
+            <i class="fas fa-solid fa-eye">[[${detail.readCount}]]</i>
+        </div>
+        <div id="likecount" style="margin-right: 2px"></div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="boardAuthor" class="form-label mt-4">글 작성자</label>
-      <p id="boardAuthor">[[${detail.boardAuthor}]]</p>
+    <div class="card-header d-flex justify-content-between">
+        <label>
+            글 제목  [[${detail.boardTitle}]]
+        </label>
     </div>
-      <section class="mb-5"></section>
-    <div class="form-group">
-      <label for="boardContents" class="form-label mt-4">글 내용</label>
-      <p id="boardContents">[[${detail.boardContents}]]</p>
+    <div class="card-body">
+        <p id="boardContents">[[${detail.boardContents}]]</p>
     </div>
-    <div class="form-group">
-      <label for="boardContents" class="form-label mt-4">조회수</label>
-      <p>[[${detail.readCount}]]</p>
-    </div>
-    <div class="form-group">
+    <div class="justify-content-center">
        <label for="board_like">
-           <button id="board_like" onclick="addDuplicatedLike()">좋아요</button>
+           <button id="board_like" class="btn btn-primary" onclick="addDuplicatedLike()">좋아요</button>
            </br>
-           <div id="likecount"></div>
        </label>
     </div>
+    <!--파일 첨부-->
     <div class="form-group">
         <label for="board_file" class="form-label mt-4">파일첨부</label>
-        <th:block th:each="attachfile:${fileList}">
+        <th:block th:unless="${#lists.isEmpty(fileList)}" th:each="attachfile:${fileList}">
             </br>
             <a th:href="@{|/api/file/${attachfile.originFileName}|}">
                 <span id="board_file" th:text="${attachfile.originFileName}"/>
             </a>
         </th:block>
+        <th:block th:if="${#lists.isEmpty(fileList)}">
+            </br>
+            첨부파일이 없습니다.
+        </th:block>
     </div>
+    <!--파일 첨부 end-->
     <!--게시글 이전글/다음글-->
-      <div class="list-group" th:each="board:${nextPrevious}">
-          <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId > detail.boardId}">
-              첫번째 글입니다.
-          </div>
-          <div th:if="${board.boardId < detail.boardId}">
-              <a th:href="@{'/page/board/detail/'+ ${board.boardId}}" class="list-group-item list-group-item-action">
-                  <span style="font-weight: bold;">이전글</span> │
-                  <div>
-                      <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
-                  </div>
-              </a>
-          </div>
-          <div th:if="${board.boardId > detail.boardId}">
-              <a th:href="@{'/page/board/detail/'+${board.boardId}}" class="list-group-item list-group-item-action">
-                  <span style="font-weight: bold;">다음글</span> │
-                  <div>
-                      <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
-                  </div>
-              </a>
-          </div>
-          <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId < detail.boardId}">
-              <p>마지막 글입니다.</p>
+    <div class="list-group" th:each="board:${nextPrevious}">
+      <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId > detail.boardId}">
+          <div>
+              <span style="font-weight: bold;">첫번째 글입니다.</span>
           </div>
       </div>
-    <button type="button" class="btn btn-primary" onclick='listpage()'>목록</button>
-    <button type="button" class="btn btn-primary" onclick='modifypage()'>수정페이지</button>
+      <div th:if="${board.boardId < detail.boardId}">
+          <a th:href="@{'/page/board/detail/'+ ${board.boardId}}" class="list-group-item list-group-item-action">
+              <span style="font-weight: bold;">이전글</span> │
+              <div>
+                  <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
+              </div>
+          </a>
+      </div>
+      <div th:if="${board.boardId > detail.boardId}">
+          <a th:href="@{'/page/board/detail/'+${board.boardId}}" class="list-group-item list-group-item-action">
+              <span style="font-weight: bold;">다음글</span> │
+              <div>
+                  <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
+              </div>
+          </a>
+      </div>
+      <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId < detail.boardId}">
+          <div>
+              <span style="font-weight: bold;">마지막 글입니다.</span>
+          </div>
+      </div>
+    </div>
+    <!--게시글 이전글/다음글 end-->
+    <div style="margin-bottom: 10px;margin-top: 10px">
+        <button type="button" class="btn btn-primary" onclick='listpage()'>목록</button>
+        <button type="button" class="btn btn-primary" onclick='modifypage()'>수정페이지</button>
+    </div>
   </fieldset>
 </form>
 <br>

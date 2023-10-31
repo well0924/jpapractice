@@ -19,8 +19,9 @@ function likeCount(){
         headers:{'Authorization': 'Bearer '+result.value}
     }).done(function(resp){
         console.log(resp.data);
-
-        $('#likecount').html(resp.data);
+        let html = "";
+        html +='<i class="fas fa-solid fa-heart">'+resp.data+'</i>';
+        $('#likecount').html(html);
     });
 }
 //좋아요 중복기능

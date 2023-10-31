@@ -32,7 +32,7 @@ function getCommentlist(){
 
 				 html +='<div class="commentArea" style="border-bottom:1px solid darkgray; margin-bottom: 15px;">';
 				 	html +='<div class="commentInfo'+resp.data[i].replyId+'">';
-				 	html +='댓글번호:'+resp.data[i].replyId+'/작성자:'+resp.data[i].replyWriter;
+					html +='작성자:'+resp.data[i].replyWriter;
 				 	html +='</br>';
 	             	html +='<div class="commentcontent'+resp.data[i].replyId+'">';
 	             	html += '<p>내용:'+resp.data[i].replyContents+'</p>';
@@ -42,7 +42,6 @@ function getCommentlist(){
 	             	html +='</div>';
 	             	html +='</div>';
 	             html +='</div>';
-	             html +='<hr>';
 	             html +='</br>';
 			}	
 		}else{
