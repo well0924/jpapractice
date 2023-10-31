@@ -161,6 +161,12 @@ public class CommentService {
 		}
 	}
 
+	//회원이 작성한 댓글 목록
+	@Transactional(readOnly = true)
+	public Page<CommentDto.CommentResponseDto>getMyComment(String username,Pageable pageable) throws Exception {
+		return repository.getMyComment(username,pageable);
+	}
+
 	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

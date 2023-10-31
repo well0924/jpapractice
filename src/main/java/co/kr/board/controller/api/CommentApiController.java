@@ -89,6 +89,14 @@ public class CommentApiController {
 		return new Response<>(HttpStatus.NO_CONTENT.value(), null);
 	}
 
+	//회원이 작성한 댓글
+	@Secured({"ROLE_ADMIN","ROLE_USER"})
+	@GetMapping("/my-comment/{username}")
+	public Response<Page<CommentDto.CommentResponseDto>>getMyComment(@PathVariable("username")String username,@PageableDefault(size = 5,sort = "id",direction = Sort.Direction.DESC) Pageable pageable)throws Exception{
+		Page<CommentDto.CommentResponseDto>commentList = service.getMyComment(username,pageable);
+		return new Response<>(HttpStatus.OK.value(),commentList);
+	}
+
 	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

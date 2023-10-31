@@ -45,7 +45,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
         return PageableExecutionUtils.getPage(list.fetch(),pageable,list::fetchCount);
     }
 
-    //댓글 목록
+    //댓글 목록(게시글 조회 화면)
     @Override
     public List<CommentDto.CommentResponseDto> findCommnentList(Integer boardId) {
         List<Comment>commentList = jpaQueryFactory
@@ -59,13 +59,32 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
     //최근에 작성한 댓글 5개
     @Override
     public List<CommentDto.CommentResponseDto> findTop5ByOrderByReplyIdCreatedAtDesc() {
+
         List<Comment> list = jpaQueryFactory
                 .select(qComment)
                 .from(qComment)
                 .orderBy(qComment.id.desc(),qComment.createdAt.desc())
                 .limit(5)
                 .fetch();
+
         return list.stream().map(CommentDto.CommentResponseDto::new).collect(Collectors.toList());
+    }
+
+    //회원이 작성한 댓글
+    @Override
+    public Page<CommentDto.CommentResponseDto> getMyComment(String username,Pageable pageable) throws Exception {
+
+        JPAQuery<CommentDto.CommentResponseDto>list = jpaQueryFactory
+                .select(Projections.constructor(CommentDto.CommentResponseDto.class,qComment))
+                .from(qComment)
+                .leftJoin(qComment.member,qMember)
+                .where(qComment.member.username.eq(username))
+                .orderBy(qComment.id.desc())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset());
+
+        return PageableExecutionUtils
+                .getPage(list.fetch(),pageable,list::fetchCount);
     }
 
     //댓글 정렬
