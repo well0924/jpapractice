@@ -67,11 +67,16 @@
                     <tbody th:unless="${#lists.isEmpty(list)}"th:each="list:${list}">
                         <tr>
                             <td>
+                                <input type="hidden" id="boardPassword" name="password" th:value="${list.password}">
                                 <input type="checkbox" id="selectCheck" name="checkboxed" th:value="${list.boardId}" onclick="checkBoxClicked()">
                             </td>
                             <td th:text="${list.boardId}"></td>
                             <td>
                                 <a th:href="@{'/page/board/detail/'+${list.boardId}}" th:text="${list.boardTitle}"></a>
+                            </td>
+                            <!--비밀번호가 있는 경우에 표시하기.-->
+                            <td th:if="${list.password !=null}">
+                                <i class="fas fa-solid fa-eye-low-vision"></i>
                             </td>
                             <td th:text="${list.boardAuthor}"></td>
                             <td th:text="${list.createdAt}"></td>
@@ -207,6 +212,7 @@
                             data:JSON.stringify(boardArray),
                             contentType:'application/json'
                         }).done(function(status){
+                            console.log(status);
                             alert('삭제되었습니다.');
                             location.href='/page/member/board/list';
                         }).fail(function(err){
@@ -216,7 +222,24 @@
                 }
                 //게시글 비밀글로 전환하기.
                 function convertSecretMessage(){
+                    let boardId = $('#selectCheck').val();
+                    let password = $('#boardPassword').val();
                     console.log("/?????");
+
+                    $.ajax({
+                        url:'/api/board/change-board/'+boardId,
+                        type:'Post',
+                        data:JSON.stringify(password),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8"
+                    }).done(function(resp){
+                        console.log(resp.data);
+                        if(resp.data===null){
+                            alert('비밀글로 변경 되었습니다.');
+                        }else{
+                            alert('비밀번호를 초기화 했습니다.');
+                        }
+                    });
                 }
             </script>
         </div>
