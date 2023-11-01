@@ -30,6 +30,8 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final StringPath boardContents = createString("boardContents");
 
+    public final ListPath<Scrap, QScrap> boardScrap = this.<Scrap, QScrap>createList("boardScrap", Scrap.class, QScrap.class, PathInits.DIRECT2);
+
     public final StringPath boardTitle = createString("boardTitle");
 
     public final QCategory category;
