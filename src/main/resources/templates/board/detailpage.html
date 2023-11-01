@@ -41,12 +41,6 @@ layout:decorate="~{layout/mainlayout}">
     <div class="card-body">
         <p id="boardContents">[[${detail.boardContents}]]</p>
     </div>
-    <div class="justify-content-center">
-       <label for="board_like">
-           <button id="board_like" class="btn btn-primary" onclick="addDuplicatedLike()">좋아요</button>
-           </br>
-       </label>
-    </div>
     <!--파일 첨부-->
     <div class="form-group">
         <label for="board_file" class="form-label mt-4">파일첨부</label>
@@ -94,6 +88,8 @@ layout:decorate="~{layout/mainlayout}">
     <!--게시글 이전글/다음글 end-->
     <div style="margin-bottom: 10px;margin-top: 10px">
         <button type="button" class="btn btn-primary" onclick='listpage()'>목록</button>
+        <button type="button" class="btn btn-primary" onclick="addScrap()">스크랩</button>
+        <button id="board_like" class="btn btn-primary" onclick="addDuplicatedLike()">좋아요</button>
         <button type="button" class="btn btn-primary" onclick='modifypage()'>수정페이지</button>
     </div>
   </fieldset>
@@ -118,6 +114,25 @@ layout:decorate="~{layout/mainlayout}">
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" th:src="@{/js/board/boarddetail.js}"></script>
 <script type="text/javascript" th:src="@{/js/reply/reply.js}"></script>
+<script>
+    //게시물 스크랩 추가하기.
+    function addScrap(){
+        let id = document.getElementById("boardid");
+        console.log(id);
+        $.ajax({
+            url:'/api/scrap/duplicate/'+id,
+            type:'get',
+            dataType:'json'
+        }).done(function(resp){
+            console.log(resp.data);
+            if(resp.data ===false){
+                alert('게시글을 스크랩했습니다.');
+            }else{
+                alert('이미 스크랩한 글입니다.');
+            }
+        });
+    }
+</script>
 <!-- 댓글 화면 -->
 <div class="container">
     <div id="replies"></div>
