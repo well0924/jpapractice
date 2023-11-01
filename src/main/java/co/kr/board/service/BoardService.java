@@ -1,8 +1,11 @@
 package co.kr.board.service;
 
 import java.io.File;
+import java.security.SecureRandom;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import co.kr.board.domain.*;
 import co.kr.board.domain.Const.SearchType;
@@ -108,7 +111,7 @@ public class BoardService{
     /*
      * 글 목록 단일 조회 -> 수정 필요
      * @Param boardId
-     * @Exception :게시글이 존재하지 않음.(NOT_BOARDDETAIL)
+     * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
     */
 	@Transactional
 	public BoardResponseDto getBoard(Integer boardId){
@@ -129,7 +132,7 @@ public class BoardService{
 	 * 게시글 삭제 (파일 삭제 포함)
 	 * @Param boardId 게시물 번호
 	 * @Param Member 회원 객체
-	 * @Exception : 회원글이 존재하지 않은 경우 NOT_BOARDDETAIL
+	 * @Exception : 회원글이 존재하지 않은 경우 NOT_BOARD_DETAIL
 	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
@@ -159,7 +162,7 @@ public class BoardService{
 	 * @Param boardId 게시물 번호
 	 * @Param Member 회원 객체
 	 * @Exception : 로그인을 하지 않은경우 ONLY_USER
-	 * @Exception : 게시글이 존재하지 않습니다. NOT_BOARDDETAIL
+	 * @Exception : 게시글이 존재하지 않습니다. NOT_BOARD_DETAIL
 	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	*/
 	@Transactional
@@ -183,8 +186,8 @@ public class BoardService{
 	/*
 	 * 회원이 작성한 글목록
 	 * @Param String username 회원의 아이디
-	 * @Param Pagaeable 페이징 객체
-	 * @retrun list
+	 * @Param Pageable 페이징 객체
+	 * @return list
 	 */
 	@Transactional
 	public Page<BoardResponseDto>memberArticle(String username, Pageable pageable){
@@ -226,13 +229,15 @@ public class BoardService{
 	
 	/*
 	 * 게시글 선택 삭제
+	 * 게시글 관리자 페이지에서 게시글을 선택삭제 할 수 있는 기능
 	 * @param boardId 게시글 번호들
 	 */
 	@Transactional
 	public void boardSelectDelete(List<String>boardId){
-		for(int i=0;i<boardId.size();i++){
-			repos.deleteAllById(boardId);
-		}
+		IntStream
+				.range(0, boardId.size())
+				.mapToObj(i -> boardId)
+				.forEach(repos::deleteAllById);
 	}
 
 	/*
@@ -244,12 +249,76 @@ public class BoardService{
 	}
 
 	/*
-	  * 회원 정보 가져오기.
+	 * 비밀글 전환
+	 * 게시글 관리자 페이지에서 공개글을 비밀글로 변환하는 기능
+	 */
+	public void changeSecretBoard(Integer id, BoardDto.BoardRequestDto dto){
+		//랜덤으로 4자리 비밀번호를 발급
+		String randomPassword = getRandomPassword(4);
+		Optional<Board>detail = Optional
+				.ofNullable(repos
+						.findById(id)
+						.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
+
+		if(detail.get().getPassword()==null||detail.get().getPassword()==""){
+			dto.setPassword(randomPassword);
+			detail.get().passwordChange(dto);
+			repos.save(detail.get());
+			log.info("result::"+detail.get().getPassword());
+		}
+	}
+
+	/*
+	 * 비밀번호 초기화
+	 * 게시글 관리자 페이지에서 비밀번호를 초기화하는 기능
+ 	 */
+	public void passwordReset(Integer boardId, BoardDto.BoardRequestDto dto){
+		Optional<Board> board = Optional
+				.ofNullable(repos
+						.findById(boardId)
+						.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
+
+		//비밀번호가 있으면 비밀번호를 초기화
+		if(board.get().getPassword()!=null){
+			dto.setPassword(null);
+			board.get().passwordChange(dto);
+			repos.save(board.get());
+			log.info("초기화 값::"+board.get().getPassword());
+		}
+	}
+
+	//비밀번호 여부조회
+	@Transactional(readOnly = true)
+	public String checkPassword(Integer boardId){
+		return repos.boardPasswordCheck(boardId);
+	}
+
+
+	//랜덤 비밀번호 발급(SecuredRandom)
+	public String getRandomPassword(int size) {
+		char[] charSet = new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '@', '#', '$', '%', '^', '&' };
+
+		StringBuffer sb = new StringBuffer();
+		SecureRandom sr = new SecureRandom();
+
+		sr.setSeed(new Date().getTime());
+
+		int idx = 0;
+		int len = charSet.length;
+		for (int i=0; i<size; i++) {
+			idx = sr.nextInt(len);// 강력한 난수를 발생시키기 위해 SecureRandom 을 사용한다.
+			sb.append(charSet[idx]);
+		}
+		return sb.toString();
+	}
+
+	/*
+	 * 회원 정보 가져오기.
 	 */
 	private Member getMember(){
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getName().toString();
+		String username = authentication.getName().toString();
 		log.info(username);
 		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 
@@ -263,7 +332,8 @@ public class BoardService{
 	  * 회원 정보 일치 확인
 	  * @param boardId 게시물 번호
 	  * @param Member 회원객체
-	  * @Exception : 로그인을 하지 않은경우 ONLY_USER
+	  * @Exception : 로그인을 하지 않은경우 NOT_BOARD_DETAIL
+	  * @Exception : 로그인을 하지 않은경우 NOT_USER
 	 */
 	public Board validateMember(Integer boardId,Member member){
 
@@ -272,7 +342,7 @@ public class BoardService{
 		String boardWriter = board.getBoardAuthor();
 		String loginUser = member.getUsername();
 
-		if(boardWriter.equals(loginUser)){
+		if(!boardWriter.equals(loginUser)){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}
 		return board;

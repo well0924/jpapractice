@@ -1,10 +1,12 @@
 package co.kr.board.testboard;
 
 import co.kr.board.Config.TestQueryDslConfig;
+import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
+import co.kr.board.service.BoardService;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +59,8 @@ public class BoardRepositoryTest {
     @Test
     @DisplayName("게시글 이전글/다음글 출력")
     public void findNextPreviousBoard(){
-        List<BoardDto.BoardResponseDto>result = boardRepository.findNextPreviousBoard(386);
+        List<BoardDto.BoardResponseDto>result = boardRepository.findNextPreviousBoard(382);
+        System.out.println("목록::"+result);
         assertThat(result).isNotNull();
         assertThat(result).hasSize(2);
     }
@@ -89,5 +93,13 @@ public class BoardRepositoryTest {
         Page<BoardDto.BoardResponseDto>list = boardRepository.findAllBoardList(pageable);
         System.out.println(list.toList());
         assertThat(list).isNotNull();
+    }
+
+    @Test
+    @DisplayName("게시글 비밀번호 여부")
+    public void passwordCheck(){
+        Optional<Board>detail = boardRepository.findById(1);
+        String result = boardRepository.boardPasswordCheck(detail.get().getId());
+        System.out.println("결과값::"+result);
     }
 }

@@ -29,6 +29,8 @@ import java.util.List;
 public class BoardApiController {
 	private final BoardService service;
 
+
+
 	//게시글 목록(카테고리 + 페이징 + 정렬)
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
 	@GetMapping("/list/{cname}")
@@ -133,7 +135,7 @@ public class BoardApiController {
 		service.boardSelectDelete(boardId);
 		return new Response<>(HttpStatus.NO_CONTENT.value(),null);
 	}
-
+	
 	//게시물 비밀번호 확인
 	@GetMapping("/password-check/{password}/{id}")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
@@ -141,4 +143,21 @@ public class BoardApiController {
 		BoardDto.BoardResponseDto responseDto = service.passwordCheck(password,boardId);
 		return new Response<>(HttpStatus.OK.value(),responseDto);
 	}
+	
+	//게시글 비밀글로 전환 및 초기화
+	@PostMapping("/change-board/{id}")
+	@Secured({"ROLE_USER"})
+	public Response<?>changeBoard(@PathVariable("id")Integer boardId,@RequestBody BoardDto.BoardRequestDto dto){
+		String result = service.checkPassword(boardId);
+
+		if(result == null){//값이 null인 경우
+			//비밀글로 변경하기. (임시 비밀번호 4자리 발급)
+			service.passwordReset(boardId,dto);
+		} else {//비밀번호가 있는 경우
+			//비밀번호가 있으면 비밀번호를 리셋 
+			service.changeSecretBoard(boardId,dto);
+		}
+		return new Response<>(HttpStatus.OK.value(),result);
+	}
+
 }
