@@ -86,6 +86,11 @@ public class Board extends BaseTime implements Serializable {
     @ToString.Exclude
     private Set<HashTag> hashtags = new LinkedHashSet<>();
 
+    //스크랩
+    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Scrap>boardScrap = new ArrayList<>();
+
     @Builder
     public Board(Integer boardId,String boardTitle,String boardAuthor,String boardContents,Integer readcount,String password,Category category,LocalDateTime createdat,Member member) {
         this.id = boardId;
@@ -109,7 +114,13 @@ public class Board extends BaseTime implements Serializable {
     public void updateBoard(BoardDto.BoardRequestDto dto) {
         this.boardTitle = dto.getBoardTitle();
         this.boardContents =dto.getBoardContents();
+        this.password = dto.getPassword();
         this.createdAt = LocalDateTime.now();
+    }
+    
+    //비밀번호 수정
+    public void passwordChange(BoardDto.BoardRequestDto dto){
+        this.password = dto.getPassword();
     }
 
     //첨부 파일 추가
