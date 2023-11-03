@@ -1,16 +1,13 @@
 package co.kr.board.controller.view;
 
-import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.domain.Dto.MemberDto;
-import co.kr.board.domain.SearchType;
 import co.kr.board.service.BoardService;
 import co.kr.board.service.CommentService;
 import co.kr.board.service.MemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -69,7 +66,7 @@ public class MemberController {
         return mv;
     }
 
-    //어드민 페이지
+    //어드민 페이지(회원 목록)
     @GetMapping("/adminlist")
     public ModelAndView adminList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5) Pageable pageable)throws Exception{
 
@@ -92,11 +89,10 @@ public class MemberController {
 
     //회원 조회
     @GetMapping("/detail/{id}")
-    public ModelAndView memberDetail(@PathVariable(value="id")Integer userIdx, MemberDto.MemeberResponseDto dto){
+    public ModelAndView memberDetail(@PathVariable(value="id")Integer userIdx){
 
         ModelAndView mv = new ModelAndView();
-
-        dto = service.getMember(userIdx);
+        MemberDto.MemeberResponseDto dto = service.getMember(userIdx);
 
         mv.addObject("detail", dto);
         mv.setViewName("login/membermodify");
@@ -146,7 +142,7 @@ public class MemberController {
     @GetMapping("/category/list")
     public ModelAndView memberCategoryList(){
         ModelAndView mv = new ModelAndView();
-
+        mv.setViewName("/admin/categoryManagerList");
         return mv;
     }
 }

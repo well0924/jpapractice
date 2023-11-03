@@ -3,11 +3,11 @@
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorate="~{layout/mainlayout}">
 <head>
 <meta charset="UTF-8">
 <title>회원 아이디 찾기</title>
-<th:block th:replace="/layout/script ::scriptfragment"></th:block>
 <style type="text/css">
 .col-sm-3{
 	margin-top: 10px;
@@ -21,6 +21,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 </style>
 </head>
 <body>
+<th:block layout:fragment="contents">
 <div class="row">
 	<div class="col-sm-3"></div>
 	<div class="col-sm-6">
@@ -52,8 +53,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 		</div>
 	</div>
 	<div class="col-sm-3"></div>
-</div>	
+</div>
+</th:block>
 <script type="text/javascript" th:src="@{/js/member/userfindid.js}"></script>
-<th:block th:replace="/layout/footer :: footerfragment"></th:block>
 </body>
 </html>

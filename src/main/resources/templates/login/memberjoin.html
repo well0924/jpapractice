@@ -3,14 +3,15 @@
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+layout:decorate="~{layout/mainlayout}">
 <head>
 <meta charset="UTF-8">
 <link rel="shortcut icon" href="#">
 <title>회원가입</title>
-<th:block th:replace="/layout/script ::scriptfragment"></th:block>
 </head>
 <body>
+<th:block layout:fragment="contents">
 <form name="registerForm" class="form-signin" action="" method="post">
     <h1 class="h3 mb-3 fw-normal">회원가입</h1>
     <hr>
@@ -58,7 +59,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         <a type="button" style="color:white" class="w-100 btn btn-lg btn-secondary" onclick="window.history.back();">취소</a>
     </div>
 </form>
-<th:block th:replace="/layout/footer :: footerfragment"></th:block>
+</th:block>
 <script type="text/javascript" th:src="@{/js/member/memberjoin.js}"></script>
 </body>
 </html>
