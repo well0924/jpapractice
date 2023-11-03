@@ -102,7 +102,7 @@ public class MemberApiController {
         return new Response<>(HttpStatus.OK.value(),userid);
     }
     //비밀번호 변경
-    @PutMapping("/passwordchange/{name}")
+    @PutMapping("/password-change/{name}")
     public Response<Integer>passwordChange(@PathVariable(value = "name")String username,
                                            @RequestBody MemberDto.MemberRequestDto dto){
         int result = service.passwordchange(username,dto);
