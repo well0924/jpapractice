@@ -110,29 +110,9 @@ layout:decorate="~{layout/mainlayout}">
         </ul>
     </div>
 </div>
-<!--jquery-->
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" th:src="@{/js/board/boarddetail.js}"></script>
 <script type="text/javascript" th:src="@{/js/reply/reply.js}"></script>
-<script>
-    //게시물 스크랩 추가하기.
-    function addScrap(){
-        let id = document.getElementById("boardid");
-        console.log(id);
-        $.ajax({
-            url:'/api/scrap/duplicate/'+id,
-            type:'get',
-            dataType:'json'
-        }).done(function(resp){
-            console.log(resp.data);
-            if(resp.data ===false){
-                alert('게시글을 스크랩했습니다.');
-            }else{
-                alert('이미 스크랩한 글입니다.');
-            }
-        });
-    }
-</script>
+<script type="text/javascript" th:src="@{/js/scrap/scrap.js}"></script>
 <!-- 댓글 화면 -->
 <div class="container">
     <div id="replies"></div>
