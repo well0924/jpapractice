@@ -1,11 +1,8 @@
-package co.kr.board.config.redis;
+package co.kr.board.config.Redis;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
-
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,14 +31,5 @@ public class RedisService {
     @Transactional
     public void setValuesWithTimeout(String key, String value, long timeout){
         redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MILLISECONDS);
-    }
-
-    //refreshToken 값 확인하기.
-    public void checkRefreshToken(String username, String refreshToken) {
-        String redisRT = this.getValues(username);
-
-        if(!refreshToken.equals(redisRT)) {
-            throw new CustomExceptionHandler(ErrorCode.TOKEN_REFRESH_EXPIRED);
-        }
     }
 }
