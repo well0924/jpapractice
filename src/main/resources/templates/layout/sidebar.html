@@ -38,7 +38,7 @@
     <hr class="sidebar-divider">
     <!-- Heading -->
     <!-- 블로그 카테고리 내용 (회원)-->
-    <th:block th:if="${categoryMenu}">
+    <th:block th:if="${categoryMenu} != null">
       <div class="sidebar-heading">
         카테고리
       </div>
@@ -64,9 +64,34 @@
         </li>
       </div>
     </th:block>
+    <th:block th:if="${scrapList} !=null">
+      <div class="sidebar-heading">
+        마이 페이지
+      </div>
+      <li class="nav-item">
+        <a class="nav-link collapsed" th:href="@{|/page/member/detail/|}">
+          <span>회원 정보</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" th:href="@{/page/mypage/list}">
+          <span>스크랩 한 글</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" th:href="@{|/page/mypage/my-artice|}">
+          <span>내가 작성한 글</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" th:href="@{|/page/mypage/my-comment|}">
+          <span>내가 작성한 댓글</span>
+        </a>
+      </li>
+    </th:block>
     <!--블로그 카테고리 end-->
     <!--관리자 페이지로 왔을 때-->
-    <div th:if="${categoryMenu}==null">
+    <th:block th:if="${categoryMenu}== null and ${scrapList} == null">
       <div class="sidebar-heading">
         관리자
       </div>
@@ -90,7 +115,7 @@
           <span>방문자 통계</span>
         </a>
       </li>
-    </div>
+    </th:block>
     <!--관리자 페이지 end-->
     <!-- Divider -->
     <hr class="sidebar-divider">
