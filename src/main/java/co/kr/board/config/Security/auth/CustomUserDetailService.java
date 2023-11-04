@@ -1,8 +1,8 @@
-package co.kr.board.config.security.auth;
+package co.kr.board.config.Security.auth;
 
 import java.util.Optional;
 
-import co.kr.board.config.redis.CacheKey;
+import co.kr.board.config.Redis.CacheKey;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

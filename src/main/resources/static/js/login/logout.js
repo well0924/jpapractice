@@ -12,6 +12,7 @@ function logoutProc(){
         //로그아웃이 되면 로컬 스토리지에 있는 at를 삭제
         alert('로그아웃 되었습니다.');
         localStorage.clear();
+        deleteCookie('refresh-token');
         location.href="/page/main/mainpage";
     });
 }

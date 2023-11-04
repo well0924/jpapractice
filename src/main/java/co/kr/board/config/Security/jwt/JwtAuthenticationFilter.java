@@ -1,4 +1,4 @@
-package co.kr.board.config.security.jwt;
+package co.kr.board.config.Security.jwt;
 
 import java.io.IOException;
 

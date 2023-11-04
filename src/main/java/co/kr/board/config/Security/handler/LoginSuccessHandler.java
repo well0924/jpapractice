@@ -1,4 +1,4 @@
-package co.kr.board.config.security.handler;
+package co.kr.board.config.Security.handler;
 
 import java.io.IOException;
 import java.util.Set;

@@ -1,11 +1,11 @@
-package co.kr.board.config.security.jwt;
+package co.kr.board.config.Security.jwt;
 
 import java.security.Key;
 import java.util.Date;
 
-import co.kr.board.config.redis.RedisService;
-import co.kr.board.config.security.auth.CustomUserDetailService;
-import co.kr.board.config.security.auth.CustomUserDetails;
+import co.kr.board.config.Redis.RedisService;
+import co.kr.board.config.Security.auth.CustomUserDetailService;
+import co.kr.board.config.Security.auth.CustomUserDetails;
 import co.kr.board.domain.Dto.TokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

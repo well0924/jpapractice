@@ -1,7 +1,7 @@
-package co.kr.board.config.security.auth;
+package co.kr.board.config.Security.auth;
 
-import co.kr.board.config.redis.RedisService;
-import co.kr.board.config.security.jwt.JwtTokenProvider;
+import co.kr.board.config.Redis.RedisService;
+import co.kr.board.config.Security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.TokenDto;
 import lombok.AllArgsConstructor;

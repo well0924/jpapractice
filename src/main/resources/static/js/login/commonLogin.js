@@ -4,7 +4,7 @@
 window.onload= function (){
     //로컬스토리지에 토큰값이 있는 경우
     let tokenId = localStorage.getItem('Authorization');
-
+    document.cookie;
     let result = tokenParse(tokenId);
 
     if(tokenId){
@@ -14,7 +14,7 @@ window.onload= function (){
         let role = result.role;
         let expire = result.exp;
         let expireTime = new Date(expire *1000);
-
+        console.log(document.cookie);
         console.log("아이디:"+username);
         console.log("권한:"+role);
         console.log("유효기간:"+expire);
@@ -125,39 +125,57 @@ function validTokenExpiredTime(exp){
         console.log(TokenValue.value);
         if(differentTime <120000){ //토큰의 유효기간이 만료되기 2분전에 주기적으로 재발급을 실행.
             console.log("재발급을 시작");
-            reissue(TokenValue.value);
-            console.log("재발급 끗.");
+            //ajax를 사용해서 rt와 at를 헤더에 넣어서 토큰을 재발급을 하고 로그인 절차와 똑같이 한다.->순수 자바스크립트 코드로 변경하기.
+            console.log(TokenValue);
+            console.log("액세스토큰::"+TokenValue.value);
+            var refreshToken = getRefreshToken();
+            console.log("리프레시토큰::"+refreshToken);
+            $.ajax({
+                url:'/api/login/reissue',
+                type:'post',
+                xhrFields: {
+                    withCredentials: true
+                },
+                headers:{
+                    'Authorization':'Bearer '+TokenValue.value,
+                    'Cookie': 'refresh-token='+refreshToken
+                },
+                dataTye:'json'
+            }).always(function(data){
+                console.log('재발급성공!!');
+                //작동이 되면 at를 로컬 스토리지에 저장을 하고 rt는 쿠키에 저장을 한다.
+                console.log(data);
+                //기존에 있던 로컬스토리지에 있는 값을 제거
+                localStorage.clear();
+                let accessToken = tokenParse(data.accessToken);
+                //받은 데이터에 at를 로컬 스토리지에 저장하기.
+                setItemWithExpireTime('Authorization',data.accessToken,accessToken.exp);
+                //rt는 쿠키에 저장
+                console.log("재발급 끗. 토큰저장!");
+            }).fail(function(err){
+                console.log(err);
+            });
         }else{
             console.log("토큰 유효");
         }
     }
 }
 
-/*
- * 토큰 재발급
- */
-function reissue(token){
-    //저장된 accessToken이 유효한지 확인
-    console.log('재발급');
-    //ajax를 사용해서 rt와 at를 헤더에 넣어서 토큰을 재발급을 하고 로그인 절차와 똑같이 한다.->순수 자바스크립트 코드로 변경하기.
-    $.ajax({
-        url:'/api/login/reissue',
-        type:'post',
-        headers:{'Authorization ': token},
-        dataTye:'json',
-        contentType:'application/json; charset=UTF-8'
-    }).done(function(data,xhr,request){
-        alert('재발급');
-        console.log('재발급');
-        //작동이 되면 at를 로컬 스토리지에 저장을 하고 rt는 쿠키에 저장을 한다.
-        console.log(data);
-        console.log(xhr);
-        console.log(request.getResponseHeader('Authorization'));
-        let tokenResult = tokenParse(data.accessToken);
-        console.log(tokenResult.exp);
-        setItemWithExpireTime('Authorization',data.accessToken,tokenResult.exp);
-        let token = localStorage.getItem('Authorization');
-        console.log(token);
-    });
-    console.log("재발급 끗");
+//쿠키에 저장된 값 가져오기.
+function getRefreshToken() {
+    // document.cookie로부터 쿠키 값을 읽어옵니다.
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        // "refresh-token="으로 시작하는 쿠키를 찾아 해당 값을 반환합니다.
+        if (cookie.startsWith('refresh-token=')) {
+            return cookie.substring('refresh-token='.length);
+        }
+    }
+    return null;
+}
+
+//쿠키값 삭제하기.
+function deleteCookie(name) {
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
