@@ -5,6 +5,8 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import co.kr.board.domain.*;
@@ -37,8 +39,8 @@ public class BoardService{
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
-
 	private final MemberRepository memberRepository;
+	private final HashTagService hashTagService;
 	private final FileHandler fileHandler;
 
 	@Transactional(readOnly = true)
@@ -80,6 +82,7 @@ public class BoardService{
 		Member member = getMember();
 
 		//해시태그 적용
+		Set<HashTag> hashtags = renewHashtagsFromContent(dto.getBoardContents());
 
 		//카테고리 적용
 		Category category = categoryRepository.findById(categoryId)
@@ -96,9 +99,10 @@ public class BoardService{
 				.category(category)
 				.createdat(dto.getCreatedAt())
 				.build();
-
+		//파일 첨부
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
-
+		//해시태그
+		board.addHashTags(hashtags);
 		log.info(fileList);
 
 		int InsertResult = repos.save(board).getId();
@@ -141,6 +145,10 @@ public class BoardService{
 		Member member = getMember();
 
 		Board board = validateMember(boardId,member);
+		//해시 태그의 번호를 추출
+		Set<Integer> hashtagIds = board.getHashtags().stream()
+				.map(HashTag::getId)
+				.collect(Collectors.toUnmodifiableSet());
 
 		List<AttachDto>list = fileService.filelist(boardId);
 
@@ -153,7 +161,10 @@ public class BoardService{
 				file.delete();
 			}
 		}
+		//게시글 삭제
 		repos.deleteById(board.getId());
+		//해시태그 삭제
+		hashtagIds.forEach(hashTagService::deleteHashtagWithoutArticles);
 	}
 	
     /*
@@ -173,6 +184,17 @@ public class BoardService{
 		Board boardDetail =	validateMember(boardId,member);
 
 		boardDetail.updateBoard(dto);
+
+		Set<Integer> hashtagIds = boardDetail.getHashtags().stream()
+				.map(HashTag::getId)
+				.collect(Collectors.toUnmodifiableSet());
+
+		boardDetail.clearHashTag();
+		//해시태그 삭제
+		hashtagIds.forEach(hashTagService::deleteHashtagWithoutArticles);
+		//새롭게 작성한 해시태그 추가
+		Set<HashTag> hashtags = renewHashtagsFromContent(dto.getBoardContents());
+		boardDetail.addHashTags(hashtags);
 
 		int updateResult = boardDetail.getId();
 
@@ -264,7 +286,6 @@ public class BoardService{
 			dto.setPassword(randomPassword);
 			detail.get().passwordChange(dto);
 			repos.save(detail.get());
-			log.info("result::"+detail.get().getPassword());
 		}
 	}
 
@@ -370,5 +391,22 @@ public class BoardService{
 			}
 		}
 		return result;
+	}
+
+	//해시태그
+	private Set<HashTag> renewHashtagsFromContent(String content) {
+		Set<String> hashtagNamesInContent = hashTagService.parseHashtagNames(content);
+		Set<HashTag> hashtags = hashTagService.findHashtagsByNames(hashtagNamesInContent);
+		Set<String> existingHashtagNames = hashtags.stream()
+				.map(HashTag::getHashtagName)
+				.collect(Collectors.toUnmodifiableSet());
+
+		hashtagNamesInContent.forEach(newHashtagName -> {
+			if (!existingHashtagNames.contains(newHashtagName)) {
+				hashtags.add(HashTag.hashTag(newHashtagName));
+			}
+		});
+
+		return hashtags;
 	}
 }
