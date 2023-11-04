@@ -27,7 +27,7 @@ public class AuthService {
 
     private final String SERVER = "Server";
 
-
+    //로그인 -> jwt로그인시 방문자로 기록하기.
     @Transactional
     public TokenDto login(LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -38,12 +38,6 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
-    }
-
-    // AT가 만료일자만 초과한 유효한 토큰인지 검사
-    public boolean validate(String requestAccessTokenInHeader) {
-        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
-        return jwtTokenProvider.validateAccessTokenOnlyExpired(requestAccessToken); // true = 재발급
     }
 
     // 토큰 재발급: validate 메서드가 true 반환할 때만 사용 -> AT, RT 재발급
@@ -76,6 +70,7 @@ public class AuthService {
         // 토큰 재발급 및 Redis 업데이트
         redisService.deleteValues("RT(" + SERVER + "):" + principal); // 기존 RT 삭제
         TokenDto tokenDto = jwtTokenProvider.createToken(principal, authorities);
+        log.info("result::"+tokenDto);
         saveRefreshToken(SERVER, principal, tokenDto.getRefreshToken());
         return tokenDto;
     }

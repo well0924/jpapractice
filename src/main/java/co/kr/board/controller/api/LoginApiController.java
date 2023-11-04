@@ -59,7 +59,7 @@ public class LoginApiController {
 					.secure(true)
 					.path("/")
 					.build();
-
+			log.info("쿠키값 저장::"+responseCookie);
 			return ResponseEntity
 					.status(HttpStatus.OK)
 					.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
@@ -73,7 +73,7 @@ public class LoginApiController {
 					.maxAge(0)
 					.path("/")
 					.build();
-
+			log.info("401인경우:"+responseCookie);
 			return ResponseEntity
 					.status(HttpStatus.UNAUTHORIZED)
 					.header(HttpHeaders.SET_COOKIE, responseCookie.toString())

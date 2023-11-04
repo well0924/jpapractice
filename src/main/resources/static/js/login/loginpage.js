@@ -16,14 +16,15 @@ function loginproc(){
         data:JSON.stringify(logindata),
         dataTye:"json",
         contentType:'application/json; charset=utf-8'
-    }).done(function(data,xhr,request){
-        console.log(data);
-        console.log(request.getResponseHeader('Authorization'));
-        let ttl = new Date(1698604892);
-        //at를 로컬스토리지에 저장하기.
-        setItemWithExpireTime('Authorization',data.accessToken,ttl);
-        let token = localStorage.getItem('Authorization');
-        loginSuccessProc(token);
+    }).done(function(data){
+        //토큰을 파싱하고 로컬스토리지에 토큰값 저장하기.
+        let tokenResult = tokenParse(data.accessToken);
+        setItemWithExpireTime('Authorization',data.accessToken,tokenResult.exp);
+        //토큰값 가져오기.
+        let token = getItems();
+        console.log(token);
+        //권한에 따른 페이지 이동
+        loginSuccessProc(token.value);
     }).fail(function (error) {
         console.log(error);
         alert("존재하지 않는 회원입니다.");

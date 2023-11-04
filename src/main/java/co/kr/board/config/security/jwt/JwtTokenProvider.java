@@ -93,12 +93,14 @@ public class JwtTokenProvider implements InitializingBean{
 			}
 		}
 
+		//인증값 가져오기.
 		public Authentication getAuthentication(String token) {
 			String username = getClaims(token).get(USERID_KEY).toString();
 			CustomUserDetails userDetailsImpl = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
 			return new UsernamePasswordAuthenticationToken(userDetailsImpl, "", userDetailsImpl.getAuthorities());
 		}
 
+		//기간 확인하기.
 		public long getTokenExpirationTime(String token) {
 			return getClaims(token).getExpiration().getTime();
 		}
@@ -145,18 +147,4 @@ public class JwtTokenProvider implements InitializingBean{
 				return false;
 			}
 		}
-
-		// 재발급 검증 API에서 사용
-		public boolean validateAccessTokenOnlyExpired(String accessToken) {
-			try {
-				return getClaims(accessToken)
-						.getExpiration()
-						.before(new Date());
-			} catch(ExpiredJwtException e) {
-				return true;
-			} catch (Exception e) {
-				return false;
-			}
-		}
-
 }
