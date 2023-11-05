@@ -1,3 +1,7 @@
+/**
+ * 로그인시에 공통적으로 사용되는 부분
+ **/
+
 /*
  * 로그인후 권한에 따라 화면 변환
  */
@@ -23,15 +27,25 @@ window.onload= function (){
         //1분마다 주기적으로 유효기간을 검증한다.
         setInterval(function(){validTokenExpiredTime(expire)},60000);
 
+        //회원정보조회
+        document.getElementById('userDetail').href='/page/mypage/detail/'+username;
+        //회원이 작성한 댓글
+        document.getElementById('userComment').href='/page/mypage/my-comment/'+username;
+        //회원이 작성한 글
+        document.getElementById('userBoard').href='/page/mypage/my-article/'+username;
+        //스크랩 목록
+        document.getElementById('scrapList').href='/page/mypage/list/'+username;
+
         if(role === 'ROLE_ADMIN'){
             console.log('관리자');
-            $(".userId").text(username + "님 환영합니다.");
+            $(".userId").text(username + "님 환영합니다.");//로그인한 회원의 아이디 표시
             $('.admin-token').css("display","block");//관리자 페이지 오픈
             $('#loginPage').css("display","none");//로그인 숨기기
             $('#main').css("display","block");//메인 페이지 오픈
             $('.logout').css("display","block");//로그아웃 오픈
         }else if(role === 'ROLE_USER'){
             console.log('회원');
+            $(".userId").text(username + "님 환영합니다.");//로그인한 회원의 아이디 표시
             $('.admin-token').css("display","none");//관리자 페이지 숨기기
             $('#loginPage').css("disabled","none");//로그인 숨기기
             $('#main').css("display","block");//메인 페이지 오픈
@@ -50,7 +64,7 @@ window.onload= function (){
  * 로컬스토리지에 저장하기.(기간 포함)
  */
 function setItemWithExpireTime(keyName,keyValue,ttl){
-    //로컬스토리지에 저장할 객체
+    //로컬스토리지에 저장할 객체(토큰값,유효기간)
     const obj = {
         value : keyValue,
         expire : ttl
