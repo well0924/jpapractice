@@ -2,16 +2,15 @@ package co.kr.board.domain.Dto;
 
 import co.kr.board.domain.Scrap;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 public class ScrapDto {
 
     @Getter
+    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ResponseDto{
@@ -28,6 +27,7 @@ public class ScrapDto {
         private LocalDateTime createdAt;
 
         @Builder
+        @QueryProjection
         public ResponseDto(Scrap scrap){
             this.boardId = scrap.getBoard().getId();
             this.categoryId = scrap.getBoard().getCategory().getId();

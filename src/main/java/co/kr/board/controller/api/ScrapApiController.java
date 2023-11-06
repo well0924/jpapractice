@@ -23,9 +23,9 @@ public class ScrapApiController {
 
     //회원이 스크랩한 목록
     @Secured({"ROLE_USER","ROLE_ADMIN"})
-    @GetMapping("/list")
-    public Response<?>scrapList(@PageableDefault(size = 5,direction = Sort.Direction.DESC,sort = "id") Pageable pageable){
-        Page<ScrapDto.ResponseDto>scrapList = service.scrapList(pageable);
+    @GetMapping("/list/{username}")
+    public Response<?>scrapList(@PathVariable("username") String username,@PageableDefault(size = 5,direction = Sort.Direction.DESC,sort = "id") Pageable pageable){
+        Page<ScrapDto.ResponseDto>scrapList = service.scrapList(username,pageable);
         return new Response<>(HttpStatus.OK.value(),scrapList);
     }
 

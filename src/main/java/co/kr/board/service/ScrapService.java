@@ -38,9 +38,9 @@ public class ScrapService {
 
     //스크랩 목록
     @Transactional(readOnly = true)
-    public Page<ScrapDto.ResponseDto>scrapList(Pageable pageable){
-        Page<Scrap>list =scrapRepository.findAll(pageable);
-        return list.map(scrap -> new ScrapDto.ResponseDto(scrap));
+    public Page<ScrapDto.ResponseDto>scrapList(String username,Pageable pageable){
+        Page<ScrapDto.ResponseDto>list =scrapRepository.ScrapList(username,pageable);
+        return list;
     }
 
     //스크랩 추가
