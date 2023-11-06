@@ -17,8 +17,6 @@ function loginproc(){
         dataTye:"json",
         contentType:'application/json; charset=utf-8'
     }).done(function(data){
-        console.log(data);
-        document.cookie;
         //토큰을 파싱하고 로컬스토리지에 토큰값 저장하기.
         let tokenResult = tokenParse(data.accessToken);
         setItemWithExpireTime('Authorization',data.accessToken,tokenResult.exp);

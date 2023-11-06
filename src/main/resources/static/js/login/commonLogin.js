@@ -8,34 +8,28 @@
 window.onload= function (){
     //로컬스토리지에 토큰값이 있는 경우
     let tokenId = localStorage.getItem('Authorization');
-    document.cookie;
+
     let result = tokenParse(tokenId);
 
     if(tokenId){
-        console.log(result);
-
         let username = result.userId;
         let role = result.role;
         let expire = result.exp;
         let expireTime = new Date(expire *1000);
+        console.log(result);
         console.log(document.cookie);
         console.log("아이디:"+username);
         console.log("권한:"+role);
         console.log("유효기간:"+expire);
         console.log(expireTime);
 
+        $('#userDetail').attr('href','/page/mypage/detail/'+username);
+        $('#userComment').attr('href','/page/mypage/my-comment/'+username);//내가 작성한 댓글
+        $('#userBoard').attr('href','/page/mypage/my-article/'+username);//내가 작성한 글
+        $('#scrapList').attr('href','/page/mypage/list/'+username);//스크랩을 한 글 목록
+
         //1분마다 주기적으로 유효기간을 검증한다.
         setInterval(function(){validTokenExpiredTime(expire)},60000);
-
-        //회원정보조회
-        document.getElementById('userDetail').href='/page/mypage/detail/'+username;
-        //회원이 작성한 댓글
-        document.getElementById('userComment').href='/page/mypage/my-comment/'+username;
-        //회원이 작성한 글
-        document.getElementById('userBoard').href='/page/mypage/my-article/'+username;
-        //스크랩 목록
-        document.getElementById('scrapList').href='/page/mypage/list/'+username;
-
         if(role === 'ROLE_ADMIN'){
             console.log('관리자');
             $(".userId").text(username + "님 환영합니다.");//로그인한 회원의 아이디 표시
@@ -173,6 +167,9 @@ function validTokenExpiredTime(exp){
             console.log("토큰 유효");
         }
     }
+}
+
+function createLocation(username){
 }
 
 //쿠키에 저장된 값 가져오기.
