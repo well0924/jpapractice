@@ -1,4 +1,4 @@
-package co.kr.board.config.redis;
+package co.kr.board.config.Redis;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

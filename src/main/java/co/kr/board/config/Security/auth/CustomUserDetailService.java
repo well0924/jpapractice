@@ -34,7 +34,7 @@ public class CustomUserDetailService implements UserDetailsService{
 			CustomUserDetails customUserDetails = new CustomUserDetails(member.get());
 			return customUserDetails;
 		}
-		return new CustomUserDetails(member.get());
+		return null;
 	}
 
 }

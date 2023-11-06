@@ -4,6 +4,7 @@ import co.kr.board.config.Redis.RedisService;
 import co.kr.board.config.Security.jwt.JwtTokenProvider;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.TokenDto;
+import co.kr.board.service.VisitorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final RedisService redisService;
-
+    private final VisitorService visitorService;
     private final String SERVER = "Server";
 
     //로그인 -> jwt로그인시 방문자로 기록하기.
@@ -36,7 +37,17 @@ public class AuthService {
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        //로그인을 했을 경우에 방문자기록을 저장
+        boolean duplicatedResult = visitorService.isNotDuplicateLogin(authentication.getName());
 
+        if(duplicatedResult == true){
+            log.info("중복로그인");
+        }else{
+            log.info("방문자 저장");
+            //저장
+            visitorService.visitorSave();
+        }
         return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
     }
 

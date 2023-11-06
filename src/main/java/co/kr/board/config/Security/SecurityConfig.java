@@ -1,6 +1,6 @@
-package co.kr.board.config.security;
+package co.kr.board.config.Security;
 
-import co.kr.board.config.security.jwt.*;
+import co.kr.board.config.Security.jwt.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -20,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Log4j2
 @Configuration
@@ -57,8 +60,10 @@ public class SecurityConfig{
 	public SecurityFilterChain cofigure(HttpSecurity http)throws Exception{
 
 		log.info("security config!!");
-		http
-				.cors().disable()
+		http	
+				//재발급 cors문제로 추가
+				.cors().configurationSource(corsConfigurationSource())
+				.and()
 				.csrf().disable()//rest Api 를 사용하므로 csrf는 차단.
 				.httpBasic().disable()// httpBasic 방식은 Authorization에 ID,PW를 들고 다니는 방식이다. <-> Bearer 방식 (토큰을 들고다니는 방식)
 				.formLogin().disable()
@@ -86,6 +91,20 @@ public class SecurityConfig{
 				.accessDeniedHandler(jwtAccessDeniedHandler);
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+
+		configuration.addAllowedOrigin("*");
+		configuration.addAllowedHeader("*");
+		configuration.addAllowedMethod("*");
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 	@Bean

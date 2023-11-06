@@ -2,6 +2,8 @@ package co.kr.board.domain;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -48,5 +50,9 @@ public class Member extends BaseTime implements Serializable {
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime createdAt;
-	
+
+	//방문자 (양방향)
+	@ToString.Exclude
+	@OneToMany(mappedBy = "member",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
+	private List<Visitor>visitors = new ArrayList<>();
 }
