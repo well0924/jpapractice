@@ -13,10 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -63,7 +65,7 @@ public class VisitorService {
 
     //오늘 하루동안 들어온 회원 방문자수
     @Transactional
-    public Integer countLoginsForLastDay(){
+    public List<Visitor> countLoginsForLastDay() {
         // 현재 시간 (UTC로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
@@ -71,17 +73,17 @@ public class VisitorService {
         // UTC 시간을 서버의 타임존으로 변환
         ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
         //시작시간 00:00:00
-        LocalDateTime startTime = serverTime.toLocalDate().atStartOfDay(serverTimeZone).toLocalDateTime();;
+        LocalDateTime startTime = serverTime.toLocalDate().now().atStartOfDay();
+        System.out.println("현재시간:"+startTime);
         //종료시간 23:59:00
-        LocalDateTime endTime = startTime.plusDays(1);
-
-        Integer count = visitorRepository.findDistinctUserIdsForBetween(startTime,endTime);
-        return count;
+        LocalDateTime endTime = serverTime.toLocalDate().now().atTime(23,59,0);
+        System.out.println("종료시간:"+endTime);
+        return visitorRepository.findDistinctUserIdsForBetween(startTime,endTime);
     }
 
     //어제 들어왔던 회원의 수
     @Transactional
-    public Integer countLoginForYesterDay(){
+    public List<Visitor> countLoginForYesterDay(){
         // 현재 시간 (UTC로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
@@ -90,12 +92,11 @@ public class VisitorService {
         ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
         LocalDateTime startOfDay = serverTime.toLocalDate().atStartOfDay(serverTimeZone).toLocalDateTime().minusDays(1);
         LocalDateTime endOfDay = startOfDay.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-        Integer count = visitorRepository.findDistinctUserIdsForBetween(startOfDay,endOfDay);
-        return count;
+        return visitorRepository.findDistinctUserIdsForBetween(startOfDay,endOfDay);
     }
 
     //회원의 일주일동안 들어온 방문자수
-    public Integer countLoginForWeekDay(){
+    public List<Visitor> countLoginForWeekDay(){
         // 현재 시간 (UTC로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)

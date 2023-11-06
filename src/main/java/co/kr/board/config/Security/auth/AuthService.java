@@ -40,7 +40,7 @@ public class AuthService {
         
         //로그인을 했을 경우에 방문자기록을 저장
         boolean duplicatedResult = visitorService.isNotDuplicateLogin(authentication.getName());
-
+        log.info(duplicatedResult);
         if(duplicatedResult == true){
             log.info("중복로그인");
         }else{

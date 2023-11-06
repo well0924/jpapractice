@@ -10,18 +10,54 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>어드민 페이지</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--방문자 차트--->
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: '/api/visitor/week-count', // 서버 API 엔드포인트
+                method: 'GET',
+                success: function(data) {
+                    console.log(data);
+                    var ctx = document.getElementById('visitorCounts').getContext('2d');
+                    var visitorCounts = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.data.labels,
+                            datasets: [{
+                                label: '방문자 통계',
+                                data: data.data.labels,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    </script>
 </head>
 <!-- Begin Page Content -->
 <th:block layout:fragment="contents">
     <div class="container-fluid">
-
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">어드민 페이지</h1>
         </div>
         <!-- 방문자 수 통계 -->
-        <div class="row">
-
+        <div class="row" style="width: 900px; height: 500px;">
+            <canvas id="visitorCounts"></canvas>
         </div>
         <!-- 회원 목록 -->
         <div class="row">
