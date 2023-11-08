@@ -8,6 +8,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 public class BoardDto {
     //게시물 작성 dto
@@ -23,6 +24,7 @@ public class BoardDto {
         private String boardContents;
         private Integer readCount;
         private String password;
+        private Set<String> hashTagName;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
     }

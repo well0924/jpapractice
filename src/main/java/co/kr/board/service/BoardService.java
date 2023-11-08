@@ -2,10 +2,8 @@ package co.kr.board.service;
 
 import java.io.File;
 import java.security.SecureRandom;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -13,10 +11,8 @@ import co.kr.board.domain.*;
 import co.kr.board.domain.Const.SearchType;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.BoardDto.BoardResponseDto;
-import co.kr.board.repository.CategoryRepository;
+import co.kr.board.repository.*;
 import co.kr.board.domain.Dto.AttachDto;
-import co.kr.board.repository.AttachRepository;
-import co.kr.board.repository.MemberRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.board.repository.BoardRepository;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import lombok.AllArgsConstructor;
@@ -41,6 +36,7 @@ public class BoardService{
 	private final FileService fileService;
 	private final MemberRepository memberRepository;
 	private final HashTagService hashTagService;
+	private final HashTagRepository hashTagRepository;
 	private final FileHandler fileHandler;
 
 	@Transactional(readOnly = true)
@@ -80,10 +76,6 @@ public class BoardService{
 	public Integer boardsave(BoardDto.BoardRequestDto dto ,Integer categoryId,List<MultipartFile>files)throws Exception{
 
 		Member member = getMember();
-
-		//해시태그 적용
-		Set<HashTag> hashtags = renewHashtagsFromContent(dto.getBoardContents());
-
 		//카테고리 적용
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
@@ -99,12 +91,34 @@ public class BoardService{
 				.category(category)
 				.createdat(dto.getCreatedAt())
 				.build();
+
+		//해시태그 저장
+		Set<HashTag>hashtags = new HashSet<>();
+		//해시태그가 있으면 해시태그의 명칭을 넣기
+		for (String hashtagName : dto.getHashTagName()) {
+
+			Optional<HashTag> existingHashTag = hashTagRepository.findByHashtagName(hashtagName);
+
+			log.info(existingHashTag);
+
+			HashTag hashTag = existingHashTag.orElseGet(() -> {
+				HashTag newHashTag = HashTag
+						.builder()
+						.hashtagName(hashtagName)
+						.createdAt(LocalDateTime.now())
+						.build();
+				return newHashTag;
+			});
+			hashtags.add(hashTag);
+
+			log.info(hashtagName);
+		}
+		board.addHashTags(hashtags);
+		log.info(board);
 		//파일 첨부
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
-		//해시태그
-		board.addHashTags(hashtags);
 		log.info(fileList);
-
+		log.info("hash??::"+hashtags);
 		int InsertResult = repos.save(board).getId();
 		//파일 처리
 		AttachFile(InsertResult,fileList,board);
@@ -113,7 +127,7 @@ public class BoardService{
 	}
 	
     /*
-     * 글 목록 단일 조회 -> 수정 필요
+     * 글 목록 단일 조회
      * @Param boardId
      * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
     */
@@ -184,17 +198,6 @@ public class BoardService{
 		Board boardDetail =	validateMember(boardId,member);
 
 		boardDetail.updateBoard(dto);
-
-		Set<Integer> hashtagIds = boardDetail.getHashtags().stream()
-				.map(HashTag::getId)
-				.collect(Collectors.toUnmodifiableSet());
-
-		boardDetail.clearHashTag();
-		//해시태그 삭제
-		hashtagIds.forEach(hashTagService::deleteHashtagWithoutArticles);
-		//새롭게 작성한 해시태그 추가
-		Set<HashTag> hashtags = renewHashtagsFromContent(dto.getBoardContents());
-		boardDetail.addHashTags(hashtags);
 
 		int updateResult = boardDetail.getId();
 
@@ -393,20 +396,4 @@ public class BoardService{
 		return result;
 	}
 
-	//해시태그
-	private Set<HashTag> renewHashtagsFromContent(String content) {
-		Set<String> hashtagNamesInContent = hashTagService.parseHashtagNames(content);
-		Set<HashTag> hashtags = hashTagService.findHashtagsByNames(hashtagNamesInContent);
-		Set<String> existingHashtagNames = hashtags.stream()
-				.map(HashTag::getHashtagName)
-				.collect(Collectors.toUnmodifiableSet());
-
-		hashtagNamesInContent.forEach(newHashtagName -> {
-			if (!existingHashtagNames.contains(newHashtagName)) {
-				hashtags.add(HashTag.hashTag(newHashtagName));
-			}
-		});
-
-		return hashtags;
-	}
 }

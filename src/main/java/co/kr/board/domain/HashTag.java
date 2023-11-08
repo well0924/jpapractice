@@ -22,7 +22,7 @@ public class HashTag extends BaseTime{
     private Integer id;
 
     @ToString.Exclude
-    @OneToMany
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Board>articles = new LinkedHashSet<>();
 
     @Setter
@@ -31,6 +31,7 @@ public class HashTag extends BaseTime{
     public static HashTag hashTag(String hashtagName){
         return new HashTag(hashtagName);
     }
+
     @Builder
     public HashTag(Integer id, String hashtagName, LocalDateTime createdAt){
         this.id = id;

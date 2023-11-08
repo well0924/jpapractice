@@ -1,7 +1,7 @@
 package co.kr.board.controller.api;
 
 import javax.validation.Valid;
-import co.kr.board.config.redis.CacheKey;
+import co.kr.board.config.Redis.CacheKey;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
 import org.springframework.cache.annotation.CacheEvict;

@@ -76,13 +76,13 @@ public class Board extends BaseTime implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
 
-    //해시태그
+    //해시태그(다대다)
     @JoinTable(
             name = "article_hashtag",
             joinColumns = @JoinColumn(name = "board_id"),
             inverseJoinColumns = @JoinColumn(name = "hashtag_id")
     )
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<HashTag> hashtags = new LinkedHashSet<>();
 
@@ -140,9 +140,6 @@ public class Board extends BaseTime implements Serializable {
     }
 
     //해시태그 추가
-    public void addHashTag(HashTag hashTag){
-        this.getHashtags().add(hashTag);
-    }
     public void addHashTags(Collection<HashTag>hashTags){
         this.getHashtags().addAll(hashTags);
     }
