@@ -10,8 +10,7 @@
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/page/main/mainpage}">
-      <div class="sidebar-brand-icon rotate-n-15">
-      </div>
+      <div class="sidebar-brand-icon rotate-n-15"></div>
       <div class="sidebar-brand-text mx-3">JpaBlog</div>
     </a>
 
@@ -126,9 +125,9 @@
     <li class="nav-item" th:each="list:${top5}">
         <input type="hidden" name="boardId" th:value="${list.boardId}">
         <input type="hidden" name="categoryId" th:value="${list.categoryId}">
-        <p class="text-center mb-2">
-          <strong>[[${list.boardContents}]]</strong>
-        </p>
+          <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}" style="color: #d7f1f5">
+            <p class="text-center mb-2" th:text="${list.boardContents}"></p>
+          </a>
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
@@ -139,11 +138,8 @@
     <!-- Sidebar Message -->
     <!--해시태그 목록-->
     <div class="sidebar-card d-none d-lg-flex">
-      <p class="text-center mb-2">
-        <strong>SB Admin Pro</strong>
-        is packed with premium features, components, and more!
-      </p>
-      <a class="btn btn-success btn-sm" href="">Upgrade to Pro!</a>
+      <span class="text-center mb-2" th:each="tag:${hashTag}" th:text="${'#' +tag}"></span>
+      <a class="btn btn-success btn-sm" th:href="@{/page/mypage/hashTag/list}">More</a>
     </div>
     <style>
       .sec_cal {
