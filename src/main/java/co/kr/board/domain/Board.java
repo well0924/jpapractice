@@ -87,7 +87,7 @@ public class Board extends BaseTime implements Serializable {
     private Set<HashTag> hashtags = new LinkedHashSet<>();
 
     //스크랩
-    @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Scrap>boardScrap = new ArrayList<>();
 
@@ -147,4 +147,6 @@ public class Board extends BaseTime implements Serializable {
     public void clearHashTag(){
         this.getHashtags().clear();
     }
+
+
 }

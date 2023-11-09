@@ -56,6 +56,14 @@ layout:decorate="~{layout/mainlayout}">
         </th:block>
     </div>
     <!--파일 첨부 end-->
+    <!--해시 태그 -->
+    <div class="list-group">
+        <label class="form-label mt-4">해시태그</label>
+        <!--해시태그에 관련된 게시글을 보여주는 페이지.--->
+        <a >
+            <span th:each="hashTags:${hashTags}" th:text="${'#' +hashTags.getHashtagName()}"></span>
+        </a>
+    </div>
     <!--게시글 이전글/다음글-->
     <div class="list-group" th:each="board:${nextPrevious}">
       <div th:if="${#lists.size(nextPrevious) == 1 and board.boardId > detail.boardId}">

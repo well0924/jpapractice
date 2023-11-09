@@ -2,12 +2,12 @@ package co.kr.board.controller.view;
 
 import javax.validation.Valid;
 
-import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.domain.Dto.CategoryDto;
+import co.kr.board.domain.Dto.*;
 import co.kr.board.domain.Const.SearchType;
-import co.kr.board.domain.Dto.AttachDto;
+import co.kr.board.domain.HashTag;
 import co.kr.board.service.CategoryService;
 import co.kr.board.service.FileService;
+import co.kr.board.service.HashTagService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,11 +23,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import co.kr.board.service.BoardService;
-import co.kr.board.config.security.auth.CustomUserDetails;
+import co.kr.board.config.Security.auth.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
+import java.util.Set;
 
 @Log4j2
 @Controller
@@ -38,6 +39,7 @@ public class BoardController {
 	private final BoardService service;
 	private final FileService fileService;
 	private final CategoryService categoryService;
+	private final HashTagService hashTagService;
 
 	//게시글 목록
 	@GetMapping("/list/{cname}")
@@ -95,16 +97,18 @@ public class BoardController {
 		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
 		//카테고리 목록
 		List<CategoryDto>categoryDtoList = categoryService.categoryList();
-
+		//게시글에 관련된 해시태그 목록
+		Set<HashTag> hashTagDtoList = hashTagService.findHashTagsByArticles(boardId);
 		//게시글 갯수 & 카테고리 갯수
 		Integer boardCount = service.articleCount();
-
+		log.info("태그::"+hashTagDtoList);
 		mv.addObject("count",boardCount);
 		mv.addObject("nextPrevious",nextPrevious);
 		mv.addObject("fileList",fileList);
 		mv.addObject("detail", board);
 		mv.addObject("top5",top5);
 		mv.addObject("categoryMenu",categoryDtoList);
+		mv.addObject("hashTags",hashTagDtoList);
 
 		mv.setViewName("board/detailpage");
 		

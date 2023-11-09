@@ -2,9 +2,11 @@ package co.kr.board.controller.view;
 
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CommentDto;
+import co.kr.board.domain.Dto.HashTagDto;
 import co.kr.board.domain.Dto.ScrapDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.service.CommentService;
+import co.kr.board.service.HashTagService;
 import co.kr.board.service.ScrapService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,6 +31,7 @@ public class MyPageController {
     private final ScrapService scrapService;
     private final BoardService boardService;
     private final CommentService commentService;
+    private final HashTagService hashTagService;
 
     //마이페이지 스크랩 목록
     @GetMapping("/list/{username}")
@@ -83,6 +86,17 @@ public class MyPageController {
 
         mv.setViewName("/mypage/mycomment");
 
+        return mv;
+    }
+
+    //해시태그 목록
+    @GetMapping("/hashTag/list")
+    public ModelAndView hashTagList(){
+        ModelAndView mv = new ModelAndView();
+        List<String> list = hashTagService.findAllHashTagNames();
+        log.info(list);
+        mv.addObject("hashTag",list);
+        mv.setViewName("/main/hashTagList");
         return mv;
     }
 }

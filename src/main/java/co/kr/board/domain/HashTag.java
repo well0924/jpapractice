@@ -13,6 +13,7 @@ import java.util.Set;
         @Index(columnList = "hashtagName", unique = true),
         @Index(columnList = "createdAt")
 })
+@ToString
 @NoArgsConstructor
 public class HashTag extends BaseTime{
 
@@ -22,7 +23,7 @@ public class HashTag extends BaseTime{
     private Integer id;
 
     @ToString.Exclude
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Board>articles = new LinkedHashSet<>();
 
     @Setter

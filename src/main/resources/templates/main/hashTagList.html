@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mainlayout}">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<th:block layout:fragment="contents">
+    <div>
+        <span th:unless="${#lists.isEmpty(hashTag)}" th:each="tag:${hashTag}" th:text="'#'+${tag}"></span>
+        <span th:if="${#lists.isEmpty(hashTag)}">해시태그가 없습니다.</span>
+    </div>
+</th:block>
+</body>
+</html>

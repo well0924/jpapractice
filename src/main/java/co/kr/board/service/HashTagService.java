@@ -1,5 +1,6 @@
 package co.kr.board.service;
 
+import co.kr.board.domain.Dto.HashTagDto;
 import co.kr.board.domain.HashTag;
 import co.kr.board.repository.HashTagRepository;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -18,11 +20,17 @@ import java.util.regex.Pattern;
 public class HashTagService {
 
     private final HashTagRepository hashTagRepository;
-
-    //해시태그 이름별로 조회
+    
+    //해시태그 목록(전체)
     @Transactional(readOnly = true)
-    public Set<HashTag> findHashtagsByNames(Set<String> hashtagNames) {
-        return new HashSet<>(hashTagRepository.findByHashtagNameIn(hashtagNames));
+    public List<String> findAllHashTagNames(){
+        return hashTagRepository.findAllHashtagNames();
+    }
+
+    //게시글에 관련된 해시태그 목록
+    @Transactional(readOnly = true)
+    public Set<HashTag>findHashTagsByArticles(Integer boardId){
+        return hashTagRepository.findHashTagsByArticles(boardId);
     }
 
     //해시태그 구별
