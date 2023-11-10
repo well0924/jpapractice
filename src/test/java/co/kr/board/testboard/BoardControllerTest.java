@@ -3,12 +3,14 @@ package co.kr.board.testboard;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import co.kr.board.config.Security.SecurityConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Category;
+import co.kr.board.domain.Const.Role;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.domain.Member;
-import co.kr.board.domain.Role;
+import co.kr.board.domain.Const.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import co.kr.board.config.security.SecurityConfig;
+import co.kr.board.config.Security.SecurityConfig;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;

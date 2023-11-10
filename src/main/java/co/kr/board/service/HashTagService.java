@@ -1,6 +1,5 @@
 package co.kr.board.service;
 
-import co.kr.board.domain.Dto.HashTagDto;
 import co.kr.board.domain.HashTag;
 import co.kr.board.repository.HashTagRepository;
 import lombok.AllArgsConstructor;

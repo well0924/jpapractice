@@ -23,7 +23,7 @@ public class ReplyRepositoryTest {
 
     @Test
     @DisplayName("최근에 작성한 댓글5개")
-    public void CommentTop5Test(){
+    public void CommentTop5Test() throws Exception {
         List<CommentDto.CommentResponseDto>list = commentRepository.findTop5ByOrderByReplyIdCreatedAtDesc();
         System.out.println(list);
         Assertions.assertThat(list).isNotNull();

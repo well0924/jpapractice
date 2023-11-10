@@ -33,7 +33,6 @@ public class Board extends BaseTime implements Serializable {
     @Column(name = "board_title",nullable = false)
     private String boardTitle;
     @Column(name = "board_contents",nullable = false)
-    @Lob
     private String boardContents;
     @Column(name = "board_author",nullable = false)
     private String boardAuthor;

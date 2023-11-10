@@ -4,8 +4,10 @@ import co.kr.board.Config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
+import co.kr.board.domain.HashTag;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
+import co.kr.board.repository.HashTagRepository;
 import co.kr.board.service.BoardService;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +38,9 @@ public class BoardRepositoryTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private HashTagRepository hashTagRepository;
 
     @Autowired // 원래는 @PersistenceContext 을 많이 썼는데, 이제는 오토와이어도 잘됩니다.
     private EntityManager em;
@@ -101,5 +107,11 @@ public class BoardRepositoryTest {
         Optional<Board>detail = boardRepository.findById(1);
         String result = boardRepository.boardPasswordCheck(detail.get().getId());
         System.out.println("결과값::"+result);
+    }
+
+    @Test
+    public void hashTagTest(){
+        Set<HashTag>list = hashTagRepository.findHashTagsByArticles(435);
+        System.out.println(list);
     }
 }

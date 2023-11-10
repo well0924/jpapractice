@@ -3,7 +3,7 @@ package co.kr.board.controller.api;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.dto.Response;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-import co.kr.board.config.redis.CacheKey;
+import co.kr.board.config.Redis.CacheKey;
 import co.kr.board.domain.Board;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.service.LikeService;

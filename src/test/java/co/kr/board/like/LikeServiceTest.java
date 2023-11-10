@@ -51,7 +51,7 @@ public class LikeServiceTest {
         board1();
         like();
 
-        Boolean duplidatedresult = likeService.hasLikeBoard(board,member);
+        Boolean duplidatedresult = likeService.hasLikeBoard(board);
 
         Assumptions.assumingThat(duplidatedresult.equals(true),()->{
             likeMinusTest();
@@ -63,12 +63,12 @@ public class LikeServiceTest {
     }
     @DisplayName("좋아요 -1")
     public void likeMinusTest(){
-        String likeResult = likeService.removeLikeBoard(board,member);
+        String likeResult = likeService.removeLikeBoard(board);
         assertEquals(likeResult,"좋아요 취소 처리 완료");
     }
     @DisplayName("좋아요 +1")
     public void likePlusTest(){
-        String likeResult = likeService.createLikeBoard(board,member);
+        String likeResult = likeService.createLikeBoard(board);
         assertEquals(likeResult,"좋아요 처리 완료");
     }
 }

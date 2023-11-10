@@ -1,11 +1,11 @@
 package co.kr.board.testreply;
 
 import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
-import co.kr.board.config.security.SecurityConfig;
-import co.kr.board.config.security.auth.CustomUserDetails;
+import co.kr.board.config.Security.SecurityConfig;
+import co.kr.board.config.Security.auth.CustomUserDetails;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Member;
-import co.kr.board.domain.Role;
+import co.kr.board.domain.Const.Role;
 import co.kr.board.repository.MemberRepository;
 import co.kr.board.domain.Comment;
 import co.kr.board.domain.Dto.CommentDto;
