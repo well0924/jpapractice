@@ -3,6 +3,7 @@ package co.kr.board.domain.Dto;
 import co.kr.board.domain.Category;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 @Getter
@@ -10,7 +11,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDto {
+public class CategoryDto implements Serializable {
     private Integer id;
     private String name;
     private List<CategoryDto> children;

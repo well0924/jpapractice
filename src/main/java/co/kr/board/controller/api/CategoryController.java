@@ -7,6 +7,7 @@ import co.kr.board.service.CategoryService;
 import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,8 @@ public class CategoryController {
 
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @GetMapping("/list")
-    @Cacheable(value = CacheKey.CATEGORY,key = "list",unless = "#result == null")
     @ResponseStatus(HttpStatus.OK)
-    public Response<List<CategoryDto>>categoryList()throws Exception{
+    public Response<List<CategoryDto>>categoryList(){
         List<CategoryDto>list = categoryService.categoryList();
         return new Response<>(HttpStatus.OK.value(),list);
     }

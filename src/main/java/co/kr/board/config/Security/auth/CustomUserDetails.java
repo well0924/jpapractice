@@ -1,5 +1,6 @@
 package co.kr.board.config.Security.auth;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -12,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Getter
-public class CustomUserDetails implements UserDetails{
+public class CustomUserDetails implements UserDetails, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private final Member member;
