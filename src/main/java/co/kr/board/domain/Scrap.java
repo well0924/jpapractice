@@ -33,6 +33,7 @@ public class Scrap extends BaseTime{
     public Scrap(Board board,Member member){
         this.board = board;
         this.member = member;
+        getCreatedAt();
     }
 
 }

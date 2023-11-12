@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTime {
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+
+    @CreatedDate
     private LocalDateTime createdAt;
 
 }
