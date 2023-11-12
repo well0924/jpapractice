@@ -42,11 +42,11 @@ public class AuthService {
         boolean duplicatedResult = visitorService.isNotDuplicateLogin(authentication.getName());
         log.info(duplicatedResult);
         if(duplicatedResult == true){
-            log.info("중복로그인");
-        }else{
             log.info("방문자 저장");
             //저장
             visitorService.visitorSave();
+        }else{
+            log.info("중복로그인");
         }
         return generateToken(SERVER, authentication.getName(), getAuthorities(authentication));
     }
