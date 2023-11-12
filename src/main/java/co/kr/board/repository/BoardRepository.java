@@ -35,4 +35,5 @@ public interface BoardRepository extends JpaRepository<Board, Integer>, BoardCus
 	//비밀번호 여부 확인
 	@Query(value = "select b.password from Board b where b.id = :id")
 	String boardPasswordCheck(@Param("id") Integer boardId);
+
 }

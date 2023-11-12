@@ -19,5 +19,7 @@ public interface HashTagRepository extends JpaRepository<HashTag,Integer>, Query
     //게시글 조회시 관련된 해시태그 목록
     @Query(value="select b.hashtags from Board b where b.id = :boardId")
     Set<HashTag> findHashTagsByArticles(@Param("boardId") Integer boardId);
-
+    
+    //해시태그 검색
+    List<HashTag> findByHashtagNameIn(Set<String> hashtagNames);
 }

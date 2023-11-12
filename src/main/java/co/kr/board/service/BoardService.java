@@ -66,6 +66,22 @@ public class BoardService{
 	}
 
 	/*
+	 * 해시태그 검색
+	 * @param hashtagName : 해시태그 이름
+	 * @param pagaeable : 페이징 객체
+	 */
+	@Transactional(readOnly = true)
+	public Page<BoardResponseDto>searchHashtagBoard(String hashtagName,Pageable pageable){
+		//해시태그가 없는 경우
+		if (hashtagName == null || hashtagName.isBlank()) {
+			return Page.empty(pageable);
+		}
+
+		return repos.findByHashtagNames(List.of(hashtagName),pageable)
+				.map(board -> new BoardResponseDto(board));
+	}
+
+	/*
 	 * 글 등록 (파일 첨부)
 	 * @Param BoardRequestDto 게시글 요청 dto
 	 * @Param Member 회원 객체
@@ -118,7 +134,6 @@ public class BoardService{
 		//파일 첨부
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 		log.info(fileList);
-		log.info("hash??::"+hashtags);
 		int InsertResult = repos.save(board).getId();
 		//파일 처리
 		AttachFile(InsertResult,fileList,board);

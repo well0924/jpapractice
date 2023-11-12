@@ -10,8 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AbstractSoftAssertions.assertAll;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,5 +51,13 @@ public class BoardServiceTest {
         dto.setPassword(detail.getPassword());
         boardService.passwordReset(1,dto);
         assertThat(detail.getPassword()).isNull();
+    }
+
+    @Test
+    @DisplayName("해시태그 관련글 검색기능")
+    public void hashtagSearchTest(){
+        Pageable pageable = Pageable.ofSize(5);
+        Page<BoardDto.BoardResponseDto> list = boardService.searchHashtagBoard("spring",pageable);
+        System.out.println(list.stream().collect(Collectors.toList()));
     }
 }

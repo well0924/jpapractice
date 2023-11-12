@@ -60,9 +60,11 @@ layout:decorate="~{layout/mainlayout}">
     <div class="list-group">
         <label class="form-label mt-4">해시태그</label>
         <!--해시태그에 관련된 게시글을 보여주는 페이지.--->
-        <a >
-            <span th:each="hashTags:${hashTags}" th:text="${'#' +hashTags.getHashtagName()}"></span>
-        </a>
+        <th:block th:each="hashTags:${hashTags}">
+            <a th:href="@{/page/board/tag/{hashtagName}(hashtagName=${hashTags.getHashtagName()})}">
+                <span th:text="${'#' +hashTags.getHashtagName()}"></span>
+            </a>
+        </th:block>
     </div>
     <!--게시글 이전글/다음글-->
     <div class="list-group" th:each="board:${nextPrevious}">
@@ -73,7 +75,7 @@ layout:decorate="~{layout/mainlayout}">
       </div>
       <div th:if="${board.boardId < detail.boardId}">
           <a th:href="@{'/page/board/detail/'+ ${board.boardId}}" class="list-group-item list-group-item-action">
-              <span style="font-weight: bold;">이전글</span> │
+              <span style="font-weight: bold;">이전글</span>
               <div>
                   <span style="color: blue;">[[${board.getBoardTitle()}]]</span>
               </div>

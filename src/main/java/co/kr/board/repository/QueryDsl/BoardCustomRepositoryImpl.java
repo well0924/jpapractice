@@ -16,16 +16,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class BoardCustomRepositoryImpl implements BoardCustomRepository{
+public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implements BoardCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
     QBoard qBoard;
@@ -33,13 +35,17 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     QLike qLike;
     QCategory qCategory;
 
+    QHashTag qHashTag;
+
     //생성자 주입
     public BoardCustomRepositoryImpl(EntityManager em) {
+        super(Board.class);
         this.jpaQueryFactory = new JPAQueryFactory(em);
         qBoard = QBoard.board;
         qMember = QMember.member;
         qLike = QLike.like;
         qCategory = QCategory.category;
+        qHashTag = QHashTag.hashTag;
     }
 
     //게시글 목록(게시글 관리페이지)
@@ -167,6 +173,16 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
                 .fetch();
 
         return boardResponseDtos.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<Board> findByHashtagNames(Collection<String> hashTagNames, Pageable pageable) {
+        JPQLQuery<Board> query = from(qBoard)
+                .innerJoin(qBoard.hashtags,qHashTag)
+                .where(qHashTag.hashtagName.in(hashTagNames));
+        List<Board> boardList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+        return new PageImpl<>(boardList, pageable, query.fetchCount());
     }
 
     //게시글 다음글 o.k

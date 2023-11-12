@@ -19,18 +19,24 @@
     <div class="row">
       <div class="col-lg-12 mb-4">
         <!-- 작성 게시글 -->
+        <th:block th:unless="${#lists.isEmpty(list)}" th:each="list:${list}">
         <div class="card shadow mb-4">
+          <input type="hidden" id="categoryName" th:value="${list.categoryName}">
           <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary"></h6>
-            <p class="text-right"></p>
+            <h6 class="m-0 font-weight-bold text-primary" th:text="${list.boardTitle}"></h6>
+            <p class="text-right" th:text="${list.createdAt}"></p>
           </div>
           <div class="card-body">
             <!--게시글 상세조회-->
-            <a>
-              <p></p>
+            <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
+              <p th:text="${list.boardContents}"></p>
             </a>
           </div>
         </div>
+        <div class="card shadow mb-4" th:if="${#lists.isEmpty(list)}">
+            게시글이 없습니다.
+        </div>
+        </th:block>
       </div>
     </div>
   </div>
