@@ -29,7 +29,4 @@ public interface BoardCustomRepository {
 
     //게시글 이전글/다음글
     List<BoardDto.BoardResponseDto>findNextPreviousBoard(Integer id);
-
-    //해시태그 관련 게시글
-    Page<Board>findByHashtagNames(Collection<String>hashTagNames,Pageable pageable);
 }

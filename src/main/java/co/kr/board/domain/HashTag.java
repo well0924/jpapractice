@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Getter
 @Entity
-@Table(indexes = {
+@Table(name = "hashtag",indexes = {
         @Index(columnList = "hashtagName", unique = true),
         @Index(columnList = "createdAt")
 })
@@ -23,8 +23,8 @@ public class HashTag extends BaseTime{
     private Integer id;
 
     @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Board>articles = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+    private Set<BoardHashTag>articles = new LinkedHashSet<>();
 
     @Setter
     private String hashtagName;

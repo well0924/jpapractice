@@ -22,7 +22,7 @@ public class QHashTag extends EntityPathBase<HashTag> {
 
     public final QBaseTime _super = new QBaseTime(this);
 
-    public final SetPath<Board, QBoard> articles = this.<Board, QBoard>createSet("articles", Board.class, QBoard.class, PathInits.DIRECT2);
+    public final SetPath<BoardHashTag, QBoardHashTag> articles = this.<BoardHashTag, QBoardHashTag>createSet("articles", BoardHashTag.class, QBoardHashTag.class, PathInits.DIRECT2);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;

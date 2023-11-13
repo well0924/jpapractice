@@ -35,11 +35,5 @@ public class HashTagApiController {
         return new Response<>(HttpStatus.OK.value(),list);
     }
 
-    //해시태그에 관련된 게시글 목록
-    @GetMapping("/tag/{hashtagName}")
-    @Secured({"ROLE_ADMIN","ROLE_USER"})
-    public Response<?>hashTagSearchBoardList(@PathVariable("hashtagName")String hashtagName,@PageableDefault(size = 5,sort ="id",direction = Sort.Direction.DESC) Pageable pageable){
-        Page<BoardDto.BoardResponseDto> list = boardService.searchHashtagBoard(hashtagName,pageable);
-        return new Response<>(HttpStatus.OK.value(),list);
-    }
+
 }

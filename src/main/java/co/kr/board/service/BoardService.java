@@ -4,7 +4,6 @@ import java.io.File;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import co.kr.board.domain.*;
@@ -35,7 +34,6 @@ public class BoardService{
 	private final AttachRepository attachRepository;
 	private final FileService fileService;
 	private final MemberRepository memberRepository;
-	private final HashTagService hashTagService;
 	private final HashTagRepository hashTagRepository;
 	private final FileHandler fileHandler;
 
@@ -63,22 +61,6 @@ public class BoardService{
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllSearch(String searchVal,String searchType, Pageable pageable){
 		return repos.findByAllSearch(searchVal, SearchType.toSearch(searchType),pageable);
-	}
-
-	/*
-	 * 해시태그 검색
-	 * @param hashtagName : 해시태그 이름
-	 * @param pagaeable : 페이징 객체
-	 */
-	@Transactional(readOnly = true)
-	public Page<BoardResponseDto>searchHashtagBoard(String hashtagName,Pageable pageable){
-		//해시태그가 없는 경우
-		if (hashtagName == null || hashtagName.isBlank()) {
-			return Page.empty(pageable);
-		}
-
-		return repos.findByHashtagNames(List.of(hashtagName),pageable)
-				.map(board -> new BoardResponseDto(board));
 	}
 
 	/*
@@ -129,7 +111,17 @@ public class BoardService{
 
 			log.info(hashtagName);
 		}
-		board.addHashTags(hashtags);
+		Set<BoardHashTag>boardHashTags = new HashSet<>();
+		for(HashTag hashTag:hashtags){
+			BoardHashTag boardHashTag = BoardHashTag
+					.builder()
+					.board(board)
+					.hashTag(hashTag)
+					.build();
+			boardHashTags.add(boardHashTag);
+		}
+		board.setTag(boardHashTags);
+
 		log.info(board);
 		//파일 첨부
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
@@ -174,10 +166,6 @@ public class BoardService{
 		Member member = getMember();
 
 		Board board = validateMember(boardId,member);
-		//해시 태그의 번호를 추출
-		Set<Integer> hashtagIds = board.getHashtags().stream()
-				.map(HashTag::getId)
-				.collect(Collectors.toUnmodifiableSet());
 
 		List<AttachDto>list = fileService.filelist(boardId);
 
@@ -192,8 +180,6 @@ public class BoardService{
 		}
 		//게시글 삭제
 		repos.deleteById(board.getId());
-		//해시태그 삭제
-		hashtagIds.forEach(hashTagService::deleteHashtagWithoutArticles);
 	}
 	
     /*
@@ -212,10 +198,46 @@ public class BoardService{
 
 		Board boardDetail =	validateMember(boardId,member);
 
+		//해시태그 저장
+		Set<HashTag>hashtags = new HashSet<>();
+		//해시태그가 있으면 해시태그의 명칭을 넣기
+		for (String hashtagName : dto.getHashTagName()) {
+
+			Optional<HashTag> existingHashTag = hashTagRepository.findByHashtagName(hashtagName);
+
+			log.info(existingHashTag);
+
+			HashTag hashTag = existingHashTag.orElseGet(() -> {
+				HashTag newHashTag = HashTag
+						.builder()
+						.hashtagName(hashtagName)
+						.createdAt(LocalDateTime.now())
+						.build();
+				return newHashTag;
+			});
+			hashtags.add(hashTag);
+
+			log.info(hashtagName);
+		}
+
+		Set<BoardHashTag>boardHashTags = new HashSet<>();
+
+		for(HashTag hashTag:hashtags){
+			BoardHashTag boardHashTag = BoardHashTag
+					.builder()
+					.board(boardDetail)
+					.hashTag(hashTag)
+					.build();
+			boardHashTags.add(boardHashTag);
+		}
+
+		boardDetail.setTag(boardHashTags);
+
+		//게시글 수정
 		boardDetail.updateBoard(dto);
-
+		
 		int updateResult = boardDetail.getId();
-
+		
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 
 		AttachFile(updateResult,fileList,boardDetail);

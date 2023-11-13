@@ -175,16 +175,6 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
         return boardResponseDtos.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
     }
 
-    @Override
-    public Page<Board> findByHashtagNames(Collection<String> hashTagNames, Pageable pageable) {
-        JPQLQuery<Board> query = from(qBoard)
-                .innerJoin(qBoard.hashtags,qHashTag)
-                .where(qHashTag.hashtagName.in(hashTagNames));
-        List<Board> boardList = getQuerydsl().applyPagination(pageable, query).fetch();
-
-        return new PageImpl<>(boardList, pageable, query.fetchCount());
-    }
-
     //게시글 다음글 o.k
     private Integer findNextBoard(Integer boardId){
 

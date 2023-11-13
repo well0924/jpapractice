@@ -18,7 +18,7 @@ INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (12, 'Spring
 INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (13, 'Web', 11);
 
 SELECT * FROM board;
-INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (1, '2023-11-01 18:18:10', 'well4149', 'test', 'test titlte', 67, 1, 1, 1, null);
+INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (1, '2023-11-01 18:18:10', 'well4149', 'test', 'test titlte', 67, 1, 1, 1, 'qwer4149!');
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (4, '2023-10-08 16:25:57', 'well4149', '수정내용Q', '수정제목', 45, 1, 0, 2, null);
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (5, '2022-10-22 00:06:52', 'well4149', '트트', '테스트', 62, 1, -3, 2, null);
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (12, '2022-10-25 10:28:37', 'well', 'test', 'test', 5, 1, 0, 2, null);

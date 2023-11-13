@@ -77,14 +77,9 @@ public class Board extends BaseTime implements Serializable {
     private Category category;
 
     //해시태그(다대다)
-    @JoinTable(
-            name = "article_hashtag",
-            joinColumns = @JoinColumn(name = "board_id"),
-            inverseJoinColumns = @JoinColumn(name = "hashtag_id")
-    )
-    @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     @ToString.Exclude
-    private Set<HashTag> hashtags = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "board",fetch = FetchType.LAZY,orphanRemoval = true,cascade = CascadeType.ALL)
+    private Set<BoardHashTag> hashtags = new LinkedHashSet<>();
 
     //스크랩
     @OneToMany(mappedBy = "board",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
@@ -112,9 +107,15 @@ public class Board extends BaseTime implements Serializable {
 
     //게시글 수정
     public void updateBoard(BoardDto.BoardRequestDto dto) {
-        this.boardTitle = dto.getBoardTitle();
-        this.boardContents =dto.getBoardContents();
-        this.password = dto.getPassword();
+        if(dto.getBoardTitle()!=null){
+            this.boardTitle = dto.getBoardTitle();
+        }
+        if(dto.getBoardContents()!=null){
+            this.boardContents =dto.getBoardContents();
+        }
+        if(dto.getPassword()!=null){
+            this.password = dto.getPassword();
+        }
         this.createdAt = LocalDateTime.now();
     }
     
@@ -139,9 +140,14 @@ public class Board extends BaseTime implements Serializable {
         this.liked -=1;
     }
 
-    //해시태그 추가
-    public void addHashTags(Collection<HashTag>hashTags){
-        this.getHashtags().addAll(hashTags);
+    //연관관계 연결
+    public void setTag(Set<BoardHashTag>boardTags){
+        for(BoardHashTag boardTag : boardTags){
+            if(!hashtags.contains(boardTag)){
+                this.hashtags.add(boardTag);
+                boardTag.setParent(this);
+            }
+        }
     }
     //해시태그 삭제
     public void clearHashTag(){
