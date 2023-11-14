@@ -60,10 +60,15 @@ layout:decorate="~{layout/mainlayout}">
     <div class="list-group">
         <label class="form-label mt-4">해시태그</label>
         <!--해시태그에 관련된 게시글을 보여주는 페이지.--->
-        <th:block th:each="hashTags:${hashTags}">
-            <a th:href="@{/page/board/tag/{hashtagName}(hashtagName=${hashTags.getHashtagName()})}">
-                <span th:text="${'#' +hashTags.getHashtagName()}"></span>
-            </a>
+        <th:block th:unless="${detail.hashtagName.isEmpty()}">
+            <div th:with="tagNames=${detail.getHashtagName()}">
+                    <a th:each="hashTags:${tagNames}" th:href="@{'/page/board/tag/'+${hashTags}}">
+                        <span th:text="${'#' +hashTags}"></span>
+                    </a>
+            </div>
+        </th:block>
+        <th:block th:if="${detail.hashtagName.isEmpty()}">
+            <span>해시태그가 없습니다.</span>
         </th:block>
     </div>
     <!--게시글 이전글/다음글-->

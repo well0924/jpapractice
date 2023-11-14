@@ -97,11 +97,11 @@ SELECT * FROM visitors;
 INSERT INTO jpaboard.visitors (id, login_date_time, username, useridx) VALUES (1, '2023-11-06 21:21:28', 'well4149', 1);
 INSERT INTO jpaboard.visitors (id, login_date_time, username, useridx) VALUES (5, '2023-11-07 01:02:49', 'well4149', 1);
 
-SELECT * FROM hash_tag;
-INSERT INTO jpaboard.hash_tag (hashtag_id, created_at, hashtag_name) VALUES (1, null, 'spring');
-INSERT INTO jpaboard.hash_tag (hashtag_id, created_at, hashtag_name) VALUES (2, null, 'jquery');
-INSERT INTO jpaboard.hash_tag (hashtag_id, created_at, hashtag_name) VALUES (3, null, 'java');
-INSERT INTO jpaboard.hash_tag (hashtag_id, created_at, hashtag_name) VALUES (4, null, 'jpa');
+SELECT * FROM hashtag;
+INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (1, null, 'spring');
+INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (2, null, 'jquery');
+INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (3, null, 'java');
+INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (4, null, 'jpa');
 
-SELECT * FROM article_hashtag;
+SELECT * FROM boardhashtag;
 

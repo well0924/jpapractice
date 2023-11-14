@@ -8,7 +8,9 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BoardDto {
     //게시물 작성 dto
@@ -44,6 +46,7 @@ public class BoardDto {
         private Integer readCount;
         private Integer liked;
         private String password;
+        private Set<String>hashtagName;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
@@ -59,6 +62,9 @@ public class BoardDto {
             this.liked = board.getLiked();
             this.categoryName = board.getCategory().getName();
             this.categoryId = board.getCategory().getId();
+            this.hashtagName = board.getHashtags() !=null ?
+                    board.getHashtags().stream().map(boardHashTag -> boardHashTag.getHashTag().getHashtagName()).collect(Collectors.toSet()) :
+                    Collections.emptySet();
             this.createdAt = board.getCreatedAt();
         }
     }

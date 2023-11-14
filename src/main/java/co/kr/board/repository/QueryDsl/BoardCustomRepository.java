@@ -1,13 +1,10 @@
 package co.kr.board.repository.QueryDsl;
 
-import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
-import co.kr.board.domain.HashTag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface BoardCustomRepository {
@@ -29,4 +26,7 @@ public interface BoardCustomRepository {
 
     //게시글 이전글/다음글
     List<BoardDto.BoardResponseDto>findNextPreviousBoard(Integer id);
+
+    //해시태그에 관련된 게시글 목록
+    Page<BoardDto.BoardResponseDto>findAllHashTagWithBoard(String tagName,Pageable pageable);
 }

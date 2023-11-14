@@ -2,7 +2,6 @@ package co.kr.board.controller.view;
 
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CommentDto;
-import co.kr.board.domain.Dto.HashTagDto;
 import co.kr.board.domain.Dto.ScrapDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.service.CommentService;
@@ -89,7 +88,7 @@ public class MyPageController {
         return mv;
     }
 
-    //해시태그 목록
+    //해시태그 전체 목록
     @GetMapping("/hashTag/list")
     public ModelAndView hashTagList(){
         ModelAndView mv = new ModelAndView();

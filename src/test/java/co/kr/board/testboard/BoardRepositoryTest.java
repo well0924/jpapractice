@@ -106,4 +106,12 @@ public class BoardRepositoryTest {
         String result = boardRepository.boardPasswordCheck(detail.get().getId());
         System.out.println("결과값::"+result);
     }
+
+    @Test
+    public void hashtest(){
+        Pageable pageable = Pageable.ofSize(5);
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findAllHashTagWithBoard("spring",pageable);
+        System.out.println(list.toList());
+
+    }
 }

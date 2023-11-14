@@ -57,7 +57,7 @@ public class BoardServiceTest {
     @DisplayName("해시태그 관련글 검색기능")
     public void hashtagSearchTest(){
         Pageable pageable = Pageable.ofSize(5);
-        Page<BoardDto.BoardResponseDto> list = boardService.searchHashtagBoard("spring",pageable);
-        System.out.println(list.stream().collect(Collectors.toList()));
+        //Page<BoardDto.BoardResponseDto> list = boardService.searchHashtagBoard("spring",pageable);
+        //System.out.println(list.stream().collect(Collectors.toList()));
     }
 }

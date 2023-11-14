@@ -26,34 +26,4 @@ public class HashTagService {
         return hashTagRepository.findAllHashtagNames();
     }
 
-    //게시글에 관련된 해시태그 목록
-    @Transactional(readOnly = true)
-    public Set<HashTag>findHashTagsByArticles(Integer boardId){
-        return hashTagRepository.findHashTagsByArticles(boardId);
-    }
-
-    //해시태그 구별
-    public Set<String> parseHashtagNames(String content) {
-        if (content == null) {
-            return Set.of();
-        }
-
-        Pattern pattern = Pattern.compile("#[\\w가-힣]+");
-        Matcher matcher = pattern.matcher(content.strip());
-        Set<String> result = new HashSet<>();
-
-        while (matcher.find()) {
-            result.add(matcher.group().replace("#", ""));
-        }
-
-        return Set.copyOf(result);
-    }
-
-    //해시태그 삭제
-    public void deleteHashtagWithoutArticles(Integer hashtagId) {
-        Optional<HashTag>hashtag = hashTagRepository.findById(hashtagId);
-        if (hashtag.get().getArticles().isEmpty()) {
-            hashTagRepository.delete(hashtag.get());
-        }
-    }
 }
