@@ -4,6 +4,7 @@ import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.service.BoardService;
+import co.kr.board.service.CategoryService;
 import co.kr.board.service.CommentService;
 import co.kr.board.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,8 @@ public class MemberController {
     private final BoardService boardService;
 
     private final CommentService commentService;
+
+    private final CategoryService categoryService;
 
     //회원 가입
     @GetMapping("/memberjoin")
@@ -142,6 +145,10 @@ public class MemberController {
     @GetMapping("/category/list")
     public ModelAndView memberCategoryList(){
         ModelAndView mv = new ModelAndView();
+        //최근에 작성한 게시글
+        List<BoardDto.BoardResponseDto>articleList = boardService.findBoardTop5();
+
+        mv.addObject("top5",articleList);
         mv.setViewName("/admin/categoryManagerList");
         return mv;
     }

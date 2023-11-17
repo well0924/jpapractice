@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mainlayout}">
+<head>
+    <meta charset="UTF-8">
+    <title>카테고리 관리 페이지</title>
+</head>
+<body>
+<th:block layout:fragment="contents">
+    <script>
+        $(document).ready(function(){
+            categoryList();
+        })
+        function categoryList(){
+            let token = getItems();
+            let result = token.value;
+            $.ajax({
+                url:'/api/category/list',
+                type:'get',
+                dataType:'json',
+                headers:{
+                    'Authorization': 'Bearer '+result,
+                }
+            }).done(function (resp){
+               console.log(resp.data);
+               renderTree(resp.data,$('#categoryList'));
+            });
+        }
+
+        // 트리 구조를 렌더링하는 함수
+        function renderTree(data, container) {
+            //var ul = $('<ul>');
+
+            data.forEach(function (node) {
+                var div = $('<div class="card mb-2">')
+                    .attr('id', 'category-' + node.id)
+                    .append('<div class="card-body">' + node.name + '</div>');
+
+                // 하위 노드가 있는 경우 재귀적으로 호출하여 렌더링
+                if (node.children && node.children.length > 0) {
+                    var childContainer = $('<div class="pl-4">');
+                    renderTree(node.children, childContainer);
+                    div.append(childContainer);
+                }
+                container.append(div);
+            });
+        }
+
+        //카테고리 추가
+        function categoryAdd(){
+            let token = getItems();
+            let result = token.value;
+            let categoryName = document.getElementById('').value;
+            let parentId = document.getElementById('').value;
+            const data = {name:categoryName,parentId:parentId};
+            $.ajax({
+                url:'/api/category/createcategory',
+                type:'post',
+                dateType:'json',
+                headers:{
+                    'Authorization': 'Bearer '+result,
+                },
+                data:data
+            }).done(function(resp){
+                console.log(resp.data);
+                alert('카테고리를 추가했습니다.');
+                categoryList();
+            });
+        }
+        //카테고리 삭제
+        function categoryDelete(){
+            let categoryId = document.getElementById('').value;
+            $.ajax({
+                url:'/api/category/deletecategory/'+categoryId,
+                type:'delete',
+                dataType:'json'
+            }).done(function (resp){
+                console.log(resp.data);
+                categoryList();
+            })
+        }
+    </script>
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">카테고리 관리</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <!--카테고리 목록이 나오는 부분-->
+            <div id="categoryList"></div>
+        </div>
+        <div class="col-lg-4">
+            <div style="margin-bottom: 5px">
+                <button role="button" class="btn btn-sm btn-primary" onclick="categoryAdd()">카테고리 추가</button>
+            </div>
+            <div style="margin-top: 5px">
+                <button role="button" class="btn btn-sm btn-primary" onclick="categoryDelete()">카테고리 삭제</button>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
