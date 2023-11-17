@@ -14,5 +14,5 @@ public interface VisitorRepository extends JpaRepository<Visitor,Integer> {
     Optional<Visitor>findByUsernameAndLoginDateTimeAfter(String username, LocalDateTime loginTime);
     //방문자 수
     @Query(value = "select distinct v from Visitor v where v.loginDateTime between :startTime and :endTime")
-    List<Visitor> findDistinctUserIdsForBetween(@Param("startTime")LocalDateTime startTime,@Param("endTime")LocalDateTime endTime);
+    List<Visitor> findDistinctByUsernameForBetween(@Param("startTime")LocalDateTime startTime,@Param("endTime")LocalDateTime endTime);
 }

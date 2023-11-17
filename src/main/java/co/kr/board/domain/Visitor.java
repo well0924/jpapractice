@@ -3,6 +3,7 @@ package co.kr.board.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "visitors")
 @Getter
+@ToString
 @NoArgsConstructor
 public class Visitor {
     @Id

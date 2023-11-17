@@ -13,11 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +63,7 @@ public class VisitorService {
     }
 
     //오늘 하루동안 들어온 회원 방문자수
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Visitor> countLoginsForLastDay() {
         // 현재 시간 (UTC로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
@@ -78,7 +77,7 @@ public class VisitorService {
         //종료시간 23:59:00
         LocalDateTime endTime = serverTime.toLocalDate().now().atTime(23,59,0);
         System.out.println("종료시간:"+endTime);
-        return visitorRepository.findDistinctUserIdsForBetween(startTime,endTime);
+        return visitorRepository.findDistinctByUsernameForBetween(startTime,endTime);
     }
 
     //어제 들어왔던 회원의 수
@@ -92,7 +91,7 @@ public class VisitorService {
         ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
         LocalDateTime startOfDay = serverTime.toLocalDate().atStartOfDay(serverTimeZone).toLocalDateTime().minusDays(1);
         LocalDateTime endOfDay = startOfDay.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-        return visitorRepository.findDistinctUserIdsForBetween(startOfDay,endOfDay);
+        return visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay);
     }
 
     //회원의 일주일동안 들어온 방문자수
@@ -108,7 +107,33 @@ public class VisitorService {
 
         LocalDateTime endOfDay = LocalDateTime.now();
 
-        return visitorRepository.findDistinctUserIdsForBetween(startOfDay,endOfDay);
+        return visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Integer> countLoginForWeekDayCount(){
+        // 현재 시간 (UTC로 설정)
+        LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
+        // 서버의 타임존 설정 (한국 시간대로 설정)
+        ZoneId serverTimeZone = ZoneId.of("Asia/Seoul");
+        // UTC 시간을 서버의 타임존으로 변환
+        ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
+
+        LocalDateTime startOfWeek = serverTime.toLocalDate().atStartOfDay(serverTimeZone).minusWeeks(1).toLocalDateTime();
+
+        List<Integer>weekDaysCount = new ArrayList<>();
+
+        //당일 날의 데이터를 넣는다.
+        for(int i= 0;i<=7;i++){
+            LocalDateTime startOfDay = startOfWeek.plusDays(i);
+            LocalDateTime endOfDay = startOfDay.withHour(23).withMinute(59).withSecond(59);
+            log.info(startOfDay);
+            log.info(endOfDay);
+            Integer dayCounts =visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay).size();
+
+            weekDaysCount.add(dayCounts);
+        }
+        return weekDaysCount;
     }
 
     //회원 인증

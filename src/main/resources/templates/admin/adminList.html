@@ -12,22 +12,23 @@
     <title>어드민 페이지</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!--방문자 차트--->
+    <!--방문자 차트 추가적으로 수정하기.--->
     <script>
         $(document).ready(function() {
             $.ajax({
-                url: '/api/visitor/week-count', // 서버 API 엔드포인트
+                url: '/api/visitor/week-count',
                 method: 'GET',
                 success: function(data) {
-                    console.log(data);
+                    console.log(data.data);
                     var ctx = document.getElementById('visitorCounts').getContext('2d');
                     var visitorCounts = new Chart(ctx, {
-                        type: 'line',
+                        type: 'bar',
                         data: {
                             labels: data.data.labels,
                             datasets: [{
                                 label: '방문자 통계',
-                                data: data.data.labels,
+                                data: data.data.DayCount,
+                                backgroundColor : 'rgba(75, 192, 192, 1)',
                                 borderColor: 'rgba(75, 192, 192, 1)',
                                 borderWidth: 1
                             }]
@@ -130,9 +131,10 @@
                     </div>
                     <div th:each="list:${top5}">
                         <div class="card-body">
-                            <p th:text="${list.boardContents}"></p>
                             <!--게시글 상세조회-->
-                            <a target="_blank" rel="nofollow">Browse Illustrations on unDraw &rarr;</a>
+                            <a target="_blank" rel="nofollow" th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
+                                <p th:text="${list.boardContents}"></p>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -147,10 +149,12 @@
                     </div>
                     <div th:each="comment:${comment}">
                         <div class="card-body">
-                            <p th:text="${comment.replyContents}"></p>
                             <!--댓글 상세조회-->
-                            <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on unDraw &rarr;</a>
+                            <a target="_blank" rel="nofollow" href="">
+                                <p th:text="${comment.replyContents}"></p>
+                            </a>
                         </div>
+                        <a th:href="@{/page/}"></a>
                     </div>
                 </div>
             </div>
