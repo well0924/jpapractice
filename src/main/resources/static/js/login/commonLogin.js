@@ -131,9 +131,10 @@ function validTokenExpiredTime(exp){
     if(TokenValue!=null){
         console.log(differentTime);
         console.log(TokenValue.value);
-        if(differentTime <120000){ //토큰의 유효기간이 만료되기 2분전에 주기적으로 재발급을 실행.
+        if(differentTime = 0){ //토큰의 유효기간이 만료가 되면 재발급을 실행.
             console.log("재발급을 시작");
-            //ajax를 사용해서 rt와 at를 헤더에 넣어서 토큰을 재발급을 하고 로그인 절차와 똑같이 한다.->순수 자바스크립트 코드로 변경하기.
+            //ajax를 사용해서 rt와 at를 헤더에 넣어서 토큰을 재발급을 하고 로그인 절차와 똑같이 한다.
+            //이방법으로 하는 경우에는 작동은 되지만 다른 방법을 생각해 봐야 할 것 같다.
             console.log(TokenValue);
             console.log("액세스토큰::"+TokenValue.value);
             var refreshToken = getRefreshToken();
