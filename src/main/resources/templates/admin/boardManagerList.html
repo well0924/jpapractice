@@ -44,7 +44,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <!-- 작성 게시글 -->
-                <table class="table">
+                <table class="table" style="table-layout: fixed">
                     <thead>
                         <tr>
                             <!--체크박스를 누르기 전까지는 셀렉트박스는 disable상태-->
@@ -74,14 +74,12 @@
                             <td>
                                 <a th:href="@{'/page/board/detail/'+${list.boardId}}" th:text="${list.boardTitle}"></a>
                             </td>
-                            <!--비밀번호가 있는 경우에 표시하기.-->
-                            <td th:if="${list.password !=null}">
-                                <i class="fas fa-solid fa-eye-low-vision"></i>
-                            </td>
                             <td th:text="${list.boardAuthor}"></td>
                             <td th:text="${list.createdAt}"></td>
                             <td th:text="${list.categoryName}"></td>
-                            <td><button role="button" class="btn btn-sm btn-primary">글 수정</button></td>
+                            <td>
+                                <button role="button" class="btn btn-sm btn-primary">글 수정</button>
+                            </td>
                         </tr>
                         <th:block th:if="${#lists.isEmpty(list)}">
                             <tr th:text="게시글이 없습니다.">
