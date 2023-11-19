@@ -57,14 +57,14 @@ public class VisitorService {
     }
 
     //총 들어온 방문자의 수
-    @Transactional
+    @Transactional(readOnly = true)
     public Integer countTotalVisitors(){
         return Math.toIntExact(visitorRepository.count());
     }
 
     //오늘 하루동안 들어온 회원 방문자수
     @Transactional(readOnly = true)
-    public List<Visitor> countLoginsForLastDay() {
+    public Integer countLoginsForLastDay() {
         // 현재 시간 (UTC로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
@@ -77,12 +77,12 @@ public class VisitorService {
         //종료시간 23:59:00
         LocalDateTime endTime = serverTime.toLocalDate().now().atTime(23,59,0);
         System.out.println("종료시간:"+endTime);
-        return visitorRepository.findDistinctByUsernameForBetween(startTime,endTime);
+        return visitorRepository.findDistinctByUsernameForBetween(startTime,endTime).size();
     }
 
     //어제 들어왔던 회원의 수
-    @Transactional
-    public List<Visitor> countLoginForYesterDay(){
+    @Transactional(readOnly = true)
+    public Integer countLoginForYesterDay(){
         // 현재 시간 (UTC로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
@@ -91,25 +91,11 @@ public class VisitorService {
         ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
         LocalDateTime startOfDay = serverTime.toLocalDate().atStartOfDay(serverTimeZone).toLocalDateTime().minusDays(1);
         LocalDateTime endOfDay = startOfDay.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
-        return visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay);
+
+        return visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay).size();
     }
 
-    //회원의 일주일동안 들어온 방문자수
-    public List<Visitor> countLoginForWeekDay(){
-        // 현재 시간 (UTC로 설정)
-        LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
-        // 서버의 타임존 설정 (한국 시간대로 설정)
-        ZoneId serverTimeZone = ZoneId.of("Asia/Seoul");
-        // UTC 시간을 서버의 타임존으로 변환
-        ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
-
-        LocalDateTime startOfDay = serverTime.toLocalDate().atStartOfDay(serverTimeZone).toLocalDateTime().minusWeeks(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
-
-        LocalDateTime endOfDay = LocalDateTime.now();
-
-        return visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay);
-    }
-
+    //일주일간의 방문자 수
     @Transactional(readOnly = true)
     public List<Integer> countLoginForWeekDayCount(){
         // 현재 시간 (UTC로 설정)
@@ -127,10 +113,7 @@ public class VisitorService {
         for(int i= 0;i<=7;i++){
             LocalDateTime startOfDay = startOfWeek.plusDays(i);
             LocalDateTime endOfDay = startOfDay.withHour(23).withMinute(59).withSecond(59);
-            log.info(startOfDay);
-            log.info(endOfDay);
             Integer dayCounts =visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay).size();
-
             weekDaysCount.add(dayCounts);
         }
         return weekDaysCount;

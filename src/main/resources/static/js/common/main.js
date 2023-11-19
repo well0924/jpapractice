@@ -8,6 +8,9 @@
 //달력 관련 JS
 $(document).ready(function() {
     calendarInit();
+    totalVisitor();
+    todayVisitorCount();
+    yesterdayVisitorCount();
 });
 function calendarInit() {
 
@@ -88,5 +91,43 @@ function calendarInit() {
     $('.go-next').on('click', function() {
         thisMonth = new Date(currentYear, currentMonth + 1, 1);
         renderCalender(thisMonth);
+    });
+}
+
+//방문자 수 (전체,어제,오늘)
+function totalVisitor(){
+    $.ajax({
+        url:'/api/visitor/total-count',
+        type:'get',
+        dataTye:'json'
+    }).done(function(resp){
+        console.log(resp.data);
+        //데이터 값을 태그에 넣기.
+        let data = '전체 방문자 :'+resp.data;
+        $('#totalCount').html(data);
+    });
+}
+
+function todayVisitorCount(){
+    $.ajax({
+        url:'/api/visitor/day-count',
+        type:'get',
+        dataTye: 'json'
+    }).done(function (resp){
+        console.log(resp);
+        let data = '오늘 방문자 :'+resp.data.today;
+        $('#todayCount').html(data);
+    });
+}
+
+function yesterdayVisitorCount(){
+    $.ajax({
+        url:'/api/visitor/yesterday-count',
+        type:'get',
+        dataTye:'json'
+    }).done(function(resp){
+        console.log(resp);
+        let data = '어제 방문자 :'+resp.data.yesterday;
+        $('#yesterdayCount').html(data);
     });
 }

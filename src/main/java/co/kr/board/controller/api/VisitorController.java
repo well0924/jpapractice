@@ -31,19 +31,17 @@ public class VisitorController {
     @GetMapping("/day-count")
     public Response<?>visitorDayList(){
         Map<String,Object>response = new HashMap<>();
-        List<LocalDateTime>labels = new ArrayList<>();
-        List<Integer>visitors = new ArrayList<>();
+        Integer dayCount = visitorService.countLoginsForLastDay();
+        response.put("today",dayCount);
+        return new Response<>(HttpStatus.OK.value(),response);
+    }
 
-        List<Visitor> dayCount = visitorService.countLoginsForLastDay();
-
-        for(Visitor visitor : dayCount){
-            labels.add(visitor.getLoginDateTime());
-            visitors.add(visitor.getId());
-        }
-
-        response.put("labels",labels);
-        response.put("visitors",visitors);
-
+    //어제 방문자
+    @GetMapping("/yesterday-count")
+    public Response<?>yesterDayVisitor(){
+        Map<String,Object>response = new HashMap<>();
+        Integer yesterDayCount = visitorService.countLoginForYesterDay();
+        response.put("yesterday",yesterDayCount);
         return new Response<>(HttpStatus.OK.value(),response);
     }
 
@@ -63,16 +61,22 @@ public class VisitorController {
         ZonedDateTime serverTime = utcNow.atZone(ZoneId.of("UTC")).withZoneSameInstant(serverTimeZone);
 
         LocalDateTime startOfWeek = serverTime.toLocalDate().atStartOfDay(serverTimeZone).minusWeeks(1).toLocalDateTime();
+
         for(int i=0;i<=7;i++){
             LocalDateTime startOfDay = startOfWeek.plusDays(i);
             labels.add(startOfDay);
         }
+
         response.put("labels",labels);
         response.put("DayCount",visitors);
-        log.info(visitors);
+
         return new Response<>(HttpStatus.OK.value(),response);
     }
 
-    //방문자 목록(한달)
-
+    //전체 방문자
+    @GetMapping("/total-count")
+    public Response<?>totalCount(){
+        Integer count = visitorService.countTotalVisitors();
+        return new Response<>(HttpStatus.OK.value(),count);
+    }
 }
