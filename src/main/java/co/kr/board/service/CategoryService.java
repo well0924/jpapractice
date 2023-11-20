@@ -32,7 +32,6 @@ public class CategoryService {
 
 
     //카테고리 목록
-    @Cacheable("category")
     public List<CategoryDto> categoryList() {
         List<CategoryDto> list = categoryRepository.categoryList();
         String cachedCategories = stringRedisTemplate.opsForValue().get(CacheKey.CATEGORY);

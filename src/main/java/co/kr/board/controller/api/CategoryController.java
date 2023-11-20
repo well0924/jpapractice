@@ -5,6 +5,7 @@ import co.kr.board.domain.Dto.CategoryDto;
 import co.kr.board.service.CategoryService;
 import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
+    @Cacheable("category")
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
@@ -28,7 +30,7 @@ public class CategoryController {
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @PostMapping("/createcategory")
     @ResponseStatus(HttpStatus.CREATED)
-    public Response<?> create(@RequestBody CategoryCreateRequest req){
+    public Response<?> categoryCreate(@RequestBody CategoryCreateRequest req){
         categoryService.create(req);
         return new Response<>(HttpStatus.OK.value(),200);
     }
@@ -36,7 +38,7 @@ public class CategoryController {
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @DeleteMapping("/deletecategory/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Response<?>categorydelete(@PathVariable(required = true,value = "id") Integer id){
+    public Response<?>categoryDelete(@PathVariable(required = true,value = "id") Integer id){
         categoryService.delete(id);
         return new Response<>(HttpStatus.OK.value(),200);
     }
