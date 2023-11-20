@@ -21,7 +21,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -65,36 +64,20 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
     //게시글 카테고리 목록(카테고리 및 정렬)
     @Override
     public Page<BoardDto.BoardResponseDto> findAllBoardList(String categoryName, Pageable pageable) {
-        List<BoardDto.BoardResponseDto>boardList = jpaQueryFactory
+        JPQLQuery<BoardDto.BoardResponseDto>boardList = jpaQueryFactory
                 .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
                 .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .on(qBoard.id.eq(qBoard.writer.id))
+                .leftJoin(qBoard.writer,qMember).fetchJoin()
                 .leftJoin(qBoard.category,qCategory)
-                .on(qCategory.id.eq(qBoard.category.id))
                 .leftJoin(qBoard.likes,qLike)
-                .on(qLike.board.id.eq(qBoard.id))
+                .leftJoin(qBoard.hashtags,qBoardHashTag)
+                .distinct()
                 .where(categoryName(categoryName))//카테고리명
                 .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-                .fetch();
+                .offset(pageable.getOffset());
 
-        //게시물 갯수
-        Long listCount = jpaQueryFactory
-                .select(qBoard.count())
-                .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .on(qBoard.id.eq(qBoard.writer.id))
-                .leftJoin(qBoard.category,qCategory)
-                .on(qCategory.id.eq(qBoard.category.id))
-                .leftJoin(qBoard.likes,qLike)
-                .on(qLike.board.id.eq(qBoard.id))
-                .where(categoryName(categoryName))//카테고리
-                .orderBy(getAllOrderSpecifiers(pageable.getSort()).toArray(OrderSpecifier[]::new))
-                .fetchOne();
-
-        return new PageImpl<>(boardList,pageable,listCount);
+        return PageableExecutionUtils.getPage(boardList.fetch(),pageable,boardList::fetchCount);
     }
 
     //게시글 목록 검색 + 정렬 + 페이징
@@ -103,10 +86,10 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
         JPQLQuery<BoardDto.BoardResponseDto>list = jpaQueryFactory
                 .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
                 .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .on(qBoard.id.eq(qBoard.writer.id))
+                .leftJoin(qBoard.writer,qMember).fetchJoin()
                 .leftJoin(qBoard.category,qCategory)
-                .on(qCategory.id.eq(qBoard.category.id))
+                .leftJoin(qBoard.likes,qLike)
+                .leftJoin(qBoard.hashtags,qBoardHashTag)
                 .distinct();
 
         JPQLQuery<BoardDto.BoardResponseDto>middleQuery = switch (searchType){
@@ -237,7 +220,7 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
     }
 
     //카테고리 이름
-    BooleanBuilder categoryName(String categoryName){return nullSafeBuilder(()->qCategory.name.containsIgnoreCase(categoryName));}
+    BooleanBuilder categoryName(String categoryName){return nullSafeBuilder(()->qBoard.category.name.containsIgnoreCase(categoryName));}
 
     //게시글 제목
     BooleanBuilder titleCt(String searchVal) {return nullSafeBuilder(() -> qBoard.boardTitle.contains(searchVal));}

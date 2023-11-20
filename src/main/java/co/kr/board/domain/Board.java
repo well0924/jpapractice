@@ -2,10 +2,7 @@ package co.kr.board.domain;
 
 import co.kr.board.domain.Dto.BoardDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
@@ -44,6 +41,8 @@ public class Board extends BaseTime implements Serializable {
     private Integer readCount;
     @Column(nullable = false)
     private Integer liked;//추천수
+
+    @Setter
     @Column(name = "board_pw",length = 10)
     private String password;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

@@ -313,7 +313,7 @@ public class BoardService{
 	 * 비밀글 전환
 	 * 게시글 관리자 페이지에서 공개글을 비밀글로 변환하는 기능
 	 */
-	public void changeSecretBoard(Integer id, BoardDto.BoardRequestDto dto){
+	public void changeSecretBoard(Integer id){
 		//랜덤으로 4자리 비밀번호를 발급
 		String randomPassword = getRandomPassword(4);
 		Optional<Board>detail = Optional
@@ -322,8 +322,7 @@ public class BoardService{
 						.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 
 		if(detail.get().getPassword()==null||detail.get().getPassword()==""){
-			dto.setPassword(randomPassword);
-			detail.get().passwordChange(dto);
+			detail.get().setPassword(randomPassword);
 			repos.save(detail.get());
 		}
 	}
@@ -332,7 +331,7 @@ public class BoardService{
 	 * 비밀번호 초기화
 	 * 게시글 관리자 페이지에서 비밀번호를 초기화하는 기능
  	 */
-	public void passwordReset(Integer boardId, BoardDto.BoardRequestDto dto){
+	public void passwordReset(Integer boardId){
 		Optional<Board> board = Optional
 				.ofNullable(repos
 						.findById(boardId)
@@ -340,8 +339,7 @@ public class BoardService{
 
 		//비밀번호가 있으면 비밀번호를 초기화
 		if(board.get().getPassword()!=null){
-			dto.setPassword(null);
-			board.get().passwordChange(dto);
+			board.get().setPassword(null);
 			repos.save(board.get());
 			log.info("초기화 값::"+board.get().getPassword());
 		}

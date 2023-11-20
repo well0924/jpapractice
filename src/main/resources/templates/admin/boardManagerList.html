@@ -227,19 +227,30 @@
                 }
                 //게시글 비밀글로 전환하기.
                 function convertSecretMessage(){
+                    //로컬 스토리지에 저장된 at
+                    let token = getItems();
+                    let result = token.value;
+
                     let boardId = $('#selectCheck').val();
                     let password = $('#boardPassword').val();
                     $.ajax({
                         url:'/api/board/change-board/'+boardId,
-                        type:'Post',
+                        type:'get',
+                        headers:{
+                            'Authorization': 'Bearer '+result,
+                        },
                         dataType: "json",
                         contentType: "application/json; charset=utf-8"
                     }).done(function(resp){
+                        console.log(boardId);
+                        console.log(password);
                         console.log(resp.data);
                         if(resp.data===null){
                             alert('비밀글로 변경 되었습니다.');
+                            location.href='/page/member/board/list';
                         }else{
                             alert('비밀번호를 초기화 했습니다.');
+                            location.href='/page/member/board/list';
                         }
                     });
                 }

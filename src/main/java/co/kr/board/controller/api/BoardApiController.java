@@ -146,15 +146,15 @@ public class BoardApiController {
 	}
 	
 	//게시글 비밀글로 전환 및 초기화
-	@PostMapping("/change-board/{id}")
-	@Secured({"ROLE_USER"})
-	public Response<?>changeBoard(@PathVariable("id")Integer boardId,@RequestBody BoardDto.BoardRequestDto dto){
+	@GetMapping("/change-board/{id}")
+	@Secured({"ROLE_USER","ROLE_ADMIN"})
+	public Response<?>changeBoard(@PathVariable("id")Integer boardId){
 		String result = service.checkPassword(boardId);
-		log.info(result);
+		log.info("result::"+result);
 		if(result == null){//값이 null인 경우
-			service.changeSecretBoard(boardId,dto);
+			service.changeSecretBoard(boardId);
 		} else {//비밀번호가 있는 경우
-			service.passwordReset(boardId,dto);
+			service.passwordReset(boardId);
 		}
 		return new Response<>(HttpStatus.OK.value(),result);
 	}

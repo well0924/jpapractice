@@ -9,6 +9,8 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,14 +21,14 @@ public class BoardDto {
     @Builder
     @RequiredArgsConstructor
     @AllArgsConstructor
-    public static class BoardRequestDto{
+    public static class BoardRequestDto implements Serializable{
         @NotBlank(message ="제목을 입력해주세요.")
         private String boardTitle;
         @NotBlank(message ="내용을 입력해주세요.")
         private String boardContents;
         private Integer readCount;
-        private String password;
-        private Set<String> hashTagName;
+        private String password = "";
+        private Set<String> hashTagName = new LinkedHashSet<>();
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
     }
@@ -46,7 +48,7 @@ public class BoardDto {
         private Integer readCount;
         private Integer liked;
         private String password;
-        private Set<String>hashtagName;
+        private Set<String>hashtagName = new LinkedHashSet<>();
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
         private LocalDateTime createdAt;
 
