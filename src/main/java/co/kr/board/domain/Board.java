@@ -6,10 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -67,7 +70,7 @@ public class Board extends BaseTime implements Serializable {
     //좋아요
     @ToString.Exclude
     @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private final Set<Like> likes = new HashSet<>();
+    private final Set<Like> likes = new LinkedHashSet<>();
 
     //카테고리
     @ToString.Exclude
@@ -77,8 +80,9 @@ public class Board extends BaseTime implements Serializable {
     private Category category;
 
     //해시태그(다대다)
+    @BatchSize(size = 100)
     @ToString.Exclude
-    @OneToMany(mappedBy = "board",fetch = FetchType.LAZY,orphanRemoval = true,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board",fetch = FetchType.EAGER,orphanRemoval = true,cascade = CascadeType.ALL)
     private Set<BoardHashTag> hashtags = new LinkedHashSet<>();
 
     //스크랩
@@ -140,7 +144,7 @@ public class Board extends BaseTime implements Serializable {
         this.liked -=1;
     }
 
-    //연관관계 연결
+    //연관관계 연결(다대다 관계)
     public void setTag(Set<BoardHashTag>boardTags){
         for(BoardHashTag boardTag : boardTags){
             if(!hashtags.contains(boardTag)){
@@ -149,10 +153,4 @@ public class Board extends BaseTime implements Serializable {
             }
         }
     }
-    //해시태그 삭제
-    public void clearHashTag(){
-        this.getHashtags().clear();
-    }
-
-
 }
