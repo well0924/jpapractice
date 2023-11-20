@@ -28,7 +28,7 @@ public class mainController {
 	private final HashTagService hashTagService;
 
 	@GetMapping("/mainpage")
-	public ModelAndView mainPage()throws Exception{
+	public ModelAndView mainPage(){
 		ModelAndView mv = new ModelAndView();
 
 		//게시글 전체갯수.

@@ -4,7 +4,6 @@ import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.service.BoardService;
-import co.kr.board.service.CategoryService;
 import co.kr.board.service.CommentService;
 import co.kr.board.service.MemberService;
 import lombok.AllArgsConstructor;
@@ -30,8 +29,6 @@ public class MemberController {
     private final BoardService boardService;
 
     private final CommentService commentService;
-
-    private final CategoryService categoryService;
 
     //회원 가입
     @GetMapping("/memberjoin")
