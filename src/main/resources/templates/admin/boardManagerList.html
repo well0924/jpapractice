@@ -188,6 +188,10 @@
 
                 //게시글 선택 삭제
                 function boardSelectDelete(){
+                    //로컬 스토리지에 저장된 at
+                    let token = getItems();
+                    let result = token.value;
+
                     let boardArray = [];
 
                     $("input:checkbox[name=checkboxed]:checked").each(function(){
@@ -207,6 +211,9 @@
                             url:'/api/board/select-delete',
                             type:'post',
                             dataType:'json',
+                            headers:{
+                                'Authorization': 'Bearer '+result,
+                            },
                             data:JSON.stringify(boardArray),
                             contentType:'application/json'
                         }).done(function(status){
@@ -222,12 +229,9 @@
                 function convertSecretMessage(){
                     let boardId = $('#selectCheck').val();
                     let password = $('#boardPassword').val();
-                    console.log("/?????");
-
                     $.ajax({
                         url:'/api/board/change-board/'+boardId,
                         type:'Post',
-                        data:JSON.stringify(password),
                         dataType: "json",
                         contentType: "application/json; charset=utf-8"
                     }).done(function(resp){

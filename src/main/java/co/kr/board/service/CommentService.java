@@ -3,6 +3,8 @@ package co.kr.board.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
+
 import co.kr.board.domain.Board;
 import co.kr.board.repository.MemberRepository;
 import org.springframework.data.domain.Page;
@@ -155,10 +157,10 @@ public class CommentService {
 	 * 댓글 선택 삭제
 	 * @param commentId: 선택된 댓글 번호(List)
 	 */
-	public void commentSelectDelete(List<String>commentId){
-		for(int i = 0; i<commentId.size(); i++){
-			repository.deleteAllById(commentId);
-		}
+	public void commentSelectDelete(List<Integer>commentId){
+		IntStream.range(0,commentId.size())
+				.mapToObj(i->commentId)
+				.forEach(repository::deleteAllById);
 	}
 
 	//회원이 작성한 댓글 목록

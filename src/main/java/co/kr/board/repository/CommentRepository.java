@@ -17,5 +17,5 @@ public interface CommentRepository extends CrudRepository<Comment, Integer>, Com
     @Modifying
     @Transactional
     @Query(value = "delete from Comment c where c.id in :id")
-    void deleteAllById(@Param("id")List<String> commentId);
+    void deleteAllById(@Param("id")List<Integer> commentId);
 }

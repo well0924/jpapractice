@@ -26,7 +26,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer>, BoardCus
 	@Transactional
 	@Modifying
 	@Query(value = "delete from Board b where b.id in :boardId")
-	void deleteAllById(List<String>boardId);
+	void deleteAllById(@Param("boardId") List<Integer>boardId);
 
 	//비밀글 확인
 	@Query(value = "select b from Board b where b.id = :id and b.password = :pw")

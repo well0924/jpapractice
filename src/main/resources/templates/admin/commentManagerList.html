@@ -171,6 +171,9 @@
 
                 //댓글 선택 삭제
                 function commentSelectDelete(){
+                    //로컬 스토리지에 저장된 at
+                    let token = getItems();
+                    let result = token.value;
                     let commentArray = [];
 
                     $("input:checkbox[name=checkboxed]:checked").each(function(){
@@ -187,8 +190,9 @@
 
                     if(confirmAlert){
                         $.ajax({
-                            url:'/api/board/select-delete',
+                            url:'/api/comment/select-delete',
                             type:'post',
+                            headers:{'Authorization' : 'Bearer '+result},
                             dataType:'json',
                             data:JSON.stringify(commentArray),
                             contentType:'application/json'

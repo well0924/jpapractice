@@ -295,10 +295,9 @@ public class BoardService{
 	 * @param boardId 게시글 번호들
 	 */
 	@Transactional
-	public void boardSelectDelete(List<String>boardId){
-		IntStream
-				.range(0, boardId.size())
-				.mapToObj(i -> boardId)
+	public void boardSelectDelete(List<Integer>boardId){
+		IntStream.range(0,boardId.size())
+				.mapToObj(i->boardId)
 				.forEach(repos::deleteAllById);
 	}
 

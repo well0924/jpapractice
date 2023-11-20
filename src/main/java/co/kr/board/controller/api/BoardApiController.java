@@ -129,11 +129,12 @@ public class BoardApiController {
 	}
 
 	//게시물 선택 삭제
-	@DeleteMapping("/select-delete")
+	@PostMapping("/select-delete")
 	@Secured({"ROLE_ADMIN"})
-	public Response<?>boardSelectDelete(@RequestBody List<String> boardId){
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public Response<List<String>>boardSelectDelete(@RequestBody List<Integer> boardId){
 		service.boardSelectDelete(boardId);
-		return new Response<>(HttpStatus.NO_CONTENT.value(),null);
+		return new Response<>(HttpStatus.NO_CONTENT.value(), null);
 	}
 	
 	//게시물 비밀번호 확인
@@ -149,13 +150,11 @@ public class BoardApiController {
 	@Secured({"ROLE_USER"})
 	public Response<?>changeBoard(@PathVariable("id")Integer boardId,@RequestBody BoardDto.BoardRequestDto dto){
 		String result = service.checkPassword(boardId);
-
+		log.info(result);
 		if(result == null){//값이 null인 경우
-			//비밀글로 변경하기. (임시 비밀번호 4자리 발급)
-			service.passwordReset(boardId,dto);
-		} else {//비밀번호가 있는 경우
-			//비밀번호가 있으면 비밀번호를 리셋 
 			service.changeSecretBoard(boardId,dto);
+		} else {//비밀번호가 있는 경우
+			service.passwordReset(boardId,dto);
 		}
 		return new Response<>(HttpStatus.OK.value(),result);
 	}
