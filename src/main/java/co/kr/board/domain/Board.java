@@ -103,11 +103,6 @@ public class Board extends BaseTime implements Serializable {
         this.writer = member;
     }
 
-    //게시글 조회수 증가
-    public void countUp() {
-        this.readCount ++;
-    }
-
     //게시글 수정
     public void updateBoard(BoardDto.BoardRequestDto dto) {
         if(dto.getBoardTitle()!=null){

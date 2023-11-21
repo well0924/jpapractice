@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
@@ -141,16 +142,19 @@ public class BoardService{
 	@Transactional
 	public BoardResponseDto getBoard(Integer boardId){
 		//글 조회
-		Optional<Board>articlelist = Optional.ofNullable(repos.findById(boardId)
-				.orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
-
-		//게시글 조회수 증가->중복 증가 방지필요
-		articlelist.get().countUp();
-
+		Optional<Board>articlelist = repos.findByboardId(boardId);
+		if(articlelist.isPresent()){
+			updateReadCount(boardId);
+		}
+		log.info("내 조회수는??:"+articlelist.get().getReadCount());
 		return BoardDto.BoardResponseDto
 			   .builder()
 			   .board(articlelist.get())
 			   .build();
+	}
+
+	public void updateReadCount(Integer boardId){
+		repos.updateByReadCount(boardId);
 	}
 
 	/*

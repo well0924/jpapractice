@@ -4,9 +4,11 @@ import co.kr.board.Config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
+import co.kr.board.domain.Visitor;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
 import co.kr.board.repository.HashTagRepository;
+import co.kr.board.repository.VisitorRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +22,16 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 @DataJpaTest
 @Import({TestQueryDslConfig.class})
@@ -39,6 +46,9 @@ public class BoardRepositoryTest {
 
     @Autowired
     private HashTagRepository hashTagRepository;
+
+    @Autowired
+    private VisitorRepository visitorRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -108,10 +118,17 @@ public class BoardRepositoryTest {
     }
 
     @Test
+    @DisplayName("관련 해시태그 게시글 목록이 나오는가?")
     public void hashtest(){
         Pageable pageable = Pageable.ofSize(5);
         Page<BoardDto.BoardResponseDto>list = boardRepository.findAllHashTagWithBoard("spring",pageable);
         System.out.println(list.toList());
+    }
 
+    @Test
+    @DisplayName("테스트")
+    public void selectDelete(){
+        String result=boardRepository.boardPasswordCheck(332);
+        System.out.println(result);
     }
 }
