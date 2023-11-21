@@ -1,6 +1,7 @@
 package co.kr.board.domain;
 
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -23,6 +24,7 @@ public class Category implements Serializable {
     @Column(length = 50,nullable = false)
     private String name;
 
+    @BatchSize(size = 10)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="parent_id",referencedColumnName = "category_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
