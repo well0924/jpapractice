@@ -27,6 +27,7 @@ public interface BoardRepository extends JpaRepository<Board, Integer>, BoardCus
 	@Transactional
 	@Query(value = "update Board b set b.readCount = b.readCount+1 where b.id = :id")
 	void updateByReadCount(@Param("id") Integer boardId);
+
 	//게시글 전체갯수
 	@Query(value = "select count(*) from Board b")
 	Integer ArticleCount();

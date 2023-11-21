@@ -146,7 +146,7 @@ public class BoardService{
 		if(articlelist.isPresent()){
 			updateReadCount(boardId);
 		}
-		log.info("내 조회수는??:"+articlelist.get().getReadCount());
+
 		return BoardDto.BoardResponseDto
 			   .builder()
 			   .board(articlelist.get())
