@@ -170,10 +170,7 @@ function validTokenExpiredTime(exp){
     }
 }
 
-function createLocation(username){
-}
-
-//쿠키에 저장된 값 가져오기.
+//쿠키에 저장된 값 가져오기.(xss 공격에 취약한데 어떻게 처리를 해야될지.....)
 function getRefreshToken() {
     // document.cookie로부터 쿠키 값을 읽어옵니다.
     var cookies = document.cookie.split(';');
