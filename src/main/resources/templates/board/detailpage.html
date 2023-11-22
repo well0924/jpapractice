@@ -19,6 +19,7 @@ layout:decorate="~{layout/mainlayout}">
     <legend>글 조회</legend>
     <div class="card-header d-flex justify-content-between">
       <input type="hidden" id="boardid" name="boardId" th:value="${detail.boardId}">
+      <input type="hidden" id="board-password" name="password" th:value="${detail.password}">
       <label for="boardid">번호 : [[${detail.boardId}]]</label>
       <label>작성일 : [[${detail.createdAt}]]</label>
     </div>
