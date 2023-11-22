@@ -103,10 +103,11 @@ public class BoardApiController {
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>updateArticle(
 			@PathVariable(value="id")Integer boardId,
-			@Valid @RequestPart(value = "boardupdate") BoardDto.BoardRequestDto dto, BindingResult bindingresult,
+			@Valid @RequestPart(value = "boardupdate") BoardDto.BoardRequestDto dto,
+			BindingResult bindingresult,
 			@RequestPart(value = "filelist",required = false)List<MultipartFile>fileList)throws Exception{
 
-		int updateResult = service.updateBoard(boardId, dto,fileList);
+		int updateResult = service.updateBoard(boardId,dto,fileList);
 
 		return new Response<>(HttpStatus.OK.value(),updateResult);
 	}
