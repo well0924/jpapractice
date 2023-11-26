@@ -34,7 +34,7 @@ public class MemberRepository {
         System.out.println("현재시간:"+startTime);
         //종료시간 23:59:00
         LocalDateTime endTime = serverTime.toLocalDate().now().atTime(23,59,0);
-        List<Visitor>list = visitorRepository.findDistinctUserIdsForBetween(startTime,endTime);
+        List<Visitor>list = visitorRepository.findDistinctByUsernameForBetween(startTime,endTime);
         System.out.println("result::"+list);
     }
 }
