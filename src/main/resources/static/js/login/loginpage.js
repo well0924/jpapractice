@@ -2,8 +2,8 @@
 *  로그인 기능
 */
 function loginproc(){
-    let userid = $('#user_id').val();
-    let userpw = $('#user_pw').val();
+    let userid = $('#user_id').val().trim();
+    let userpw = $('#user_pw').val().trim();
 
     let logindata = {
         username : userid,
