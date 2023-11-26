@@ -30,13 +30,13 @@ public class CategoryService {
     private StringRedisTemplate stringRedisTemplate;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-
     //카테고리 목록
+    @Cacheable("category")
     public List<CategoryDto> categoryList() {
         List<CategoryDto> list = categoryRepository.categoryList();
         String cachedCategories = stringRedisTemplate.opsForValue().get(CacheKey.CATEGORY);
         if(cachedCategories!=null){
-            log.info(list);
+            log.info("목록::"+list);
             list = deserializeCategories(cachedCategories);
         }else{
             stringRedisTemplate.opsForValue().set(CacheKey.CATEGORY,serializeCategories(list));

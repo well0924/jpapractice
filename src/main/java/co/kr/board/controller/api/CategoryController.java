@@ -18,7 +18,7 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @Cacheable("category")
+   
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
