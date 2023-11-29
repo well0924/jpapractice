@@ -24,6 +24,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Log4j2
 @Configuration
 @EnableWebSecurity
@@ -81,6 +84,7 @@ public class SecurityConfig{
 				.antMatchers("/api/board/*").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 				.antMatchers("/api/reply/*").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 				.antMatchers("/api/like/*").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+				.antMatchers("/api/scrap/*").access("hasRole('ROLE_USER')")
 				.antMatchers("/api/login/*").permitAll()
 				.antMatchers("/page/**").permitAll()
 				.anyRequest()
@@ -96,10 +100,10 @@ public class SecurityConfig{
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-
-		configuration.addAllowedOrigin("*");
-		configuration.addAllowedHeader("*");
-		configuration.addAllowedMethod("*");
+		configuration.setAllowedOriginPatterns(List.of("*"));
+		configuration.setAllowedMethods(Arrays.asList("*")); // 사용할 CRUD 메소드 등록
+		configuration.setAllowedHeaders(Arrays.asList("*")); // 사용할 Header 등록
+		configuration.setExposedHeaders(Arrays.asList("authorization", "refreshToken"));
 		configuration.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
