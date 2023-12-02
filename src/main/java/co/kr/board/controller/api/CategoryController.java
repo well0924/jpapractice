@@ -5,7 +5,6 @@ import co.kr.board.domain.Dto.CategoryDto;
 import co.kr.board.service.CategoryService;
 import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;

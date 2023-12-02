@@ -31,15 +31,17 @@ public class CategoryService {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     //카테고리 목록
-    @Cacheable("category")
     public List<CategoryDto> categoryList() {
         List<CategoryDto> list = categoryRepository.categoryList();
+
         String cachedCategories = stringRedisTemplate.opsForValue().get(CacheKey.CATEGORY);
+
         if(cachedCategories!=null){
             log.info("목록::"+list);
             list = deserializeCategories(cachedCategories);
         }else{
             stringRedisTemplate.opsForValue().set(CacheKey.CATEGORY,serializeCategories(list));
+            log.info("목록::"+list+"null임??");
         }
         return list;
     }
@@ -68,7 +70,8 @@ public class CategoryService {
             categoryRepository.deleteById(id);
         }
     }
-
+    
+    //cache 직렬화 설정
     private String serializeCategories(List<CategoryDto> categories) {
         try {
             return objectMapper.writeValueAsString(categories);
@@ -76,7 +79,8 @@ public class CategoryService {
             throw new RuntimeException("Error serializing categories", e);
         }
     }
-
+    
+    //cache 역직렬화 설정
     private List<CategoryDto> deserializeCategories(String cachedCategories) {
         try {
             TypeReference<List<CategoryDto>> typeReference = new TypeReference<List<CategoryDto>>(){};
