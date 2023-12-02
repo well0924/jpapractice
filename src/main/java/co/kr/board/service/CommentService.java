@@ -10,8 +10,6 @@ import co.kr.board.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.repository.BoardRepository;
@@ -114,36 +112,6 @@ public class CommentService {
 
 		repository.deleteById(replyId);
 	}
-	
-	/*
-	 * 댓글 수정 기능
-	 * @Param CommentRequestDto 
-	 * @Param Member
-	 * @Param replyId
-	 * 
-	 * @Exception:로그인을 안한 경우 ONLY_USER
-	 * @Exception:수정시 로그인한 아이디와 댓글 작성자가 일치하지 않은 경우 COMMENT_EDITE_DENINED
-	 */
-	@Transactional
-	public Integer replyUpdate(CommentDto.CommentRequestDto dto,Member principal,Integer replyId){
-		
-		if(principal == null) {
-			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
-		}
-		
-		Comment comment = repository.findById(replyId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-		
-		String userid= principal.getUsername();
-		String replywriter= comment.getReplyWriter();
-		
-		if(!userid.equals(replywriter)) {
-			throw new CustomExceptionHandler(ErrorCode.COMMENT_EDITE_DENIED);
-		}
-		
-		comment.contentsChange(dto.getReplyContents());
-		
-		return comment.getId();
-	}
 
 	/*
 	 * 최근에 작성한 댓글 5개 출력하기.
@@ -167,13 +135,5 @@ public class CommentService {
 	@Transactional(readOnly = true)
 	public Page<CommentDto.CommentResponseDto>getMyComment(String username,Pageable pageable) throws Exception {
 		return repository.getMyComment(username,pageable);
-	}
-
-	//회원 인증
-	private Member getMember(){
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getName().toString();
-		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-		return member;
 	}
 }

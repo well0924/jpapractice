@@ -79,7 +79,7 @@ public class CommentApiController {
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@PostMapping("/select-delete")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public Response<?>commentSelectDelete(@RequestBody List<Integer>commentId)throws Exception{
+	public Response<?>commentSelectDelete(@RequestBody List<Integer>commentId){
 		service.commentSelectDelete(commentId);
 		return new Response<>(HttpStatus.NO_CONTENT.value(), null);
 	}
@@ -95,8 +95,7 @@ public class CommentApiController {
 	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = (String)authentication.getName().toString();
-		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
-		return member;
+		String username = authentication.getName().toString();
+		return memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 	}
 }
