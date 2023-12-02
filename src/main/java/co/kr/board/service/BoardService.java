@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import co.kr.board.config.Redis.CacheKey;
 import co.kr.board.domain.*;
 import co.kr.board.domain.Const.SearchType;
 import co.kr.board.domain.Dto.BoardDto;
@@ -13,12 +14,13 @@ import co.kr.board.domain.Dto.BoardDto.BoardResponseDto;
 import co.kr.board.repository.*;
 import co.kr.board.domain.Dto.AttachDto;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.kr.board.config.Exception.dto.ErrorCode;
@@ -140,6 +142,7 @@ public class BoardService{
      * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
     */
 	@Transactional
+	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public BoardResponseDto getBoard(Integer boardId){
 		//글 조회
 		Optional<Board>articlelist = repos.findByboardId(boardId);
@@ -153,6 +156,10 @@ public class BoardService{
 			   .build();
 	}
 
+	/*
+	 * 게시글 조회수 증가.
+	 * @Param boardId 게시글 번호
+	 */
 	public void updateReadCount(Integer boardId){
 		repos.updateByReadCount(boardId);
 	}
@@ -165,6 +172,7 @@ public class BoardService{
 	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
+	@CacheEvict(value = CacheKey.BOARD,key = "#boardId")
 	public void deleteBoard(Integer boardId)throws Exception{
 
 		Member member = getMember();
@@ -316,6 +324,7 @@ public class BoardService{
 	/*
 	 * 비밀글 전환
 	 * 게시글 관리자 페이지에서 공개글을 비밀글로 변환하는 기능
+	 * @Param id 게시글 번호
 	 */
 	public void changeSecretBoard(Integer id){
 		//랜덤으로 4자리 비밀번호를 발급
@@ -334,6 +343,7 @@ public class BoardService{
 	/*
 	 * 비밀번호 초기화
 	 * 게시글 관리자 페이지에서 비밀번호를 초기화하는 기능
+	 * @param boardId 게시글 번호
  	 */
 	public void passwordReset(Integer boardId){
 		Optional<Board> board = Optional
@@ -349,7 +359,11 @@ public class BoardService{
 		}
 	}
 
-	//비밀번호 여부조회
+	/*
+	* 비밀번호 조회여부
+	* 게시글 조회시 비밀번호가 있는 경우 비밀번호 확인 페이지에서 비밀번호 확인하는 기능
+	* @Param boardId 게시글 번호 
+	*/
 	@Transactional(readOnly = true)
 	public String checkPassword(Integer boardId){
 		return repos.boardPasswordCheck(boardId);

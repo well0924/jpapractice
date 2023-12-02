@@ -1,11 +1,8 @@
 package co.kr.board.controller.api;
 
 import javax.validation.Valid;
-import co.kr.board.config.Redis.CacheKey;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,8 +25,6 @@ import java.util.List;
 @RequestMapping("/api/board/*")
 public class BoardApiController {
 	private final BoardService service;
-
-
 
 	//게시글 목록(카테고리 + 페이징 + 정렬)
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
@@ -62,7 +57,6 @@ public class BoardApiController {
 	@GetMapping("/detail/{id}")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code=HttpStatus.OK)
-	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
 		log.info("detail");
 		BoardDto.BoardResponseDto detail = service.getBoard(boardId);
@@ -89,7 +83,6 @@ public class BoardApiController {
 	
 	//게시글 삭제
 	@DeleteMapping("/delete/{id}")
-	@CacheEvict(value = CacheKey.BOARD,key = "#boardId")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
 	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId)throws Exception{
