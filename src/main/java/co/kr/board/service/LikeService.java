@@ -3,6 +3,7 @@ package co.kr.board.service;
 import co.kr.board.domain.Board;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.domain.Const.NoticeType;
 import co.kr.board.domain.Like;
 import co.kr.board.repository.LikeRepository;
 import co.kr.board.domain.Member;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
     private final LikeRepository repository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
     private final String likeMessage ="좋아요 처리 완료";
     private final String likeCancelMessage ="좋아요 취소 처리 완료";
 
@@ -35,6 +37,9 @@ public class LikeService {
         //좋아요 증가
         board.increaseLikeCount();
         Like like = new Like(board,member);
+        //좋아요 알림
+        String message = member.getUsername()+"님이 게시글에 좋아요를 누르셨습니다.";
+        notificationService.send(member, NoticeType.LIKE,message);
         repository.save(like);
         return likeMessage;
     }
