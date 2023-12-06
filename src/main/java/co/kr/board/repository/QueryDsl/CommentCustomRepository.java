@@ -15,4 +15,6 @@ public interface CommentCustomRepository {
     List<CommentDto.CommentResponseDto> findTop5ByOrderByReplyIdCreatedAtDesc()throws Exception;
     //회원이 작성한 댓글
     Page<CommentDto.CommentResponseDto> getMyComment(String username,Pageable pageable)throws Exception;
+    //댓글 선택삭제
+    void deleteAllById(List<Integer> commentId);
 }

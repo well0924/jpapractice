@@ -11,7 +11,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +88,17 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
 
         return PageableExecutionUtils
                 .getPage(list.fetch(),pageable,list::fetchCount);
+    }
+    
+    //댓글 선택삭제
+    @Modifying
+    @Transactional
+    @Override
+    public void deleteAllById(List<Integer> commentId) {
+        jpaQueryFactory
+                .delete(qComment)
+                .where(qComment.id.in(commentId))
+                .execute();
     }
 
     //댓글 정렬

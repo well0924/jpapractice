@@ -10,18 +10,22 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -117,15 +121,15 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
     @Override
     public Page<BoardDto.BoardResponseDto> findByAllContents(String username, Pageable pageable) {
 
-        List<Board>myarticle = getMyArticle(username,pageable);
-        long count = getMyArticleCount(username);
+        JPQLQuery<BoardDto.BoardResponseDto>result = jpaQueryFactory
+                .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
+                .from(qBoard)
+                .leftJoin(qBoard.writer,qMember)
+                .where(qMember.username.eq(username))
+                .orderBy(qBoard.id.desc());
 
-        List<BoardDto.BoardResponseDto>list = myarticle
-                .stream()
-                .map(BoardDto.BoardResponseDto::new)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(list,pageable,count);
+        return PageableExecutionUtils
+                .getPage(result.fetch(),pageable,result::fetchCount);
     }
     
     //최근에 작성한 글(5개) o.k
@@ -172,6 +176,50 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
 
         return PageableExecutionUtils.getPage(list.fetch(),pageable,list::fetchCount);
     }
+    
+    //게시글 선택삭제
+    @Modifying
+    @Transactional
+    @Override
+    public void deleteAllByBoard(List<Integer> boardId) {
+        jpaQueryFactory
+                .delete(qBoard)
+                .where(qBoard.id.in(boardId))
+                .execute();
+    }
+
+    @Override
+    public Optional<BoardDto.BoardResponseDto> findByBoardDetail(Integer boardId) {
+        BoardDto.BoardResponseDto result = jpaQueryFactory
+                .select(Projections
+                        .constructor(BoardDto.BoardResponseDto.class,qBoard))
+                .from(qBoard)
+                .where(qBoard.id.eq(boardId))
+                .setLockMode(LockModeType.PESSIMISTIC_WRITE)
+                .fetchOne();
+        return Optional.ofNullable(result);
+    }
+
+    @Modifying
+    @Transactional
+    @Override
+    public void updateReadCount(Integer boardId) {
+        jpaQueryFactory.update(qBoard)
+                .set(qBoard.readCount,qBoard.readCount.add(1))
+                .where(qBoard.id.eq(boardId))
+                .execute();
+    }
+
+    @Override
+    public BoardDto.BoardResponseDto passwordCheck(String password,Integer boardId) {
+        JPAQuery<BoardDto.BoardResponseDto> result = jpaQueryFactory
+                .select(Projections
+                .constructor(BoardDto.BoardResponseDto.class,qBoard))
+                .from(qBoard)
+                .where(qBoard.id.eq(boardId)
+                        .and(qBoard.password.eq(password)));
+        return result.fetchOne();
+    }
 
     //게시글 다음글 o.k
     private Integer findNextBoard(Integer boardId){
@@ -193,29 +241,6 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
                 .where(qBoard.id.gt(boardId))
                 .orderBy(qBoard.id.asc())
                 .limit(1)
-                .fetchOne();
-    }
-
-    //회원이 작성한 글 목록 o.k
-    private List<Board>getMyArticle(String username,Pageable pageable){
-        return jpaQueryFactory
-                .select(qBoard)
-                .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .where(qMember.username.eq(username))
-                .orderBy(qBoard.id.desc())
-                .limit(pageable.getPageSize())
-                .offset(pageable.getOffset())
-                .fetch();
-    }
-
-    //회원이 작성한 글 개수
-    private Long getMyArticleCount(String username){
-        return jpaQueryFactory
-                .select(qBoard.count())
-                .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .where(qMember.username.eq(username))
                 .fetchOne();
     }
 

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BoardCustomRepository {
 
@@ -29,4 +30,16 @@ public interface BoardCustomRepository {
 
     //해시태그에 관련된 게시글 목록
     Page<BoardDto.BoardResponseDto>findAllHashTagWithBoard(String tagName,Pageable pageable);
+
+    //게시글 선택삭제
+    void deleteAllByBoard(List<Integer>boardId);
+    
+    //게시글 단일 조회
+    Optional<BoardDto.BoardResponseDto>findByBoardDetail(Integer boardId);
+
+    //조회수 증가
+    void updateReadCount(Integer boardId);
+
+    //비밀글 확인
+    BoardDto.BoardResponseDto passwordCheck(String password,Integer boardId);
 }
