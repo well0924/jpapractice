@@ -1,10 +1,7 @@
 package co.kr.board.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,19 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 	private final MemberRepository  repository;
 	private final BCryptPasswordEncoder encoder;
-	
-	/*
-	 * 회원 목록 
-	 * 어드민으로 로그인을 했을 경우 회원 목록출력
-	 * 
-	 */
-	@Transactional
-	public List<MemberDto.MemeberResponseDto>findAll(){
-		
-		List<Member>memberlist = repository.findAll();
-
-		return memberlist.stream().map(member->new MemeberResponseDto(member)).collect(Collectors.toList());
-	}
 	
 	/*
 	 * 회원 목록(페이징)
@@ -73,18 +57,14 @@ public class MemberService {
 	 */
 	@Transactional(readOnly = true)
 	public MemberDto.MemeberResponseDto getMember(Integer useridx){
-		Optional<Member>memberdetail = Optional.ofNullable(repository.findById(useridx).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER)));
+		Optional<MemberDto.MemeberResponseDto>result = repository
+				.findByMemberDetail(useridx);
 
-		if(!memberdetail.isPresent()){
+		if(!result.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}
 
-		Member member = memberdetail.get();
-
-		return MemberDto.MemeberResponseDto
-				.builder()
-				.member(member)
-				.build();
+		return result.get();
 	}
 
 	/*
@@ -179,11 +159,15 @@ public class MemberService {
 	 */
 	@Transactional
 	public String findByMembernameAndUseremail(String membername, String useremail){
-		Optional<Member> member = repository.findByMembernameAndUseremail(membername, useremail);
 
-		Member detail = member.get();
+		Optional<MemberDto.MemeberResponseDto> member = Optional
+				.ofNullable(repository
+				.findByMemberNameAndUserEmail(membername, useremail)
+				.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_USER)));
 
-		return detail.getUsername();
+		MemberDto.MemeberResponseDto result = member.get();
+
+		return result.getUsername();
 	}
 
 	/*
@@ -204,15 +188,6 @@ public class MemberService {
 
 		return memberDetail.get().getId();
 	}
-
-	/*
-	 * 비밀번호 유효성 검사
-	 */
-    public void passwordvalidation(Member memberAccount,LoginDto dto){
-        if(!encoder.matches(dto.getPassword(),memberAccount.getPassword())){
-            throw new CustomExceptionHandler(ErrorCode.NOT_PASSWORD_MATCH);
-        }
-    }
 
 	//Dto에서 Entity 로 변환
 	public Member dtoToEntity(MemberDto.MemberRequestDto dto) {
