@@ -64,6 +64,24 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
         return Optional.ofNullable(result);
     }
 
+    @Override
+    public Boolean existsByUsername(String userename) {
+        return jpaQueryFactory
+                .selectOne()
+                .from(qMember)
+                .where(qMember.username.eq(userename))
+                .fetchFirst()!=null;
+    }
+
+    @Override
+    public Boolean existsByUseremail(String useremail) {
+        return jpaQueryFactory
+                .selectOne()
+                .from(qMember)
+                .where(qMember.useremail.eq(useremail))
+                .fetchFirst()!=null;
+    }
+
     //회원 목록
     private List<Member> getMemberDto(String searchVal, Pageable pageable){
         return jpaQueryFactory

@@ -13,4 +13,8 @@ public interface MemberCustomRepository {
     Optional<MemberDto.MemeberResponseDto>findByMemberDetail(Integer useridx);
     //회원 아이디 찾기
     Optional<MemberDto.MemeberResponseDto>findByMemberNameAndUserEmail(String memberName,String userEmail);
+    //아이디 중복여부 o.k
+    Boolean existsByUsername(String userename);
+    //이메일 중복여부 o.k
+    Boolean existsByUseremail(String useremail);
 }
