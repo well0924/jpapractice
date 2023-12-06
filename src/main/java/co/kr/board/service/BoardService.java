@@ -145,15 +145,15 @@ public class BoardService{
 	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
 	public BoardResponseDto getBoard(Integer boardId){
 		//글 조회
-		Optional<Board>articlelist = repos.findByboardId(boardId);
-		if(articlelist.isPresent()){
+		Optional<BoardResponseDto>boardDetail = Optional
+				.ofNullable(repos.findByBoardDetail(boardId)
+				.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
+
+		if(boardDetail.isPresent()){
 			updateReadCount(boardId);
 		}
 
-		return BoardDto.BoardResponseDto
-			   .builder()
-			   .board(articlelist.get())
-			   .build();
+		return boardDetail.get();
 	}
 
 	/*
@@ -161,7 +161,7 @@ public class BoardService{
 	 * @Param boardId 게시글 번호
 	 */
 	public void updateReadCount(Integer boardId){
-		repos.updateByReadCount(boardId);
+		repos.updateReadCount(boardId);
 	}
 
 	/*
@@ -310,7 +310,7 @@ public class BoardService{
 	public void boardSelectDelete(List<Integer>boardId){
 		IntStream.range(0,boardId.size())
 				.mapToObj(i->boardId)
-				.forEach(repos::deleteAllById);
+				.forEach(repos::deleteAllByBoard);
 	}
 
 	/*

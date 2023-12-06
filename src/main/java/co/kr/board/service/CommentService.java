@@ -6,8 +6,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import co.kr.board.domain.Board;
-import co.kr.board.domain.Const.NoticeType;
-import co.kr.board.repository.MemberRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -31,7 +29,6 @@ public class CommentService {
 	
 	private final BoardRepository boardrepository;
 
-	private final NotificationService notificationService;
 
 	/*
 	 * 댓글 목록 (페이징)
@@ -84,11 +81,7 @@ public class CommentService {
 				.createdAt(dto.getCreatedAt())
 				.build();
 
-		String message = principal.getUsername()+"님의 게시글에 댓글을 달았습니다.";
-
 		repository.save(reply);
-
-		notificationService.send(principal, NoticeType.REPLY,message);
 
 		board.getCommentlist().add(reply);
 		

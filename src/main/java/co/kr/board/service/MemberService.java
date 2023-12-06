@@ -12,7 +12,6 @@ import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Const.Role;
-import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.domain.Dto.MemberDto.MemeberResponseDto;
 import co.kr.board.repository.MemberRepository;
@@ -40,6 +39,7 @@ public class MemberService {
 
 		return members.map(member -> new MemeberResponseDto(member));
 	}
+
 	/*
 	* 회원 목록(페이징 + 검색)
 	* 어드민 페이지에서 회원아이디를 검색하는 기능
@@ -134,7 +134,7 @@ public class MemberService {
 	 * @Exception: 아이디가 중복이 되면 USERID_DUPLICATE
 	 * 회원가입 페이지에서 아이디 중복확인
 	 */
-	@Transactional
+	@Transactional(readOnly = true)
 	public Boolean checkmemberIdDuplicate(String username){
 		return repository.existsByUsername(username);
 	}
@@ -145,7 +145,7 @@ public class MemberService {
 	 * @Exception: 이메일이 중복이되면 USEREMAIL_DUPLICATE
 	 * 회원가입 페이지에서 이메일 중복확인
 	 */
-	@Transactional
+	@Transactional(readOnly = true)
 	public Boolean checkmemberEmailDuplicate(String useremail){
 		return repository.existsByUseremail(useremail);
 	}
