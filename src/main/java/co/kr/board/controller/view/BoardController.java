@@ -4,9 +4,7 @@ import javax.validation.Valid;
 
 import co.kr.board.domain.Dto.*;
 import co.kr.board.domain.Const.SearchType;
-import co.kr.board.service.CategoryService;
 import co.kr.board.service.FileService;
-import co.kr.board.service.HashTagService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
-import java.util.Set;
 
 @Log4j2
 @Controller
@@ -37,9 +34,6 @@ public class BoardController {
 
 	private final BoardService service;
 	private final FileService fileService;
-	private final CategoryService categoryService;
-	private final HashTagService hashTagService;
-
 	//게시글 목록
 	@GetMapping("/list/{cname}")
 	public ModelAndView pageList(
@@ -52,14 +46,6 @@ public class BoardController {
 
 		//페이징 기능
 		Page<BoardDto.BoardResponseDto> list = service.findAllPage(pageable,categoryName);
-		//최근에 작성한 글(5개)
-		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
-		//카테고리 목록
-		List<CategoryDto>categoryDtoList = categoryService.categoryList();
-		//해시태그 목록
-		List<String>hashTags = hashTagService.findAllHashTagNames();
-		//게시글 갯수 & 카테고리 갯수
-		Integer boardCount = service.articleCount();
 		Integer categoryCount = service.categoryCount(categoryName);
 
 		//검색어가 있으면 검색.
@@ -69,16 +55,12 @@ public class BoardController {
 
 		mv.addObject("list", list);
 		mv.addObject("cname",categoryName);
-		mv.addObject("count",boardCount);
 		mv.addObject("categoryCount",categoryCount);
 		mv.addObject("searchVal", searchVal);
 		mv.addObject("previous", pageable.previousOrFirst().getPageNumber());
 		mv.addObject("next", pageable.next().getPageNumber());
 		mv.addObject("hasNext", list.hasNext());        
 		mv.addObject("hasPrev", list.hasPrevious());
-		mv.addObject("top5",top5);
-		mv.addObject("categoryMenu",categoryDtoList);
-		mv.addObject("hashTag",hashTags);
 		mv.setViewName("board/boardlist");
 		
 		return mv;
@@ -94,23 +76,10 @@ public class BoardController {
 		List<AttachDto> fileList = fileService.filelist(boardId);
 		//게시글 이전글/다음글
 		List<BoardDto.BoardResponseDto>nextPrevious = service.articleNextPreviousBoard(boardId);
-		//최근에 작성한 글(5개)
-		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
-		//카테고리 목록
-		List<CategoryDto>categoryDtoList = categoryService.categoryList();
-		//해시태그 목록
-		List<String>hashTags = hashTagService.findAllHashTagNames();
 
-		//게시글 갯수 & 카테고리 갯수
-		Integer boardCount = service.articleCount();
-		log.info(board);
-		mv.addObject("count",boardCount);
 		mv.addObject("nextPrevious",nextPrevious);
 		mv.addObject("fileList",fileList);
 		mv.addObject("detail", board);
-		mv.addObject("top5",top5);
-		mv.addObject("categoryMenu",categoryDtoList);
-		mv.addObject("hashTag",hashTags);
 
 		mv.setViewName("board/detailpage");
 		
@@ -122,19 +91,6 @@ public class BoardController {
 								  @AuthenticationPrincipal CustomUserDetails user){
 
 		ModelAndView mv = new ModelAndView();
-		//게시글 갯수
-		Integer boardCount = service.articleCount();
-		//최근에 작성한 글(5개)
-		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
-		//카테고리 목록
-		List<CategoryDto>categoryDtoList = categoryService.categoryList();
-		//해시태그 목록
-		List<String>hashTags = hashTagService.findAllHashTagNames();
-
-		mv.addObject("count",boardCount);
-		mv.addObject("top5",top5);
-		mv.addObject("categoryMenu",categoryDtoList);
-		mv.addObject("hashTag",hashTags);
 
 		mv.setViewName("board/writeboard");
 
@@ -148,21 +104,9 @@ public class BoardController {
 		BoardDto.BoardResponseDto board = service.getBoard(boardId);
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
-		//게시글 갯수
-		Integer boardCount = service.articleCount();
-		//최근에 작성한 글(5개)
-		List<BoardDto.BoardResponseDto>top5 = service.findBoardTop5();
-		//카테고리 목록
-		List<CategoryDto>categoryDtoList = categoryService.categoryList();
-		//해시태그 목록
-		List<String>hashTags = hashTagService.findAllHashTagNames();
 
-		mv.addObject("count",boardCount);
 		mv.addObject("fileList",fileList);
 		mv.addObject("modify", board);
-		mv.addObject("top5",top5);
-		mv.addObject("categoryMenu",categoryDtoList);
-		mv.addObject("hashTag",hashTags);
 
 		mv.setViewName("board/modifyboard");
 		
@@ -175,13 +119,7 @@ public class BoardController {
 		ModelAndView mv = new ModelAndView();
 
 		BoardDto.BoardResponseDto dto = service.getBoard(boardId);
-		//해시태그 목록
-		List<String>hashTags = hashTagService.findAllHashTagNames();
-		//게시글 갯수
-		Integer boardCount = service.articleCount();
 
-		mv.addObject("count",boardCount);
-		mv.addObject("hashTag",hashTags);
 		mv.addObject("detail",dto);
 
 		mv.setViewName("/board/passwordCheck");
@@ -190,10 +128,13 @@ public class BoardController {
 
 	//해시태그 관련 게시글
 	@GetMapping("/tag/{tagName}")
-	public ModelAndView boardRelatedToHashTag(@PathVariable("tagName")String tagName,Pageable pageable){
+	public ModelAndView boardRelatedToHashTag(@PathVariable("tagName")String tagName,@PageableDefault Pageable pageable){
 		ModelAndView mv = new ModelAndView();
+		Page<BoardDto.BoardResponseDto>tagRelatedBoardList = service.findHashTagRelatedBoardList(tagName,pageable);
 
+		mv.addObject("list",tagRelatedBoardList);
 		mv.setViewName("/main/HashTagBoardList");
+
 		return mv;
 	}
 }

@@ -5,7 +5,6 @@ import co.kr.board.domain.Dto.CommentDto;
 import co.kr.board.domain.Dto.ScrapDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.service.CommentService;
-import co.kr.board.service.HashTagService;
 import co.kr.board.service.ScrapService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,8 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
-
 @Log4j2
 @Controller
 @RequestMapping("/page/mypage")
@@ -30,7 +27,6 @@ public class MyPageController {
     private final ScrapService scrapService;
     private final BoardService boardService;
     private final CommentService commentService;
-    private final HashTagService hashTagService;
 
     //마이페이지 스크랩 목록
     @GetMapping("/list/{username}")
@@ -38,11 +34,9 @@ public class MyPageController {
         ModelAndView mv = new ModelAndView();
         //스크랩 한 게시글 목록
         Page<ScrapDto.ResponseDto> scrapList = scrapService.scrapList(username,pageable);
-        //최근에 작성한 글(5개)
-        List<BoardDto.BoardResponseDto> top5 = boardService.findBoardTop5();
 
         mv.addObject("scrapList",scrapList);
-        mv.addObject("top5",top5);
+
         mv.setViewName("/mypage/mypage");
 
         return mv;
@@ -56,12 +50,9 @@ public class MyPageController {
         Page<BoardDto.BoardResponseDto>list = boardService.memberArticle(username,pageable);
         //스크랩 한 게시글 목록
         Page<ScrapDto.ResponseDto> scrapList = scrapService.scrapList(username,pageable);
-        //최근에 작성한 글(5개)
-        List<BoardDto.BoardResponseDto> top5 = boardService.findBoardTop5();
 
         mv.addObject("list",list);
         mv.addObject("scrapList",scrapList);
-        mv.addObject("top5",top5);
 
         mv.setViewName("/mypage/myarticle");
 
@@ -76,12 +67,9 @@ public class MyPageController {
         Page<CommentDto.CommentResponseDto>list = commentService.getMyComment(username,pageable);
         //스크랩 한 게시글 목록
         Page<ScrapDto.ResponseDto> scrapList = scrapService.scrapList(username,pageable);
-        //최근에 작성한 글(5개)
-        List<BoardDto.BoardResponseDto> top5 = boardService.findBoardTop5();
 
         mv.addObject("list",list);
         mv.addObject("scrapList",scrapList);
-        mv.addObject("top5",top5);
 
         mv.setViewName("/mypage/mycomment");
 
@@ -92,9 +80,6 @@ public class MyPageController {
     @GetMapping("/hashTag/list")
     public ModelAndView hashTagList(){
         ModelAndView mv = new ModelAndView();
-        List<String> list = hashTagService.findAllHashTagNames();
-        log.info(list);
-        mv.addObject("hashTag",list);
         mv.setViewName("/main/hashTagList");
         return mv;
     }
