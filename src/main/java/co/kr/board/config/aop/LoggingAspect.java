@@ -1,4 +1,4 @@
-package co.kr.board.config.Exception.aop;
+package co.kr.board.config.aop;
 
 import com.google.common.base.Joiner;
 import lombok.extern.log4j.Log4j2;
@@ -19,17 +19,17 @@ import java.util.stream.Collectors;
 @Component
 public class LoggingAspect {
 
-    @Around("execution(* co.kr.board.*..*ApiController.*(..))")
+    @Around("execution(* co.kr.board.*..*Controller.*(..))")
     public Object logging(ProceedingJoinPoint pjp) throws Throwable { // 2
 
-        String params = getRequestParams(); // request 값 가져오기
+        String params = getRequestParams();
 
         long startAt = System.currentTimeMillis();
 
         log.info("-----------> REQUEST : {}({}) = {}", pjp.getSignature().getDeclaringTypeName(),
                 pjp.getSignature().getName(), params);
 
-        Object result = pjp.proceed(); // 4
+        Object result = pjp.proceed();
 
         long endAt = System.currentTimeMillis();
 

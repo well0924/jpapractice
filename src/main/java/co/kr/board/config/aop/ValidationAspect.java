@@ -1,4 +1,4 @@
-package co.kr.board.config.Exception.aop;
+package co.kr.board.config.aop;
 
 import java.util.HashMap;
 import java.util.Map;
