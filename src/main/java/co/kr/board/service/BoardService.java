@@ -67,6 +67,17 @@ public class BoardService{
 	}
 
 	/*
+	 * 해시태그 관련 게시글목록
+	 * @Param tagName : 해시태그 이름
+	 * @Param pageable : 페이징 객체
+	 * 게시글 목록이나 상세 조회 페이지에서
+	*/
+	@Transactional(readOnly = true)
+	public Page<BoardResponseDto>findHashTagRelatedBoardList(String tageName,Pageable pageable){
+		return repos.findAllHashTagWithBoard(tageName,pageable);
+	}
+
+	/*
 	 * 글 등록 (파일 첨부)
 	 * @Param BoardRequestDto 게시글 요청 dto
 	 * @Param Member 회원 객체

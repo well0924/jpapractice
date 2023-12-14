@@ -1,14 +1,16 @@
 package co.kr.board.controller.view;
 
-import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CategoryDto;
-import co.kr.board.repository.BoardRepository;
 import co.kr.board.service.BoardService;
 import co.kr.board.service.CategoryService;
 import co.kr.board.service.HashTagService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +25,11 @@ import java.util.List;
 public class mainController {
 
 	private final BoardService boardService;
-	private final BoardRepository boardRepository;
 	private final CategoryService categoryService;
 	private final HashTagService hashTagService;
 
 	@GetMapping("/mainpage")
-	public ModelAndView mainPage(){
+	public ModelAndView mainPage(@PageableDefault(size = 10,sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
 		ModelAndView mv = new ModelAndView();
 
 		//게시글 전체갯수.
@@ -38,7 +39,7 @@ public class mainController {
 		//카테고리 목록
 		List<CategoryDto>categoryDtoList = categoryService.categoryList();
 		//게시글 목록(전체)
-		List<Board>boardList = boardRepository.findAll();
+		Page<BoardDto.BoardResponseDto> boardList = boardService.findAll(pageable);
 		//해시태그 목록
 		List<String>hashTags = hashTagService.findAllHashTagNames();
 
@@ -47,8 +48,7 @@ public class mainController {
 		mv.addObject("categoryMenu",categoryDtoList);
 		mv.addObject("list",boardList);
 		mv.addObject("hashTag",hashTags);
-
-		log.info(boardList.size());
+		log.info("게시글 목록:"+boardList.toList());
 		log.info(categoryDtoList);
 		log.info(hashTags);
 		mv.setViewName("main/mainpage");

@@ -44,6 +44,14 @@
                         <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
                             <p>[[${list.boardContents}]]</p>
                         </a>
+                        <!--해시태그--->
+                        <th:block th:unless="${list.hashtagName.isEmpty()}">
+                            <div th:with="tagNames=${list.getHashtagName()}">
+                                <a th:each="hashTags:${tagNames}" th:href="@{'/page/board/tag/'+${hashTags}}">
+                                    <span th:text="${'#' +hashTags}"></span>
+                                </a>
+                            </div>
+                        </th:block>
                     </div>
                 </div>
                 <div class="card shadow mb-4" th:if="${#lists.isEmpty(list)}">

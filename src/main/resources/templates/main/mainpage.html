@@ -30,10 +30,50 @@ layout:decorate="~{layout/mainlayout}">
                     </div>
                     <div class="card-body">
                         <!--게시글 상세조회-->
-                        <a th:href="@{/page/board/detail/{id}(id=${list.id})}">
+                        <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
                             <p th:text="${list.boardContents}"></p>
                         </a>
+                        <!--해시태그--->
+                        <th:block th:unless="${list.hashtagName.isEmpty()}">
+                            <div th:with="tagNames=${list.getHashtagName()}">
+                                <a th:each="hashTags:${tagNames}" th:href="@{'/page/board/tag/'+${hashTags}}">
+                                    <span th:text="${'#' +hashTags}"></span>
+                                </a>
+                            </div>
+                        </th:block>
                     </div>
+                </div>
+                <!--페이징 처리-->
+                <div th:if="${!list.isEmpty()}">
+                    <nav th:with="
+				pageNumber = ${list.pageable.pageNumber},
+				pageSize = ${list.pageable.pageSize},
+				totalPages= ${list.totalPages},
+				startPage=${T(java.lang.Math).floor(pageNumber/pageSize)*pageSize+1},
+				tempEndPage=${startPage+pageSize - 1},
+				endPage=(${tempEndPage < totalPages ? tempEndPage : totalPages})">
+                        <div class="d-none d-md-block">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${pageNumber < pageSize} ? 'disabled'">
+                                    <a class="page-link" th:href="@{'/page/main/mainpage'(page= 0)}">First</a>
+                                </li>
+                                <li class="page-item" th:classappend="${list.first} ? 'disabled'">
+                                    <a class="page-link" th:if="${list.first} ? '#' " th:href="@{'/page/main/mainpage'(page=${pageNumber - 1})}">previous</a>
+                                </li>
+                                <li class="page-item"
+                                    th:each="page: ${#numbers.sequence(startPage,endPage)}"
+                                    th:classappend="${page == pageNumber + 1} ? 'active'">
+                                    <a class="page-link" th:href="@{'/page/main/mainpage/'(page=${page - 1})}">[[${page}]]</a>
+                                </li>
+                                <li class="page-item" th:classappend="${!list.last} ? 'disabled'">
+                                    <a class="page-link" th:if="${list.last} ? '#'" th:href="@{'/page/mian/mainpage'(page=${pageNumber + 1})}">다음</a>
+                                </li>
+                                <li class="page-item" th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
+                                    <a class="page-link" th:if="${list.last} ? '#' " th:href="@{'/page/main/mainpage'(page=${totalPages - 1})}">Last</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
                 </div>
             </div>
         </div>
