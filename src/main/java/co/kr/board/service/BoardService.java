@@ -162,6 +162,7 @@ public class BoardService{
 
 		if(boardDetail.isPresent()){
 			updateReadCount(boardId);
+			log.info("readCount:::"+boardDetail.get().getReadCount());
 		}
 
 		return boardDetail.get();
@@ -364,6 +365,7 @@ public class BoardService{
 
 		//비밀번호가 있으면 비밀번호를 초기화
 		if(board.get().getPassword()!=null){
+			log.info("???????");
 			board.get().setPassword(null);
 			repos.save(board.get());
 			log.info("초기화 값::"+board.get().getPassword());

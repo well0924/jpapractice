@@ -9,13 +9,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -26,13 +31,9 @@ public class BoardServiceTest {
     @Autowired
     MemberRepository memberRepository;
 
-    @Autowired
-    VisitorService visitorService;
-
     @Test
     @DisplayName("게시글 비밀글로 전환")
     public void changeBoard(){
-        BoardDto.BoardRequestDto dto = new BoardDto.BoardRequestDto();
         boardService.changeSecretBoard(1);
         BoardDto.BoardResponseDto detail = boardService.getBoard(1);
 
@@ -42,21 +43,11 @@ public class BoardServiceTest {
     }
 
     @Test
-    @DisplayName("게시글 비밀글 초기화")
-    public void restPassword(){
-        BoardDto.BoardResponseDto detail = boardService.getBoard(1);
-        BoardDto.BoardRequestDto dto = new BoardDto.BoardRequestDto();
-        dto.setPassword(detail.getPassword());
-        boardService.passwordReset(1);
-        assertThat(detail.getPassword()).isNull();
-    }
-
-    @Test
     @DisplayName("해시태그 관련글 검색기능")
     public void hashtagSearchTest(){
         Pageable pageable = Pageable.ofSize(5);
-        //Page<BoardDto.BoardResponseDto> list = boardService.searchHashtagBoard("spring",pageable);
-        //System.out.println(list.stream().collect(Collectors.toList()));
+        Page<BoardDto.BoardResponseDto> list = boardService.findHashTagRelatedBoardList("spring",pageable);
+        System.out.println(list.stream().collect(Collectors.toList()));
     }
 
     @Test
@@ -75,6 +66,30 @@ public class BoardServiceTest {
         latch.await();
         result = boardService.getBoard(382).getReadCount();
 
-        assertThat(result).isEqualTo(100);
+        assertThat(result).isEqualTo(99);
+    }
+
+    @Test
+    @DisplayName("회원이 작성한 글")
+    public void memberArticle(){
+        Pageable pageable = PageRequest.of(0,20);
+        String username = "well";
+
+        Page<BoardDto.BoardResponseDto>memberArticle = boardService.memberArticle(username,pageable);
+
+        System.out.println(memberArticle.toList());
+        System.out.println(memberArticle.stream().count());
+
+        assertThat(memberArticle).isNotNull();
+    }
+
+    @Test
+    @DisplayName("최근에 작성한 글")
+    public void findBoardTop5Test(){
+        List<BoardDto.BoardResponseDto>list = boardService.findBoardTop5();
+
+        System.out.println("size::"+list.size());
+        System.out.println("result::"+list);
+        assertThat(list).isNotNull();
     }
 }

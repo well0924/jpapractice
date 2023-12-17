@@ -2,13 +2,11 @@ package co.kr.board.testboard;
 
 import co.kr.board.Config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
+import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
-import co.kr.board.domain.Visitor;
 import co.kr.board.repository.BoardRepository;
 import co.kr.board.repository.CategoryRepository;
-import co.kr.board.repository.HashTagRepository;
-import co.kr.board.repository.VisitorRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,10 +20,6 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,15 +34,9 @@ public class BoardRepositoryTest {
 
     @Autowired
     private BoardRepository boardRepository;
-
+    
     @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
-    private HashTagRepository hashTagRepository;
-
-    @Autowired
-    private VisitorRepository visitorRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -80,28 +68,52 @@ public class BoardRepositoryTest {
     }
 
     @Test
-    @DisplayName("게시글 목록")
+    @DisplayName("게시글 목록-카테고리 및 정렬")
     public void boardListQueryDslTest(){
+        //given
         Pageable pageable  = Pageable.ofSize(5);
-        String categoryName = "";
+        Category category = categoryRepository.findById(1).get();
+        String categoryName = category.getName();
+        //when
         Page<BoardDto.BoardResponseDto>list = boardRepository.findAllBoardList(categoryName,pageable);
         System.out.println("result::"+list.get().collect(Collectors.toList()));
         assertThat(list).isNotNull();
     }
 
     @Test
-    @DisplayName("게시글 검색")
-    public void boardSearchTest(){
+    @DisplayName("게시글 검색 - 게시글 내용")
+    public void boardSearchContentsTest(){
         Pageable pageable = Pageable.ofSize(10);
-        String keyword = "well4149";
-        Page<BoardDto.BoardResponseDto>list = boardRepository.findByAllSearch(keyword, SearchType.toSearch("boardAuthor"),pageable);
+        String keyword = "트트";
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findByAllSearch(keyword, SearchType.toSearch("boardContents"),pageable);
         System.out.println(list.toList());
-        assertThat(list);
+        assertThat(list).isNotNull();
         System.out.println("size::"+list.stream().count());
     }
 
     @Test
-    @DisplayName("게시글 전체 목록")
+    @DisplayName("게시글 검색 - 게시글 제목")
+    public void boardSearchTitleTest(){
+        Pageable pageable = Pageable.ofSize(10);
+        String keyword = "수정제목";
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findByAllSearch(keyword, SearchType.toSearch("boardTitle"),pageable);
+        System.out.println(list.toList());
+        assertThat(list.toList().get(0).getBoardTitle()).isEqualTo(keyword);
+        System.out.println("size::"+list.stream().count());
+    }
+
+    @Test
+    @DisplayName("게시글 검색 - 전체")
+    public void boardSearchALLTest(){
+        Pageable pageable = Pageable.ofSize(10);
+        String keyword = "upload test";
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findByAllSearch(keyword, SearchType.ALL,pageable);
+        System.out.println(list.toList());
+        System.out.println("size::"+list.stream().count());
+    }
+
+    @Test
+    @DisplayName("게시글 전체 목록(게시글 관리 페이지)")
     public void adminBoardList(){
         Pageable pageable = Pageable.ofSize(5);
         Page<BoardDto.BoardResponseDto>list = boardRepository.findAllBoardList(pageable);
@@ -123,12 +135,28 @@ public class BoardRepositoryTest {
         Pageable pageable = Pageable.ofSize(5);
         Page<BoardDto.BoardResponseDto>list = boardRepository.findAllHashTagWithBoard("spring",pageable);
         System.out.println(list.toList());
+        assertThat(list).isNotNull();
+    }
+
+
+    @Test
+    @DisplayName("작성자가 작성한 게시글")
+    public void findUserBoardContents(){
+        Pageable pageable = Pageable.ofSize(5);
+        String username = "well4149";
+        Page<BoardDto.BoardResponseDto>list = boardRepository.findByAllContents(username,pageable);
+        assertThat(list).isNotNull();
     }
 
     @Test
-    @DisplayName("테스트")
-    public void selectDelete(){
-        String result=boardRepository.boardPasswordCheck(332);
+    @DisplayName("비밀번호 확인 테스트")
+    public void boardPasswordCheckTest(){
+        BoardDto.BoardResponseDto result1 = boardRepository.passwordCheck("1234",433);
+        System.out.println(result1);
+        String result=boardRepository.boardPasswordCheck(433);
         System.out.println(result);
     }
+
+
 }
+

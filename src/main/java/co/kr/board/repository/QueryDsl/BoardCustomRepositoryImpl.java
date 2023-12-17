@@ -17,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implements BoardCustomRepository{
+public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
     QBoard qBoard;
@@ -42,7 +41,6 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
 
     //생성자 주입
     public BoardCustomRepositoryImpl(EntityManager em) {
-        super(Board.class);
         this.jpaQueryFactory = new JPAQueryFactory(em);
         qBoard = QBoard.board;
         qMember = QMember.member;
@@ -104,7 +102,9 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
             //내용
             case CONTENTS -> list.where(contentCt(searchVal));
             //ALL
-            default ->list.where(titleCt(searchVal).or(authorCt(searchVal)).or(contentCt(searchVal)));
+            case ALL ->list.where(titleCt(searchVal).or(authorCt(searchVal)).or(contentCt(searchVal)));
+
+            default -> throw new IllegalStateException("Unexpected value: " + searchType);
         };
 
         return PageableExecutionUtils
@@ -124,8 +124,11 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
         JPQLQuery<BoardDto.BoardResponseDto>result = jpaQueryFactory
                 .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
                 .from(qBoard)
-                .leftJoin(qBoard.writer,qMember)
-                .where(qMember.username.eq(username))
+                .leftJoin(qBoard.writer,qMember).fetchJoin()
+                .leftJoin(qBoard.category,qCategory).fetchJoin()
+                .leftJoin(qBoard.likes,qLike)
+                .distinct()
+                .where(qBoard.boardAuthor.eq(username))
                 .orderBy(qBoard.id.desc());
 
         return PageableExecutionUtils
@@ -135,15 +138,15 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
     //최근에 작성한 글(5개) o.k
     @Override
     public List<BoardDto.BoardResponseDto> findTop5ByOrderByBoardIdDescCreatedAtDesc() {
-
-        List<Board>boardList = jpaQueryFactory
-                .select(qBoard)
+        JPQLQuery<BoardDto.BoardResponseDto>result = jpaQueryFactory
+                .select(Projections.constructor(BoardDto.BoardResponseDto.class,qBoard))
                 .from(qBoard)
+                .leftJoin(qBoard.category,qCategory).fetchJoin()
+                .leftJoin(qBoard.likes,qLike)
+                .distinct()
                 .orderBy(qBoard.createdAt.desc(),qBoard.id.desc())
-                .limit(5)
-                .fetch();
-
-        return boardList.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
+                .limit(5);
+        return result.fetch();
     }
     
     //게시글 이전글/다음글 조회 o.k
@@ -159,7 +162,7 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
         return boardResponseDtos.stream().map(BoardDto.BoardResponseDto::new).collect(Collectors.toList());
     }
 
-    //해시태그 관련 게시글
+    //해시태그 관련 게시글 o.k
     @Override
     public Page<BoardDto.BoardResponseDto> findAllHashTagWithBoard(String tagName, Pageable pageable) {
 
@@ -188,6 +191,7 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
                 .execute();
     }
 
+    //게시글 조회(비관적 락 사용) o.k
     @Override
     public Optional<BoardDto.BoardResponseDto> findByBoardDetail(Integer boardId) {
         BoardDto.BoardResponseDto result = jpaQueryFactory
@@ -200,6 +204,7 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
         return Optional.ofNullable(result);
     }
 
+    //게시글 조회수 증가 o.k
     @Modifying
     @Transactional
     @Override
@@ -210,6 +215,7 @@ public class BoardCustomRepositoryImpl  extends QuerydslRepositorySupport implem
                 .execute();
     }
 
+    //게시글 비밀번호 확인 o.k
     @Override
     public BoardDto.BoardResponseDto passwordCheck(String password,Integer boardId) {
         JPAQuery<BoardDto.BoardResponseDto> result = jpaQueryFactory
