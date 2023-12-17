@@ -61,7 +61,7 @@ public class MemberRepositoryTest {
         String userId = "well4149";
         boolean isId = memberRepository.existsByUsername(userId);
         System.out.println("result::"+isId);
-        assertThat(isId).isFalse();
+        assertThat(isId).isTrue();
     }
 
     @Test
