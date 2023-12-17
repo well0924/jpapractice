@@ -64,6 +64,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
         return Optional.ofNullable(result);
     }
 
+    //회원 아이디 중복처리
     @Override
     public Boolean existsByUsername(String userename) {
         return jpaQueryFactory
@@ -73,6 +74,7 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
                 .fetchFirst()!=null;
     }
 
+    //회원 이메일 중복처리
     @Override
     public Boolean existsByUseremail(String useremail) {
         return jpaQueryFactory
