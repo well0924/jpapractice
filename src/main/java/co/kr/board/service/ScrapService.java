@@ -29,28 +29,47 @@ public class ScrapService {
     private final String scrapAddMessage ="스크랩 완료";
     private final String scrapCancelMessage ="스크랩 취소 처리 완료";
 
-
-    //스크랩 중복여부
+    /*
+      * 스크랩 중복여부
+      * 스크랩 버튼을 눌렀을 경우 게시글이 스크랩이 되었는지 아닌지를 확인하는 기능
+      * @param boardId : 게시글 번호
+     */
     @Transactional(readOnly = true)
     public boolean ScrapDuplicated(Integer boardId){
         return scrapRepository.findByBoardAndMember(getBoard(boardId),getMember()).isPresent();
     }
 
-    //스크랩 목록
+    /*
+      * 스크랩 목록
+      * 마이페이지에서 게시글을 스크랩한 목록을 보여주는 기능
+      * @param username : 회원 아이디
+      * @param pageable : 페이징 객체
+      * @return : Page<ScrapDto.ResponseDto>
+    */
     @Transactional(readOnly = true)
     public Page<ScrapDto.ResponseDto>scrapList(String username,Pageable pageable){
         Page<ScrapDto.ResponseDto>list =scrapRepository.ScrapList(username,pageable);
         return list;
     }
 
-    //스크랩 추가
+    /*
+      * 스크랩 추가
+      * 스크랩 중복 결과를 거친 후 중복이 없는 경우에 스크랩을 추가.
+      * @param boardId : 게시글 번호
+      * @return : 스크랩 완료
+     */
     @Transactional
     public String scrapAdd(Integer boardId){
         scrapRepository.save(Scrap.builder().board(getBoard(boardId)).member(getMember()).build());
         return scrapAddMessage;
     }
 
-    //스크랩 삭제
+    /*
+      * 스크랩 삭제
+      * 마이페이지에서 스크랩 목록에서 스크랩을 삭제하는 기능
+      * @param boardId : 게시글 번호
+      * @return : 스크랩 취소 처리 완료
+     */
     @Transactional
     public String scrapCancel(Integer boardId){
         Scrap scrap = scrapRepository.findByBoardAndMember(getBoard(boardId),getMember()).orElseThrow();
