@@ -15,7 +15,6 @@ import co.kr.board.repository.*;
 import co.kr.board.domain.Dto.AttachDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -48,7 +47,8 @@ public class BoardService{
     /*
 	 * 글목록 전체 조회(페이징+카테고리)
 	 * @Param Pageable 페이징 객체
-	 * @param categoryName 카테고리 명
+	 * @param categoryName 카테고리명
+	 * @return Page<BoardResponseDto>
 	*/
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllPage(Pageable pageable, String categoryName){
@@ -56,10 +56,11 @@ public class BoardService{
 	}
 
 	/*
-	 * 페이징 + 검색기능 + 정렬
-	 * @Param searchVal : 검색어,
-	 * @Param pageable : 페이징 객체
-	 * 게시물 목록에서 검색.
+	  * 게시글 목록(페이징 + 검색기능 + 정렬)
+	  * 게시물 목록에서 검색.
+	  * @Param searchVal : 검색어,
+	  * @Param pageable : 페이징 객체
+	  * @return Page<BoardResponseDto>
 	 */
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllSearch(String searchVal,String searchType, Pageable pageable){
@@ -67,10 +68,10 @@ public class BoardService{
 	}
 
 	/*
-	 * 해시태그 관련 게시글목록
-	 * @Param tagName : 해시태그 이름
-	 * @Param pageable : 페이징 객체
-	 * 게시글 목록이나 상세 조회 페이지에서
+	  * 해시태그 관련 게시글목록
+	  * 게시글 목록이나 상세 조회 페이지나 메인페이지에 있는 해시태그를 누르면 해당 해시태그가 있는 게시글 목록을 보여주는 기능
+	  * @Param tagName : 해시태그 이름
+	  * @Param pageable : 페이징 객체
 	*/
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findHashTagRelatedBoardList(String tageName,Pageable pageable){
@@ -78,11 +79,11 @@ public class BoardService{
 	}
 
 	/*
-	 * 글 등록 (파일 첨부)
-	 * @Param BoardRequestDto 게시글 요청 dto
-	 * @Param Member 회원 객체
-	 * 시큐리티 로그인 후 이용
-	 * @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
+	  * 글 등록 (파일 첨부)
+	  * @Param BoardRequestDto 게시글 요청 dto
+	  * @Param Member 회원 객체
+	  * 시큐리티 로그인 후 이용
+	  * @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
 	*/
 	@Transactional
 	public Integer boardsave(BoardDto.BoardRequestDto dto ,Integer categoryId,List<MultipartFile>files)throws Exception{
@@ -148,12 +149,11 @@ public class BoardService{
 	}
 	
     /*
-     * 글 목록 단일 조회
-     * @Param boardId
-     * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
+      * 글 목록 단일 조회
+      * @Param boardId
+      * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
     */
-	@Transactional
-	@Cacheable(value = CacheKey.BOARD,key = "#boardId",unless = "#result == null")
+	@Transactional(readOnly = true)
 	public BoardResponseDto getBoard(Integer boardId){
 		//글 조회
 		Optional<BoardResponseDto>boardDetail = Optional
@@ -169,19 +169,19 @@ public class BoardService{
 	}
 
 	/*
-	 * 게시글 조회수 증가.
-	 * @Param boardId 게시글 번호
+	  * 게시글 조회수 증가.
+	  * @Param boardId 게시글 번호
 	 */
 	public void updateReadCount(Integer boardId){
 		repos.updateReadCount(boardId);
 	}
 
 	/*
-	 * 게시글 삭제 (파일 삭제 포함)
-	 * @Param boardId 게시물 번호
-	 * @Param Member 회원 객체
-	 * @Exception : 회원글이 존재하지 않은 경우 NOT_BOARD_DETAIL
-	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
+	  * 게시글 삭제 (파일 삭제 포함)
+	  * @Param boardId 게시물 번호
+	  * @Param Member 회원 객체
+	  * @Exception : 회원글이 존재하지 않은 경우 NOT_BOARD_DETAIL
+	  * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	*/
 	@Transactional
 	@CacheEvict(value = CacheKey.BOARD,key = "#boardId")
@@ -270,10 +270,10 @@ public class BoardService{
 	}
 
 	/*
-	 * 회원이 작성한 글목록
-	 * @Param String username 회원의 아이디
-	 * @Param Pageable 페이징 객체
-	 * @return list
+	  * 회원이 작성한 글목록
+	  * @Param String username 회원의 아이디
+	  * @Param Pageable 페이징 객체
+	  * @return Page<BoardResponseDto>
 	 */
 	@Transactional
 	public Page<BoardResponseDto>memberArticle(String username, Pageable pageable){
@@ -281,7 +281,8 @@ public class BoardService{
 	}
 
 	/*
-	 * 최근에 작성한 글(5개)
+	  * 최근에 작성한 글(5개)
+	  * @retrun List<BoardResponseDto>
 	 */
 	@Transactional(readOnly = true)
 	public List<BoardResponseDto>findBoardTop5(){
@@ -289,7 +290,7 @@ public class BoardService{
 	}
 
 	/*
-	 * 게시글 전체 갯수
+	  * 게시글 전체 갯수
 	 */
 	@Transactional(readOnly = true)
 	public Integer articleCount(){
@@ -297,7 +298,9 @@ public class BoardService{
 	}
 
 	/*
-	 * 게시글 카테고리별 갯수
+	  * 게시글 카테고리별 갯수
+	  * 메인 페이지에서 카테고리의 갯수를 보여주는 기능
+	  * @param categoryName : 카테고리명
 	 */
 	@Transactional(readOnly = true)
 	public Integer categoryCount(String categoryName){
@@ -306,6 +309,7 @@ public class BoardService{
 
 	/*
 	  * 게시글 이전글/다음글 가져오기.
+	  * 게시글 단일조회 페이지에서 게시글 이전글/다음글을 보여주는 기능
 	  * @param boardId 게시글 번호
 	 */
 	@Transactional(readOnly = true)
@@ -326,7 +330,8 @@ public class BoardService{
 	}
 
 	/*
-	 * 게시글 비밀번호 확인
+	  * 게시글 비밀번호 확인
+	  * 게시글에 비밀번호가 있는 경우 비밀번호 확인 페이지에서 비밀번호를 확인하는 기능
      */
 	@Transactional(readOnly = true)
 	public BoardDto.BoardResponseDto passwordCheck(String password, Integer boardId){
@@ -334,9 +339,9 @@ public class BoardService{
 	}
 
 	/*
-	 * 비밀글 전환
-	 * 게시글 관리자 페이지에서 공개글을 비밀글로 변환하는 기능
-	 * @Param id 게시글 번호
+	  * 비밀글 전환
+	  * 게시글 관리자 페이지에서 공개글을 비밀글로 변환하는 기능
+	  * @Param id 게시글 번호
 	 */
 	public void changeSecretBoard(Integer id){
 		//랜덤으로 4자리 비밀번호를 발급
@@ -353,9 +358,9 @@ public class BoardService{
 	}
 
 	/*
-	 * 비밀번호 초기화
-	 * 게시글 관리자 페이지에서 비밀번호를 초기화하는 기능
-	 * @param boardId 게시글 번호
+	  * 비밀번호 초기화
+	  * 게시글 관리자 페이지에서 비밀번호를 초기화하는 기능
+	  * @param boardId 게시글 번호
  	 */
 	public void passwordReset(Integer boardId){
 		Optional<Board> board = Optional
@@ -373,9 +378,9 @@ public class BoardService{
 	}
 
 	/*
-	* 비밀번호 조회여부
-	* 게시글 조회시 비밀번호가 있는 경우 비밀번호 확인 페이지에서 비밀번호 확인하는 기능
-	* @Param boardId 게시글 번호 
+	  * 비밀번호 조회여부
+	  * 게시글 조회시 비밀번호가 있는 경우 비밀번호 확인 페이지에서 비밀번호 확인하는 기능
+	  * @Param boardId 게시글 번호
 	*/
 	@Transactional(readOnly = true)
 	public String checkPassword(Integer boardId){
@@ -383,7 +388,11 @@ public class BoardService{
 	}
 
 
-	//랜덤 비밀번호 발급(SecuredRandom)
+	/*
+	  * 랜덤 비밀번호 발급(SecuredRandom)
+	  * 어드민 페이지에서 게시글 관리 페이지에서 비밀글로 전환을 했을 때 비밀번호를 발생하는 기능
+	  * @param size : 비밀번호 길이
+	 */
 	public String getRandomPassword(int size) {
 		char[] charSet = new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '!', '@', '#', '$', '%', '^', '&' };
 
@@ -402,7 +411,7 @@ public class BoardService{
 	}
 
 	/*
-	 * 회원 정보 가져오기.
+	  * 회원 정보 가져오기.
 	 */
 	private Member getMember(){
 
@@ -438,7 +447,7 @@ public class BoardService{
 	}
 
 	/*
-	  * 파일 첨부 부분(작성,수정)
+	 * 파일 첨부 부분(작성,수정)
 	 */
 	public int AttachFile(int result, List<AttachFile>files, Board board){
 
