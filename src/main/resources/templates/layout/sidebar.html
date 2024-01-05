@@ -19,42 +19,42 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-      <th:block th:if="${count} == null">
-        <a class="nav-link">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>관리자 페이지</span>
-        </a>
-      </th:block>
+        <div id="admin-side-bar">
+          <a class="nav-link">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>관리자 페이지</span>
+          </a>
+        </div>
       <!--회원으로 들어왔을 때-->
-      <th:block th:if="${count} != null">
-        <a class="nav-link">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>전체 글[ [[${count}]] ]</span>
-          </br>
-          <span id="totalCount"></span>
-          </br>
-          <span id="todayCount"></span>
-          </br>
-          <span id="yesterdayCount"></span>
-        </a>
-      </th:block>
+        <div id="user-side-bar">
+          <a class="nav-link">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>전체 글[ [[${count}]] ]</span>
+            </br>
+            <span id="totalCount"></span>
+            </br>
+            <span id="todayCount"></span>
+            </br>
+            <span id="yesterdayCount"></span>
+          </a>
+        </div>
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider">
     <!-- Heading -->
     <!-- 블로그 카테고리 내용 (회원)-->
-    <th:block th:if="${categoryMenu} != null">
+    <div class="user-side-bar-page">
       <div class="sidebar-heading">
         카테고리
       </div>
       <div th:each="menu:${categoryMenu}">
         <li class="nav-item">
-            <a class="nav-link collapsed" data-toggle="collapse"
-               th:href="@{|/page/board/list/${menu.name}|}"
-               th:attr="data-target=${'#collapseTwo'+menu.id}"
-              aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
-              <span th:text="${menu.name}"></span>
-            </a>
+          <a class="nav-link collapsed" data-toggle="collapse"
+             th:href="@{|/page/board/list/${menu.name}|}"
+             th:attr="data-target=${'#collapseTwo'+menu.id}"
+             aria-expanded="true" aria-controls="collapseTwo"　id="mainCategory">
+            <span th:text="${menu.name}"></span>
+          </a>
         </li>
         <li>
           <div th:id="'collapseTwo'+${menu.id}" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
@@ -68,7 +68,7 @@
           </div>
         </li>
       </div>
-    </th:block>
+    </div>
     <th:block th:if="${scrapList} !=null">
       <div class="sidebar-heading">
         마이 페이지
@@ -95,8 +95,9 @@
       </li>
     </th:block>
     <!--블로그 카테고리 end-->
+
     <!--관리자 페이지로 왔을 때-->
-    <th:block th:if="${categoryMenu}== null and ${scrapList} == null">
+    <div id="admin-page">
       <div class="sidebar-heading">
         관리자
       </div>
@@ -120,7 +121,7 @@
           <span>방문자 관리</span>
         </a>
       </li>
-    </th:block>
+    </div>
     <!--관리자 페이지 end-->
     <!-- Divider -->
     <hr class="sidebar-divider">
