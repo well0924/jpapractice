@@ -3,7 +3,6 @@
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 layout:decorate="~{layout/mainlayout}">
 <head>
 <meta charset="UTF-8">
@@ -34,7 +33,7 @@ layout:decorate="~{layout/mainlayout}">
     <div class="mb-3">
         <label for="pwd_check">패스워드 확인</label>
         <input onchange="pwSame()" type="password" class="form-control" id="pwd_check"  placeholder="비밀번호를 입력해 주세요" autocomplete="off">
-        <span id="pw_check_msg"></span>       
+        <span id="pw_check_msg"></span>
     </div>
 
     <label th:for="memberName" class="form-label">이름</label>
@@ -58,8 +57,8 @@ layout:decorate="~{layout/mainlayout}">
     <div class="mb-3">
         <a type="button" style="color:white" class="w-100 btn btn-lg btn-secondary" onclick="window.history.back();">취소</a>
     </div>
+    <script type="text/javascript" th:src="@{/js/member/memberjoin.js}"></script>
 </form>
 </th:block>
-<script type="text/javascript" th:src="@{/js/member/memberjoin.js}"></script>
 </body>
 </html>

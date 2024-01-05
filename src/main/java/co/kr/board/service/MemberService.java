@@ -176,6 +176,7 @@ public class MemberService {
 	 * @param MemberRequestDto
 	 * @Exception NOT_USER(회원이 존재하지 않습니다)
 	 */
+	@Transactional
 	public Integer passwordchange(String username,MemberDto.MemberRequestDto dto){
 		//회원조회
 		Optional<Member>memberDetail = Optional.ofNullable(repository.findByUsername(username).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_USER)));

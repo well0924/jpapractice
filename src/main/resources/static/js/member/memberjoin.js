@@ -5,7 +5,7 @@
 //아이디 중복 o.k
 function usernameCheck(){
 	let userid = $('#userId').val();
-	
+	console.log(userid);
 		$.ajax({
 			url:'/api/member/logincheck/'+ userid,
 			type:'get',
