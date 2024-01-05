@@ -19,6 +19,7 @@ import org.hibernate.annotations.Proxy;
 @ToString
 @Builder
 @Table(name="member",indexes = {
+		@Index(columnList = "id"),
 		@Index(columnList = "userid"),
 		@Index(columnList = "membername"),
 		@Index(columnList = "useremail")
@@ -53,6 +54,6 @@ public class Member extends BaseTime implements Serializable {
 
 	//방문자 (양방향)
 	@ToString.Exclude
-	@OneToMany(mappedBy = "member",cascade = {CascadeType.ALL},orphanRemoval = true,fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "member",cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
 	private List<Visitor>visitors = new ArrayList<>();
 }
