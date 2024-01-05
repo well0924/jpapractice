@@ -146,7 +146,10 @@ public class BoardApiController {
 		String result = service.checkPassword(boardId);
 		log.info("result::"+result);
 		if(result == null){//값이 null인 경우
+			//4자리 비밀번호 발급
 			service.changeSecretBoard(boardId);
+			//회원에게 비밀번호 이메일을 전송
+
 		} else {//비밀번호가 있는 경우
 			service.passwordReset(boardId);
 		}

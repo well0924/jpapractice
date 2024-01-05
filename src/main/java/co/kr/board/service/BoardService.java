@@ -152,6 +152,7 @@ public class BoardService{
       * 글 목록 단일 조회
       * @Param boardId
       * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
+      * @return : BoardResponseDto
     */
 	@Transactional(readOnly = true)
 	public BoardResponseDto getBoard(Integer boardId){
@@ -207,13 +208,13 @@ public class BoardService{
 	}
 	
     /*
-	 * 글 수정 기능 (파일 첨부)
-	 * @Param BoardRequestDto 게시물 요청 dto
-	 * @Param boardId 게시물 번호
-	 * @Param Member 회원 객체
-	 * @Exception : 로그인을 하지 않은경우 ONLY_USER
-	 * @Exception : 게시글이 존재하지 않습니다. NOT_BOARD_DETAIL
-	 * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
+	  * 글 수정 기능 (파일 첨부)
+	  * @Param BoardRequestDto 게시물 요청 dto
+	  * @Param boardId 게시물 번호
+	  * @Param Member 회원 객체
+	  * @Exception : 로그인을 하지 않은경우 ONLY_USER
+	  * @Exception : 게시글이 존재하지 않습니다. NOT_BOARD_DETAIL
+	  * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	*/
 	@Transactional
 	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,List<MultipartFile>files)throws Exception{

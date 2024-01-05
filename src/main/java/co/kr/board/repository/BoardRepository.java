@@ -9,17 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface BoardRepository extends JpaRepository<Board, Integer>, BoardCustomRepository {
 
-/*	//게시글 단일 조회
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	@Query(value = "select b from Board b where b.id = :boardId")
-	Optional<Board>findByboardId(@Param("boardId") Integer boardId);
-
-	//조회수 증가
-	@Modifying
-	@Transactional
-	@Query(value = "update Board b set b.readCount = b.readCount+1 where b.id = :id")
-	void updateByReadCount(@Param("id") Integer boardId);*/
-
 	//게시글 전체갯수
 	@Query(value = "select count(*) from Board b")
 	Integer ArticleCount();
