@@ -27,10 +27,10 @@ public class CommonQueryAspect {
     private final CategoryService categoryService;
 
     //view 패키지내에 있는 컨트롤러 & ModelAndView 가 있는 모든 부분에 적용
-    @Around("execution(* co.kr.board.controller.view.*Controller.*(..)) || execution(* org.springframework.web.servlet.ModelAndView.*(..))")
+    @Around("execution(* co.kr.board.controller.view.*Controller.*(..)) " +
+            "|| execution(* org.springframework.web.servlet.ModelAndView.*(..))")
     public Object commonUiQuery(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         log.info("Common Aop !");
-        ModelAndView mv = new ModelAndView();
         //게시글 갯수
         Integer boardCount = boardService.articleCount();
         //최근에 작성한 글(5개)
@@ -39,14 +39,17 @@ public class CommonQueryAspect {
         List<String>hashTags = hashTagService.findAllHashTagNames();
         //카테고리 목록
         List<CategoryDto>categoryDtoList = categoryService.categoryList();
+        log.info("목록::"+boardCount);
+        Object result = proceedingJoinPoint.proceed();
 
-        mv.addObject("count",boardCount);
-        mv.addObject("top5",top5);
-        mv.addObject("hashTag",hashTags);
-        mv.addObject("categoryMenu",categoryDtoList);
-
-        log.info("Query::"+proceedingJoinPoint.getSignature().getName());
-
-        return proceedingJoinPoint.proceed();
+        if(result instanceof ModelAndView){
+            ModelAndView mv = (ModelAndView) result;
+            mv.addObject("count",boardCount);
+            mv.addObject("top5",top5);
+            mv.addObject("hashTag",hashTags);
+            mv.addObject("categoryMenu",categoryDtoList);
+            log.info("Query::"+proceedingJoinPoint.getSignature().getName());
+        }
+        return result;
     }
 }

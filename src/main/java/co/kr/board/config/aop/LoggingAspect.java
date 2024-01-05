@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class LoggingAspect {
 
-    @Around("execution(* co.kr.board.*..*Controller.*(..))")
+    @Around("execution(* co.kr.board.*..*Controller.*(..))|| execution(* org.springframework.web.servlet.ModelAndView.*(..))")
     public Object logging(ProceedingJoinPoint pjp) throws Throwable { // 2
 
         String params = getRequestParams();
