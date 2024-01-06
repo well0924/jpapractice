@@ -19,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 public class LoginApiController {
 	private final AuthService authService;
 	private final EmailService emailService;
-
 	private final long COOKIE_EXPIRATION = 1209600;
 
 	//로그인 ->토큰 발행
@@ -100,13 +99,13 @@ public class LoginApiController {
 	@PostMapping("/sendEmail/{email}")
 	public Response<String>sendEmail(@PathVariable(value = "email") String userEmail)throws Exception{
 		String epw = emailService.sendSimpleMessage(userEmail);
-		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.:"+epw);
+		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.");
 	}
 
 	//회원 비밀번호 재수정 인증 이메일
 	@PostMapping("/temporary-password/{email}")
 	public Response<String>sendPwd(@PathVariable(value = "email") String userEmail) throws Exception{
 		String tpw = emailService.sendTemporaryPasswordMessage(userEmail);
-		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.:"+tpw);
+		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.");
 	}
 }

@@ -4,6 +4,7 @@ import co.kr.board.config.Exception.dto.Response;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.service.MemberService;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 
+@Log4j2
 @RestController
 @RequestMapping("/api/member")
 @AllArgsConstructor
@@ -106,6 +108,7 @@ public class MemberApiController {
     public Response<Integer>passwordChange(@PathVariable(value = "name")String username,
                                            @RequestBody MemberDto.MemberRequestDto dto){
         int result = service.passwordchange(username,dto);
+        log.info(result);
         return new Response<>(HttpStatus.OK.value(),result);
     }
 }

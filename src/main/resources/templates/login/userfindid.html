@@ -3,7 +3,6 @@
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org" 
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 layout:decorate="~{layout/mainlayout}">
 <head>
 <meta charset="UTF-8">
@@ -41,6 +40,7 @@ layout:decorate="~{layout/mainlayout}">
 		    	<div id="finduserid"></div>
 		    	<div class="form-group">
 		    		<button type="button" class="btn btn-primary" id="findidbutton" onclick="finduserid()">아이디 찾기</button>
+					<script type="text/javascript" th:src="@{/js/member/userfindid.js}"></script>
 		   		</div>	
 		  </div>
 		  <div id="findid"></div>
@@ -55,6 +55,5 @@ layout:decorate="~{layout/mainlayout}">
 	<div class="col-sm-3"></div>
 </div>
 </th:block>
-<script type="text/javascript" th:src="@{/js/member/userfindid.js}"></script>
 </body>
 </html>

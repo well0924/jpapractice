@@ -12,8 +12,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @RequestMapping("/page/login")
 public class LoginController {
-	
-	private final MemberService service;
 
 	//로그인 페이지
 	@GetMapping("/loginpage")
