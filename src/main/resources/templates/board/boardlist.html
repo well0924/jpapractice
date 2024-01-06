@@ -40,10 +40,18 @@
                         <p class="text-right" th:text="${list.createdAt}"></p>
                     </div>
                     <div class="card-body">
-                        <!--게시글 상세조회-->
-                        <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
-                            <p>[[${list.boardContents}]]</p>
-                        </a>
+                        <input type="hidden" name="password" th:value="${list.password}">
+                        <th:block th:if="${not #strings.isEmpty(list.password)}">
+                            <a th:href="@{/page/board/passwordcheck/{id}(id=${list.boardId})}">
+                                <p>[[${list.boardContents}]]</p>
+                            </a>
+                        </th:block>
+                        <th:block th:if="${#strings.isEmpty(list.password)}">
+                            <!--게시글 상세조회-->
+                            <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
+                                <p>[[${list.boardContents}]]</p>
+                            </a>
+                        </th:block>
                         <!--해시태그--->
                         <th:block th:unless="${list.hashtagName.isEmpty()}">
                             <div th:with="tagNames=${list.getHashtagName()}">
