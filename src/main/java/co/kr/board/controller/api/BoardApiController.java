@@ -1,5 +1,6 @@
 package co.kr.board.controller.api;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
@@ -17,6 +18,8 @@ import co.kr.board.config.Exception.dto.Response;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Log4j2
@@ -142,14 +145,12 @@ public class BoardApiController {
 	//게시글 비밀글로 전환 및 초기화
 	@GetMapping("/change-board/{id}")
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
-	public Response<?>changeBoard(@PathVariable("id")Integer boardId){
+	public Response<?>changeBoard(@PathVariable("id")Integer boardId) throws Exception {
 		String result = service.checkPassword(boardId);
 		log.info("result::"+result);
 		if(result == null){//값이 null인 경우
-			//4자리 비밀번호 발급
+			//4자리 비밀번호 발급 + 이메일 발송
 			service.changeSecretBoard(boardId);
-			//회원에게 비밀번호 이메일을 전송
-
 		} else {//비밀번호가 있는 경우
 			service.passwordReset(boardId);
 		}
