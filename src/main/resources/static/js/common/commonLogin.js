@@ -23,15 +23,20 @@ window.onload= function (){
         console.log("유효기간:"+expire);
         console.log(expireTime);
 
-        $('#userDetail').attr('href','/page/mypage/detail/'+username);
+        $('#userDetail').attr('href','/page/mypage/detail/'+username);//마이페이지
         $('#userComment').attr('href','/page/mypage/my-comment/'+username);//내가 작성한 댓글
         $('#userBoard').attr('href','/page/mypage/my-article/'+username);//내가 작성한 글
         $('#scrapList').attr('href','/page/mypage/list/'+username);//스크랩을 한 글 목록
+        //권한에 따라 사이드바를 변경
 
         //1분마다 주기적으로 유효기간을 검증한다.
         setInterval(function(){validTokenExpiredTime(expire)},60000);
         if(role === 'ROLE_ADMIN'){
             console.log('관리자');
+            $('#admin-side-bar').css("display","block");
+            $('#admin-page').css("display","block");
+            $('#user-side-bar').css("display","none");
+            $('.user-side-bar-page').css("display","none");
             $(".userId").text(username + "님 환영합니다.");//로그인한 회원의 아이디 표시
             $('.admin-token').css("display","block");//관리자 페이지 오픈
             $('#loginPage').css("display","none");//로그인 숨기기
@@ -39,15 +44,23 @@ window.onload= function (){
             $('.logout').css("display","block");//로그아웃 오픈
         }else if(role === 'ROLE_USER'){
             console.log('회원');
+            $('#admin-side-bar').css("display","none");
+            $('#admin-page').css("display","none");
+            $('#user-side-bar').css("display","block");
+            $('#user-side-bar-page').css("display","block");
             $(".userId").text(username + "님 환영합니다.");//로그인한 회원의 아이디 표시
             $('.admin-token').css("display","none");//관리자 페이지 숨기기
-            $('#loginPage').css("disabled","none");//로그인 숨기기
+            $('#loginPage').css("display","none");//로그인 숨기기
             $('#main').css("display","block");//메인 페이지 오픈
             $('.logout').css("display","block");//로그아웃 오픈
-            $('#mypage').css("display","block")//마이페이지 오픈
+            $('#mylist').css("display","block")//마이페이지 오픈
+            $('#mypage').attr('href','/page/mypage/detail/'+username);
         }
     }else{//토큰이 없는 경우
         console.log('익명');
+        $('#admin-side-bar').css("display","none");//관리자 페이지 사이드바 숨김.
+        $('#user-side-bar').css("display","block");//회원 페이지 사이드바 오픈
+        $('#admin-page').css("display","none");
         $(".userId").text('로그인을 해주세요.');
         $('#loginPage').css("display","block");//로그인 오픈
         $('.logout').css("display","none");//로그아웃 숨기기
