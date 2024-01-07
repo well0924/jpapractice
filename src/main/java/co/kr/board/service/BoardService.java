@@ -1,7 +1,6 @@
 package co.kr.board.service;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -28,8 +27,6 @@ import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.mail.MessagingException;
 
 @Log4j2
 @Service
@@ -110,47 +107,17 @@ public class BoardService{
 				.createdat(dto.getCreatedAt())
 				.build();
 
-		//해시태그 저장
-		Set<HashTag>hashtags = new HashSet<>();
-		//해시태그가 있으면 해시태그의 명칭을 넣기
-		for (String hashtagName : dto.getHashTagName()) {
-
-			Optional<HashTag> existingHashTag = hashTagRepository.findByHashtagName(hashtagName);
-
-			log.info(existingHashTag);
-
-			HashTag hashTag = existingHashTag.orElseGet(() -> {
-				HashTag newHashTag = HashTag
-						.builder()
-						.hashtagName(hashtagName)
-						.createdAt(LocalDateTime.now())
-						.build();
-				return newHashTag;
-			});
-			hashtags.add(hashTag);
-
-			log.info(hashtagName);
-		}
-		Set<BoardHashTag>boardHashTags = new HashSet<>();
-		for(HashTag hashTag:hashtags){
-			BoardHashTag boardHashTag = BoardHashTag
-					.builder()
-					.board(board)
-					.hashTag(hashTag)
-					.build();
-			boardHashTags.add(boardHashTag);
-		}
-		board.setTag(boardHashTags);
+		//해시태그 연관관계
+		board.setTag(setBoardHashTag(dto,board));
 
 		log.info(board);
 		//파일 첨부
 		List<AttachFile>fileList = fileHandler.parseFileInfo(files);
 		log.info(fileList);
 		int InsertResult = repos.save(board).getId();
-		//파일 처리
-		AttachFile(InsertResult,fileList,board);
 		
-		return InsertResult;
+		//파일처리
+		return AttachFile(InsertResult,fileList,board);
 	}
 	
     /**
@@ -165,13 +132,12 @@ public class BoardService{
 		Optional<BoardResponseDto>boardDetail = Optional
 				.ofNullable(repos.findByBoardDetail(boardId)
 				.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
-
+		//조회수 증가
 		if(boardDetail.isPresent()){
 			updateReadCount(boardId);
 			log.info("readCount:::"+boardDetail.get().getReadCount());
 		}
-
-		return boardDetail.get();
+		return boardDetail.orElseThrow();
 	}
 
 	/**
@@ -229,39 +195,7 @@ public class BoardService{
 		Board boardDetail =	validateMember(boardId,member);
 
 		//해시태그 저장
-		Set<HashTag>hashtags = new HashSet<>();
-		//해시태그가 있으면 해시태그의 명칭을 넣기
-		for (String hashtagName : dto.getHashTagName()) {
-
-			Optional<HashTag> existingHashTag = hashTagRepository.findByHashtagName(hashtagName);
-
-			log.info(existingHashTag);
-
-			HashTag hashTag = existingHashTag.orElseGet(() -> {
-				HashTag newHashTag = HashTag
-						.builder()
-						.hashtagName(hashtagName)
-						.createdAt(LocalDateTime.now())
-						.build();
-				return newHashTag;
-			});
-			hashtags.add(hashTag);
-
-			log.info(hashtagName);
-		}
-
-		Set<BoardHashTag>boardHashTags = new HashSet<>();
-
-		for(HashTag hashTag:hashtags){
-			BoardHashTag boardHashTag = BoardHashTag
-					.builder()
-					.board(boardDetail)
-					.hashTag(hashTag)
-					.build();
-			boardHashTags.add(boardHashTag);
-		}
-
-		boardDetail.setTag(boardHashTags);
+		boardDetail.setTag(setBoardHashTag(dto,boardDetail));
 
 		//게시글 수정
 		boardDetail.updateBoard(dto);
@@ -356,8 +290,10 @@ public class BoardService{
 				.ofNullable(repos
 						.findById(id)
 						.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
+		String password = detail.get().getPassword();
+
 		//비밀번호 저장
-		if(detail.get().getPassword()==null||detail.get().getPassword()==""){
+		if(password.equals("")){
 			detail.get().setPassword(randomPassword);
 			repos.save(detail.get());
 		}
@@ -376,9 +312,10 @@ public class BoardService{
 						.findById(boardId)
 						.orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL)));
 
+		String password = board.get().getPassword();
+
 		//비밀번호가 있으면 비밀번호를 초기화
-		if(board.get().getPassword()!=null){
-			log.info("???????");
+		if(password != null){
 			board.get().setPassword(null);
 			repos.save(board.get());
 			log.info("초기화 값::"+board.get().getPassword());
@@ -424,7 +361,7 @@ public class BoardService{
 	private Member getMember(){
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName().toString();
+		String username = authentication.getName();
 		log.info(username);
 		Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 
@@ -458,23 +395,57 @@ public class BoardService{
 	 **/
 	public int AttachFile(int result, List<AttachFile>files, Board board){
 
-		if(files == null || files.size() ==0){
+		if(files.isEmpty()){
 			return result;
 		}
 
-		if(!files.isEmpty()){
-			for (int i=0;i<files.size();i++) {
-				String filePath = files.get(i).getFilePath();
-				File file = new File(filePath);
-				if(file.exists()){
-					file.delete();
-				}
-			}
-			for(AttachFile attachFile : files){
-				board.addAttach(attachRepository.save(attachFile));
+		for (int i=0;i<files.size();i++) {
+			String filePath = files.get(i).getFilePath();
+			File file = new File(filePath);
+			if(file.exists()){
+				file.delete();
 			}
 		}
+		for(AttachFile attachFile : files){
+			board.addAttach(attachRepository.save(attachFile));
+		}
 		return result;
+	}
+
+	/**
+	 * 해시태그 연관관계
+	 **/
+	private Set<BoardHashTag>setBoardHashTag(BoardDto.BoardRequestDto dto,Board board){
+		Set<HashTag>hashtags = new HashSet<>();
+		//해시태그가 있으면 해시태그의 명칭을 넣기
+		for (String hashtagName : dto.getHashTagName()) {
+
+			Optional<HashTag> existingHashTag = hashTagRepository.findByHashtagName(hashtagName);
+
+			log.info(existingHashTag);
+
+			HashTag hashTag = existingHashTag.orElseGet(() -> {
+				HashTag newHashTag = HashTag
+						.builder()
+						.hashtagName(hashtagName)
+						.createdAt(LocalDateTime.now())
+						.build();
+				return newHashTag;
+			});
+			hashtags.add(hashTag);
+
+			log.info(hashtagName);
+		}
+		Set<BoardHashTag>boardHashTags = new HashSet<>();
+		for(HashTag hashTag:hashtags){
+			BoardHashTag boardHashTag = BoardHashTag
+					.builder()
+					.board(board)
+					.hashTag(hashTag)
+					.build();
+			boardHashTags.add(boardHashTag);
+		}
+		return boardHashTags;
 	}
 
 }
