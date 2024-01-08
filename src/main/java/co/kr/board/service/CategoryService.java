@@ -12,8 +12,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +32,7 @@ public class CategoryService {
     public List<CategoryDto> categoryList() {
         List<CategoryDto> list = categoryRepository.categoryList();
 
-        String cachedCategories = stringRedisTemplate.opsForValue().get(CacheKey.CATEGORY);
+     /*   String cachedCategories = stringRedisTemplate.opsForValue().get(CacheKey.CATEGORY);
 
         if(cachedCategories!=null){
             log.info("목록::"+list);
@@ -42,13 +40,12 @@ public class CategoryService {
         }else{
             stringRedisTemplate.opsForValue().set(CacheKey.CATEGORY,serializeCategories(list));
             log.info("목록::"+list+"null임??");
-        }
+        }*/
         return list;
     }
 
     //카테고리 등록
     @Transactional
-    @Cacheable(value=CacheKey.CATEGORY,key = "#req.parentId",unless = "#result == null")
     public void create(CategoryCreateRequest req) {
         Category parent = Optional.ofNullable(req.getParentId())
                 .map(id -> categoryRepository.findById(id)
@@ -60,12 +57,11 @@ public class CategoryService {
 
     //카테고리 삭제
     @Transactional
-    @CacheEvict(value = CacheKey.CATEGORY,key = "#id")
     public void delete(Integer id) {
         Category category = categoryRepository
                 .findById(id)
                 .orElseThrow(()->new CustomExceptionHandler(ErrorCode.CATEGORY_NOT_FOUND));
-
+        log.info("category::"+category);
         if(category!=null){
             categoryRepository.deleteById(id);
         }
