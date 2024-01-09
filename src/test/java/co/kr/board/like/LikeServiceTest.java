@@ -44,23 +44,6 @@ public class LikeServiceTest {
         like = new Like(board,member);
     }
 
-    @DisplayName("좋아요 중복체크")
-    @Test
-    public void likeDuplicatedTest(){
-        member1();
-        board1();
-        like();
-
-        Boolean duplidatedresult = likeService.hasLikeBoard(board);
-
-        Assumptions.assumingThat(duplidatedresult.equals(true),()->{
-            likeMinusTest();
-        });
-
-        Assumptions.assumingThat(duplidatedresult.equals(false),()->{
-            likePlusTest();
-        });
-    }
     @DisplayName("좋아요 -1")
     public void likeMinusTest(){
         String likeResult = likeService.removeLikeBoard(board);

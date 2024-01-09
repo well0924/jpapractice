@@ -49,8 +49,10 @@ public class LikeController {
     public Response<Boolean> likeDuplicated(@PathVariable(value = "id") Integer boardId){
         Board board = boardRepository.findById(boardId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
         boolean result = likeService.hasLikeBoard(board);
+
+        //true: 1(좋아요 처리) , false : 0 (좋아요 취소)
         log.info("result::"+result);
-        if(result == true){
+        if(result){
             minusBoard(boardId);
         }else{
             likeBoard(boardId);
