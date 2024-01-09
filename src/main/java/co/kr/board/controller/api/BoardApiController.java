@@ -1,6 +1,5 @@
 package co.kr.board.controller.api;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Const.SearchType;
@@ -19,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @Log4j2
@@ -33,7 +31,7 @@ public class BoardApiController {
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
 	@GetMapping("/list/{cname}")
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<Page<BoardDto.BoardResponseDto>>articleList(
+	public Response<Page<BoardDto.BoardResponseDto>>boardList(
 			@PathVariable(value = "cname") String categoryName,
 			@PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10)Pageable pageable){
 				
@@ -60,7 +58,7 @@ public class BoardApiController {
 	@GetMapping("/detail/{id}")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code=HttpStatus.OK)
-	public Response<BoardDto.BoardResponseDto> detailArticle(@PathVariable(value="id")Integer boardId){
+	public Response<BoardDto.BoardResponseDto> boardDetail(@PathVariable(value="id")Integer boardId){
 		log.info("detail");
 		BoardDto.BoardResponseDto detail = service.getBoard(boardId);
 		return new Response<>(HttpStatus.OK.value(),detail);
@@ -70,14 +68,14 @@ public class BoardApiController {
 	@PostMapping(value = "/write")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public Response<Integer>writeArticle(
+	public Response<Integer>boardWrite(
 			@RequestPart(value="filelist",required = false) List<MultipartFile> files,
 			@Valid @RequestPart(value = "boardsave") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
 			@RequestParam(defaultValue = "2")int categoryId)throws Exception{
 
 		//url: localhost:8085/api/board/write?categoryId=2
-		int insertResult = service.boardsave(dto,categoryId,files);
+		int insertResult = service.boardCreate(dto,categoryId,files);
 
 		log.info("title: {},content: {},image:{}",dto.getBoardTitle(),dto.getBoardContents(),files);
 
@@ -88,8 +86,8 @@ public class BoardApiController {
 	@DeleteMapping("/delete/{id}")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
-	public Response<?>deleteArticle(@PathVariable(value="id")Integer boardId)throws Exception{
-		service.deleteBoard(boardId);
+	public Response<?>boardDelete(@PathVariable(value="id")Integer boardId)throws Exception{
+		service.boardDelete(boardId);
 		return new Response<>(HttpStatus.OK.value(),200);
 	}
 	
@@ -97,7 +95,7 @@ public class BoardApiController {
 	@PatchMapping("/update/{id}")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
-	public Response<?>updateArticle(
+	public Response<?>boardUpdate(
 			@PathVariable(value="id")Integer boardId,
 			@Valid @RequestPart(value = "boardupdate") BoardDto.BoardRequestDto dto,
 			BindingResult bindingresult,
@@ -112,7 +110,7 @@ public class BoardApiController {
 	@GetMapping("/my-article/{id}")
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@ResponseStatus(code = HttpStatus.OK)
-	public Response<?>memberArticle(@PathVariable("id") String username,Pageable pageable){
+	public Response<?>boardByMember(@PathVariable("id") String username,Pageable pageable){
 		Page<BoardDto.BoardResponseDto>list = service.memberArticle(username,pageable);
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
@@ -120,7 +118,7 @@ public class BoardApiController {
 	//최근에 작성한 글
 	@GetMapping("/article-top5")
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
-	public Response<?>findArticleTop5(){
+	public Response<?>findBoardTop5(){
 		List<BoardDto.BoardResponseDto>list = service.findBoardTop5();
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
@@ -145,7 +143,7 @@ public class BoardApiController {
 	//게시글 비밀글로 전환 및 초기화
 	@GetMapping("/change-board/{id}")
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
-	public Response<?>changeBoard(@PathVariable("id")Integer boardId) throws Exception {
+	public Response<?>changeSecretBoard(@PathVariable("id")Integer boardId) throws Exception {
 		String result = service.checkPassword(boardId);
 		log.info("result::"+result);
 		if(result == null){//값이 null인 경우

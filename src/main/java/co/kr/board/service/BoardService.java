@@ -46,49 +46,51 @@ public class BoardService{
 		return repos.findAllBoardList(pageable);
 	}
 	
-    /*
+    /**
 	 * 글목록 전체 조회(페이징+카테고리)
-	 * @Param Pageable 페이징 객체
-	 * @param categoryName 카테고리명
+	 * @Param Pageable : 페이징 객체
+	 * @param categoryName : 카테고리명
 	 * @return Page<BoardResponseDto>
-	*/
+	**/
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllPage(Pageable pageable, String categoryName){
 		return repos.findAllBoardList(categoryName,pageable);
 	}
 
-	/*
+	/**
 	  * 게시글 목록(페이징 + 검색기능 + 정렬)
-	  * 게시물 목록에서 검색.
+	  * 게시물 목록에서 검색하는 기능
 	  * @Param searchVal : 검색어,
 	  * @Param pageable : 페이징 객체
 	  * @return Page<BoardResponseDto>
-	 */
+	 **/
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findAllSearch(String searchVal,String searchType, Pageable pageable){
 		return repos.findByAllSearch(searchVal, SearchType.toSearch(searchType),pageable);
 	}
 
-	/*
+	/**
 	  * 해시태그 관련 게시글목록
 	  * 게시글 목록이나 상세 조회 페이지나 메인페이지에 있는 해시태그를 누르면 해당 해시태그가 있는 게시글 목록을 보여주는 기능
 	  * @Param tagName : 해시태그 이름
 	  * @Param pageable : 페이징 객체
-	*/
+	  * @return Page<BoardResponseDto>
+	**/
 	@Transactional(readOnly = true)
 	public Page<BoardResponseDto>findHashTagRelatedBoardList(String tageName,Pageable pageable){
 		return repos.findAllHashTagWithBoard(tageName,pageable);
 	}
 
-	/*
+	/**
 	  * 글 등록 (파일 첨부)
 	  * @Param BoardRequestDto 게시글 요청 dto
 	  * @Param Member 회원 객체
 	  * 시큐리티 로그인 후 이용
+	  * @exception CustomExceptionHandler : ErrorCode.ONLY_USER 회원만 사용
 	  * @Valid BindingResult Exception : 게시글 제목, 내용 미작성시 유효성 검사
-	*/
+	**/
 	@Transactional
-	public Integer boardsave(BoardDto.BoardRequestDto dto ,Integer categoryId,List<MultipartFile>files)throws Exception{
+	public Integer boardCreate(BoardDto.BoardRequestDto dto ,Integer categoryId,List<MultipartFile>files)throws Exception{
 
 		Member member = getMember();
 		//카테고리 적용
@@ -122,9 +124,9 @@ public class BoardService{
 	
     /**
       * 글 목록 단일 조회
-      * @Param boardId
-      * @Exception :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
-      * @return : BoardResponseDto
+      * @param boardId : 게시글 번호
+      * @exception CustomExceptionHandler  :게시글이 존재하지 않음.(NOT_BOARD_DETAIL)
+      * @return  BoardResponseDto
 	 **/
 	@Transactional(readOnly = true)
 	public BoardResponseDto getBoard(Integer boardId){
@@ -142,7 +144,7 @@ public class BoardService{
 
 	/**
 	  * 게시글 조회수 증가.
-	  * @Param boardId 게시글 번호
+	  * @param boardId : 게시글 번호
 	 **/
 	public void updateReadCount(Integer boardId){
 		repos.updateReadCount(boardId);
@@ -150,14 +152,13 @@ public class BoardService{
 
 	/**
 	  * 게시글 삭제 (파일 삭제 포함)
-	  * @Param boardId 게시물 번호
-	  * @Param Member 회원 객체
-	  * @Exception : 회원글이 존재하지 않은 경우 NOT_BOARD_DETAIL
-	  * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
+	  * @param boardId : 게시물 번호
+	  * @exception CustomExceptionHandler : 회원글이 존재하지 않은 경우 NOT_BOARD_DETAIL
+	  * @exception CustomExceptionHandler : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 NOT_USER
 	**/
 	@Transactional
 	@CacheEvict(value = CacheKey.BOARD,key = "#boardId")
-	public void deleteBoard(Integer boardId)throws Exception{
+	public void boardDelete(Integer boardId)throws Exception{
 
 		Member member = getMember();
 
@@ -180,12 +181,12 @@ public class BoardService{
 	
     /**
 	  * 글 수정 기능 (파일 첨부)
-	  * @Param BoardRequestDto 게시물 요청 dto
-	  * @Param boardId 게시물 번호
-	  * @Param Member 회원 객체
-	  * @Exception : 로그인을 하지 않은경우 ONLY_USER
-	  * @Exception : 게시글이 존재하지 않습니다. NOT_BOARD_DETAIL
-	  * @Exception : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
+	  * @param dto : 게시물 요청 dto
+	  * @param boardId : 게시물 번호
+	  * @param files : 파일 업로드 객체
+	  * @exception CustomExceptionHandler : 로그인을 하지 않은경우 ONLY_USER
+	  * @exception CustomExceptionHandler : 게시글이 존재하지 않습니다. NOT_BOARD_DETAIL
+	  * @exception CustomExceptionHandler : 글작성자와 로그인한 유저의 아이디가 일치하지 않으면 BOARD_EDITE_DENIED
 	**/
 	@Transactional
 	public Integer updateBoard(Integer boardId,BoardDto.BoardRequestDto dto,List<MultipartFile>files)throws Exception{
@@ -211,8 +212,8 @@ public class BoardService{
 
 	/**
 	  * 회원이 작성한 글목록
-	  * @Param String username 회원의 아이디
-	  * @Param Pageable 페이징 객체
+	  * @param username 회원의 아이디
+	  * @param pageable 페이징 객체
 	  * @return Page<BoardResponseDto>
 	 **/
 	@Transactional
@@ -250,17 +251,17 @@ public class BoardService{
 	/**
 	  * 게시글 이전글/다음글 가져오기.
 	  * 게시글 단일조회 페이지에서 게시글 이전글/다음글을 보여주는 기능
-	  * @param boardId 게시글 번호
+	  * @param boardId : 게시글 번호
 	 **/
 	@Transactional(readOnly = true)
-	public List<BoardResponseDto>articleNextPreviousBoard(Integer boardId){
+	public List<BoardResponseDto>findNextPreviousBoard(Integer boardId){
 		return repos.findNextPreviousBoard(boardId);
 	}
 	
 	/**
 	  * 게시글 선택 삭제
 	  * 게시글 관리자 페이지에서 게시글을 선택삭제 할 수 있는 기능
-	  * @param boardId 게시글 번호들
+	  * @param boardId : 게시글 번호들
 	 **/
 	@Transactional
 	public void boardSelectDelete(List<Integer>boardId){
@@ -272,6 +273,8 @@ public class BoardService{
 	/**
 	  * 게시글 비밀번호 확인
 	  * 게시글에 비밀번호가 있는 경우 비밀번호 확인 페이지에서 비밀번호를 확인하는 기능
+	  * @param boardId : 게시글 번호
+	  * @param password : 게시글 비밀번호
      **/
 	@Transactional(readOnly = true)
 	public BoardDto.BoardResponseDto passwordCheck(String password, Integer boardId){
@@ -280,8 +283,8 @@ public class BoardService{
 
 	/**
 	  * 비밀글 전환
-	  * 게시글 관리자 페이지에서 공개글을 비밀글로 변환하는 기능
-	  * @Param id 게시글 번호
+	  * 게시글 관리자 페이지에서 공개글을 비밀글로 변환후 회원에게 이메일을 발송
+	  * @param id : 게시글 번호
 	 **/
 	public void changeSecretBoard(Integer id) throws Exception {
 		//랜덤으로 4자리 비밀번호를 발급
@@ -304,7 +307,7 @@ public class BoardService{
 	/**
 	  * 비밀번호 초기화
 	  * 게시글 관리자 페이지에서 비밀번호를 초기화하는 기능
-	  * @param boardId 게시글 번호
+	  * @param boardId : 게시글 번호
  	 **/
 	public void passwordReset(Integer boardId){
 		Optional<Board> board = Optional
@@ -325,7 +328,7 @@ public class BoardService{
 	/**
 	  * 비밀번호 조회여부
 	  * 게시글 조회시 비밀번호가 있는 경우 비밀번호 확인 페이지에서 비밀번호 확인하는 기능
-	  * @Param boardId 게시글 번호
+	  * @param boardId : 게시글 번호
 	**/
 	@Transactional(readOnly = true)
 	public String checkPassword(Integer boardId){
@@ -357,6 +360,7 @@ public class BoardService{
 
 	/**
 	  * 회원 정보 가져오기.
+	  * api 사용시 회원정보를 가져오는 기능 
 	 **/
 	private Member getMember(){
 
@@ -373,9 +377,9 @@ public class BoardService{
 
 	/**
 	  * 회원 정보 일치 확인
-	  * @param boardId 게시물 번호
-	  * @Exception : 로그인을 하지 않은경우 NOT_BOARD_DETAIL
-	  * @Exception : 로그인을 하지 않은경우 NOT_USER
+	  * @param boardId : 게시물 번호
+	  * @exception CustomExceptionHandler : 로그인을 하지 않은경우 NOT_BOARD_DETAIL
+	  * @exception CustomExceptionHandler : 로그인을 하지 않은경우 NOT_USER
 	 **/
 	public Board validateMember(Integer boardId,Member member){
 
@@ -392,6 +396,9 @@ public class BoardService{
 
 	/**
 	  * 파일 첨부 부분(작성,수정)
+	  * @param files : 첨부파일 저장을 위한 파일객체
+	  * @param board : 게시글 객체
+	  * @param result : 게시글 번호                 
 	 **/
 	public int AttachFile(int result, List<AttachFile>files, Board board){
 
@@ -413,7 +420,7 @@ public class BoardService{
 	}
 
 	/**
-	 * 해시태그 연관관계
+	 * 해시태그 연관관계 설정
 	 **/
 	private Set<BoardHashTag>setBoardHashTag(BoardDto.BoardRequestDto dto,Board board){
 		Set<HashTag>hashtags = new HashSet<>();

@@ -61,6 +61,7 @@ public class BoardController {
 		mv.addObject("next", pageable.next().getPageNumber());
 		mv.addObject("hasNext", list.hasNext());        
 		mv.addObject("hasPrev", list.hasPrevious());
+
 		mv.setViewName("board/boardlist");
 		
 		return mv;
@@ -75,7 +76,7 @@ public class BoardController {
 		//파일 첨부목록
 		List<AttachDto> fileList = fileService.filelist(boardId);
 		//게시글 이전글/다음글
-		List<BoardDto.BoardResponseDto>nextPrevious = service.articleNextPreviousBoard(boardId);
+		List<BoardDto.BoardResponseDto>nextPrevious = service.findNextPreviousBoard(boardId);
 
 		mv.addObject("nextPrevious",nextPrevious);
 		mv.addObject("fileList",fileList);
@@ -114,8 +115,8 @@ public class BoardController {
 	}
 	
 	//비밀글 화면
-	@GetMapping("/passwordcheck")
-	public ModelAndView passwordCheckPage(Integer boardId){
+	@GetMapping("/password-check/{id}")
+	public ModelAndView passwordCheckPage(@PathVariable("id")Integer boardId){
 		ModelAndView mv = new ModelAndView();
 
 		BoardDto.BoardResponseDto dto = service.getBoard(boardId);
