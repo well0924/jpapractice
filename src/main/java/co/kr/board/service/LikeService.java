@@ -36,12 +36,11 @@ public class LikeService {
         return "좋아요 처리 완료";
     }
 
-    /*
+    /**
      * 좋아요-1
-     * @param Board
-     * @param Member
+     * @param board :게시글 객체
      * 게시글 조회에서 좋아요 -1
-     */
+     **/
     @Transactional
     public String removeLikeBoard(Board board){
         Member member =getMember();
@@ -52,29 +51,28 @@ public class LikeService {
         return "좋아요 취소 처리 완료";
     }
 
-    /*
-    * 좋아요 중복처리기능
-    * @param Board
-    * @param Member
-    *
-    */
+    /**
+     * 좋아요 중복처리기능
+     * @param board : 게시글 객체
+    **/
     @Transactional
     public boolean hasLikeBoard(Board board){
         Member member =getMember();
         return repository.findByMemberAndBoard(member,board).isPresent();
     }
 
-    /*
-     * 좋아요 갯수
-     */
+    /**
+      * 좋아요 갯수
+      * @param boardId : 게시글 번호
+     **/
     @Transactional
     public Integer LikeCount(Integer boardId){
         return repository.findByBoardId(boardId);
     }
 
-    /*
-     * 회원 인증
-     */
+    /**
+      * 회원 인증
+     **/
     private Member getMember(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
