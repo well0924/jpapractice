@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 파일 업로드 기능
@@ -23,9 +24,6 @@ import java.util.List;
 public class FileHandler {
     @Value("${server.file.upload}")
     private String filePath;
-
-    @Value("/istatic/images/")
-    private String imagPath;
 
     public List<AttachFile>parseFileInfo(List<MultipartFile>multipartFiles)throws Exception{
         //반환을 할 배열
@@ -44,9 +42,6 @@ public class FileHandler {
             // 프로젝트 디렉터리 내의 저장을 위한 절대 경로 설정
             // 경로 구분자 File.separator 사용
             String absolutePath = new File(filePath).getAbsolutePath() + File.separator + File.separator;
-
-            // 파일을 저장할 세부 경로 지정
-            //String path = "images" + File.separator + current_date;
 
             File file = new File(absolutePath);
 
@@ -67,7 +62,7 @@ public class FileHandler {
                     String originalFileExtension;
                     String originFileName = multipartFile.getOriginalFilename();
                     String contentType = multipartFile.getContentType();
-                    String ext = originFileName.substring(originFileName.lastIndexOf(".")+1);
+                    String ext = Objects.requireNonNull(originFileName).substring(originFileName.lastIndexOf(".")+1);
 
                     // 확장자명이 존재하지 않을 경우 처리 x
                     if(ObjectUtils.isEmpty(contentType)) {

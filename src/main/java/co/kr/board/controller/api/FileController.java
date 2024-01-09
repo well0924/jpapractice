@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,7 +44,7 @@ public class FileController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment;filename=\"" + URLEncoder.encode(getFile.getOriginFileName(), "UTF-8") + "\"")
+                        "attachment;filename=\"" + URLEncoder.encode(getFile.getOriginFileName(), StandardCharsets.UTF_8) + "\"")
                 .body(resource);
     }
 }
