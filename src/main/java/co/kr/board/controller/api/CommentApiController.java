@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import co.kr.board.config.Exception.dto.Response;
@@ -38,7 +37,7 @@ public class CommentApiController {
 	//목록(어드민)
 	@Secured({"ROLE_ADMIN"})
 	@GetMapping("/list")
-	public Response<Page<CommentDto.CommentResponseDto>>commentList(@PageableDefault(sort="id",direction = Sort.Direction.DESC,size =10) Pageable pageable) throws Exception {
+	public Response<Page<CommentDto.CommentResponseDto>>commentList(@PageableDefault(sort="id",direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
 		Page<CommentDto.CommentResponseDto> list = service.findCommentList(pageable);
 		return new Response<>(HttpStatus.OK.value(),list);
 	}
@@ -55,11 +54,10 @@ public class CommentApiController {
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
 	@PostMapping("/write/{id}")
 	public Response<?>replyWrite(@PathVariable(value="id")Integer boardId,
-								 @Valid @RequestBody CommentDto.CommentRequestDto dto,
-								 BindingResult bindingresult){
+								 @Valid @RequestBody CommentDto.CommentRequestDto dto){
 
 		Member member = getMember();
-		int insertResult = service.replysave(dto, member, boardId);
+		int insertResult = service.replyCreate(dto, member, boardId);
 		
 		return new Response<>(HttpStatus.OK.value(),insertResult);
 	}
@@ -69,8 +67,8 @@ public class CommentApiController {
 	@DeleteMapping("/delete/{id}")
 	public Response<?>replyDelete(@PathVariable(value="id")Integer replyId){
 
-		Member mebmer = getMember();
-		service.replydelete(replyId,mebmer);
+		Member member = getMember();
+		service.replyDelete(replyId,member);
 
 		return new Response<>(HttpStatus.OK.value(),"o.k");
 	}
@@ -95,7 +93,7 @@ public class CommentApiController {
 	//회원 인증
 	private Member getMember(){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName().toString();
+		String username = authentication.getName();
 		return memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 	}
 }
