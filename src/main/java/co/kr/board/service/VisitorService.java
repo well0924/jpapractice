@@ -27,7 +27,11 @@ public class VisitorService {
     private final VisitorRepository visitorRepository;
     private final MemberRepository memberRepository;
 
-    //로그인 중복처리
+    /**
+     * 로그인 중복처리
+     * 로그인시 1분 이내에 로그인한 기록이 있다면 중복 로그인으로 처리
+     * @param username :회원 아이디
+     **/
     public boolean isNotDuplicateLogin(String username) {
         LocalDateTime loginTime = LocalDateTime.now();
         Optional<Visitor> existingLogin = visitorRepository.findByUsernameAndLoginDateTimeAfter(username, loginTime.minusMinutes(1));
@@ -41,7 +45,9 @@ public class VisitorService {
         }
     }
 
-    //방문자 기록
+    /**
+     * 방문자 기록
+     **/
     public void visitorSave(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication!=null&& authentication.isAuthenticated()){
@@ -56,13 +62,17 @@ public class VisitorService {
         }
     }
 
-    //총 들어온 방문자의 수
+    /**
+     * 총 들어온 방문자의 수
+     **/
     @Transactional(readOnly = true)
     public Integer countTotalVisitors(){
         return Math.toIntExact(visitorRepository.count());
     }
 
-    //오늘 하루동안 들어온 회원 방문자수
+    /**
+     * 오늘 하루동안 들어온 회원 방문자수
+     **/
     @Transactional(readOnly = true)
     public Integer countLoginsForLastDay() {
         // 현재 시간 (UTC로 설정)
@@ -80,7 +90,9 @@ public class VisitorService {
         return visitorRepository.findDistinctByUsernameForBetween(startTime,endTime).size();
     }
 
-    //어제 들어왔던 회원의 수
+    /**
+     * 어제 들어왔던 회원의 수
+     **/
     @Transactional(readOnly = true)
     public Integer countLoginForYesterDay(){
         // 현재 시간 (UTC로 설정)
@@ -95,7 +107,9 @@ public class VisitorService {
         return visitorRepository.findDistinctByUsernameForBetween(startOfDay,endOfDay).size();
     }
 
-    //일주일간의 방문자 수
+    /**
+     * 일주일간의 방문자 수
+     **/
     @Transactional(readOnly = true)
     public List<Integer> countLoginForWeekDayCount(){
         // 현재 시간 (UTC로 설정)
@@ -119,10 +133,12 @@ public class VisitorService {
         return weekDaysCount;
     }
 
-    //회원 인증
+    /**
+     * 회원 인증
+     **/
     private Member getMember(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName().toString();
+        String username = authentication.getName();
         Member member = memberRepository.findByUsername(username).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_FOUND));
         if(member == null){
             throw new CustomExceptionHandler(ErrorCode.ONLY_USER);

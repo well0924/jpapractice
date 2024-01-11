@@ -25,10 +25,10 @@ public class MemberService {
 	private final MemberRepository  repository;
 	private final BCryptPasswordEncoder encoder;
 	
-	/*
-	 * 회원 목록(페이징)
-	 * 회원 목록 페이징 적용
-	 */
+	/**
+	  * 회원 목록(페이징)
+	  * 회원 목록 페이징 적용
+	 **/
 	@Transactional
 	public Page<MemberDto.MemeberResponseDto>findAll(Pageable pageable){
 		Page<Member>members = repository.findAll(pageable);
@@ -40,25 +40,27 @@ public class MemberService {
 		return members.map(member -> new MemeberResponseDto(member));
 	}
 
-	/*
-	* 회원 목록(페이징 + 검색)
-	* 어드민 페이지에서 회원아이디를 검색하는 기능
-	*/
+	/**
+	 * 회원 목록(페이징 + 검색)
+	 * 어드민 페이지에서 회원아이디를 검색하는 기능
+	 * @param searchVal : 회원검색어
+	 * @param pageable :페이징 객체                    
+	**/
 	@Transactional(readOnly = true)
 	public Page<MemberDto.MemeberResponseDto>findByAll(String searchVal,Pageable pageable){
 		return repository.findByAllSearch(searchVal,pageable);
 	}
 
-	/*
-	 * 회원 정보 단일 조회
-	 * 관리자 페이지 또는 회원 수정 페이지에서 회원 정보조회
-	 * @param useridx
-	 * @param Exception: 회원이 없는 경우 해당 회원이 없습니다.
-	 */
+	/**
+	  * 회원 정보 단일 조회
+	  * 관리자 페이지 또는 회원 수정 페이지에서 회원 정보조회
+	  * @param userIdx : 회원번호
+	  * @exception CustomExceptionHandler : 회원이 없는 경우 해당 회원이 없습니다.
+	 **/
 	@Transactional(readOnly = true)
-	public MemberDto.MemeberResponseDto getMember(Integer useridx){
+	public MemberDto.MemeberResponseDto getMember(Integer userIdx){
 		Optional<MemberDto.MemeberResponseDto>result = repository
-				.findByMemberDetail(useridx);
+				.findByMemberDetail(userIdx);
 
 		if(!result.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
