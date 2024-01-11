@@ -95,13 +95,6 @@ public class LoginApiController {
 				.body("log-out");
 	}
 
-	//회원가입 인증 이메일
-	@PostMapping("/sendEmail/{email}")
-	public Response<String>sendEmail(@PathVariable(value = "email") String userEmail)throws Exception{
-		String epw = emailService.sendSimpleMessage(userEmail);
-		return new Response<>(HttpStatus.OK.value(),"인증번호를 보냈습니다.");
-	}
-
 	//회원 비밀번호 재수정 인증 이메일
 	@PostMapping("/temporary-password/{email}")
 	public Response<String>sendPwd(@PathVariable(value = "email") String userEmail) throws Exception{
