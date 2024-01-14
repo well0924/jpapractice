@@ -9,16 +9,16 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Notification extends BaseTime{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String message;
+    private String data;
     private boolean isRead;
-
     @Enumerated(EnumType.STRING)
     private NoticeType noticeType;
 
@@ -29,11 +29,16 @@ public class Notification extends BaseTime{
     private Member member;
 
     @Builder
-    public Notification(String message,boolean isRead,NoticeType noticeType,Member member){
+    public Notification(String message,String data,boolean isRead,NoticeType noticeType,Member member){
         this.message = message;
+        this.data = data;
         this.isRead = isRead;
         this.noticeType = noticeType;
         this.member = member;
         this.getCreatedAt();
+    }
+
+    public void isReadChange(){
+        this.isRead = true;
     }
 }

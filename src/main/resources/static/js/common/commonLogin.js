@@ -2,9 +2,9 @@
  * 로그인시에 공통적으로 사용되는 부분
  **/
 
-/*
+/**
  * 로그인후 권한에 따라 화면 변환
- */
+ **/
 window.onload= function (){
     //로컬스토리지에 토큰값이 있는 경우
     let tokenId = localStorage.getItem('Authorization');
@@ -22,15 +22,19 @@ window.onload= function (){
         console.log("권한:"+role);
         console.log("유효기간:"+expire);
         console.log(expireTime);
-
+        //알림기능
+        notification();
+        
         $('#userDetail').attr('href','/page/mypage/detail/'+username);//마이페이지
         $('#userComment').attr('href','/page/mypage/my-comment/'+username);//내가 작성한 댓글
         $('#userBoard').attr('href','/page/mypage/my-article/'+username);//내가 작성한 글
         $('#scrapList').attr('href','/page/mypage/list/'+username);//스크랩을 한 글 목록
-        //권한에 따라 사이드바를 변경
 
         //1분마다 주기적으로 유효기간을 검증한다.
         setInterval(function(){validTokenExpiredTime(expire)},60000);
+
+
+        //권한에 따라 사이드바를 변경
         if(role === 'ROLE_ADMIN'){
             console.log('관리자');
             $('#admin-side-bar').css("display","block");
@@ -67,9 +71,9 @@ window.onload= function (){
     }
 };
 
-/*
+/**
  * 로컬스토리지에 저장하기.(기간 포함)
- */
+ **/
 function setItemWithExpireTime(keyName,keyValue,ttl){
     //로컬스토리지에 저장할 객체(토큰값,유효기간)
     const obj = {
@@ -82,9 +86,9 @@ function setItemWithExpireTime(keyName,keyValue,ttl){
     window.localStorage.setItem(keyName, objString);
 }
 
-/*
+/**
  * 로컬스토리지에 저장된 값을 가져오기.
- */
+ **/
 function getItems(){
     //value값
    let value =localStorage.getItem('Authorization');
@@ -92,9 +96,9 @@ function getItems(){
    return result;
 }
 
-/*
+/**
  * 토큰 파싱
- */
+ **/
 function tokenParse(token){
     if(token){
         const base64Url = token.split('.')[1];
@@ -112,9 +116,9 @@ function tokenParse(token){
     }
 }
 
-/*
+/**
  * 로컬스토리지에 저장된 토큰을 파싱후 권한에 맞게 페이지 이동
- */
+ **/
 function loginSuccessProc(tokenId){
     //토큰값이 있다면 파싱후 권한에 맞는 페이지로 이동하기.
     let result = tokenParse(tokenId);
@@ -130,9 +134,9 @@ function loginSuccessProc(tokenId){
     }
 }
 
-/*
+/**
  * 로컬스토리지에 저장된 토큰의 유효기간 확인
- */
+ **/
 function validTokenExpiredTime(exp){
     //AccessToken의 유효기간
     let expirationDate = new Date(exp*1000);
@@ -144,6 +148,7 @@ function validTokenExpiredTime(exp){
     if(TokenValue!=null){
         console.log(differentTime);
         console.log(TokenValue.value);
+
         if(differentTime == 120000){ //토큰의 유효기간이 만료되기 1분전에 재발급하기.
             console.log("재발급을 시작");
             //ajax를 사용해서 rt와 at를 헤더에 넣어서 토큰을 재발급을 하고 로그인 절차와 똑같이 한다.
@@ -183,7 +188,9 @@ function validTokenExpiredTime(exp){
     }
 }
 
-//쿠키에 저장된 값 가져오기.(xss 공격에 취약한데 어떻게 처리를 해야될지.....)
+/**
+ * 쿠키에 저장된 값 가져오기.(xss 공격에 취약한데 어떻게 처리를 해야될지.....)
+ **/
 function getRefreshToken() {
     // document.cookie로부터 쿠키 값을 읽어옵니다.
     var cookies = document.cookie.split(';');
@@ -197,7 +204,73 @@ function getRefreshToken() {
     return null;
 }
 
-//쿠키값 삭제하기.
+/**
+ * 쿠키값 삭제하기.
+ **/
 function deleteCookie(name) {
     document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+/**
+ * SSE 알림기능
+ **/
+function notification(){
+    const userId=1;
+
+    const sourceEvent = new EventSource(`http://localhost:8085/api/notice/subscribe/`+userId);
+
+    console.log(sourceEvent);
+
+    sourceEvent.addEventListener("open", function (event) {
+        console.log("connection opened");
+        const data = JSON.parse(event);
+        console.log("통신::"+data);
+        (async () => {
+            // 브라우저 알림
+            const showNotification = () => {
+
+                const notification = new Notification('Alarm Test', {
+                    body: data.content
+                });
+
+                setTimeout(() => {
+                    notification.close();
+                }, 10 * 1000);
+
+                notification.addEventListener('click', () => {
+                    window.open(data.url, '_blank');
+                });
+            }
+
+            // 브라우저 알림 허용 권한
+            let granted = false;
+
+            if (Notification.permission === 'granted') {
+                granted = true;
+            } else if (Notification.permission !== 'denied') {
+                let permission = await Notification.requestPermission();
+                granted = permission === 'granted';
+            }
+
+            // 알림 보여주기
+            if (granted) {
+                showNotification();
+            }
+        })();
+        console.log("알림::"+data);
+    });
+
+    sourceEvent.addEventListener("alarm", function (event) {
+        console.log(event.data);
+        const data = JSON.parse(event.data);
+    });
+
+    sourceEvent.addEventListener("error", function (event) {
+        console.log(event.target.readyState);
+        if (event.target.readyState === EventSource.CLOSED) {
+            console.log("eventsource closed");
+        }
+        sourceEvent.close();
+    });
+
 }

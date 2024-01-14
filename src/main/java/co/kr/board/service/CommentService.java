@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import co.kr.board.domain.Board;
+import co.kr.board.domain.Const.NoticeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -29,6 +30,7 @@ public class CommentService {
 	
 	private final BoardRepository boardrepository;
 
+	private final SSeService sSeService;
 
 	/**
 	  * 댓글 목록 (페이징)
@@ -85,7 +87,9 @@ public class CommentService {
 		repository.save(reply);
 
 		board.getCommentlist().add(reply);
-		
+		//댓글 알림
+		sSeService.send(principal, NoticeType.REPLY,"게시글에 댓글이 달렸습니다.","boardId :" +board.getId());
+
 		return reply.getId();
 	}
 	

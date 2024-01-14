@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class NoticeDto {
     private Integer id;
-
+    private String data;
     private String messeage;
 
     private boolean isRead;
@@ -24,11 +24,19 @@ public class NoticeDto {
     private LocalDateTime createdTime;
 
     @Builder
-    public NoticeDto(Notification notification){
+    public  NoticeDto(Notification notification){
         this.id = notification.getId();
+        this.data = notification.getData();
         this.messeage = notification.getMessage();
         this.noticeType = notification.getNoticeType();
         this.isRead = notification.isRead();
         this.createdTime = notification.getCreatedAt();
+    }
+
+    public static NoticeDto create(Notification notification){
+        return NoticeDto
+                .builder()
+                .notification(notification)
+                .build();
     }
 }
