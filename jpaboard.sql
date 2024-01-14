@@ -94,9 +94,22 @@ SELECT *  FROM scrap;
 INSERT INTO jpaboard.scrap (id, created_at, useridx, board_id) VALUES (5, '2023-11-02 00:21:18', 1, 1);
 
 SELECT * FROM visitors;
-INSERT INTO jpaboard.visitors (id, login_date_time, username, useridx) VALUES (1, '2023-11-06 21:21:28', 'well4149', 1);
-INSERT INTO jpaboard.visitors (id, login_date_time, username, useridx) VALUES (5, '2023-11-07 01:02:49', 'well4149', 1);
-
+INSERT IGNORE INTO `visitors` (`id`, `login_date_time`, `username`, `useridx`) VALUES
+                                                                                   (1, '2023-11-06 21:21:28', 'well4149', 1),
+                                                                                   (5, '2023-11-07 01:02:49', 'well4149', 1),
+                                                                                   (6, '2023-11-14 21:00:28', 'well4149', 1),
+                                                                                   (7, '2023-11-14 21:08:18', 'well4149', 1),
+                                                                                   (8, '2023-11-14 22:18:33', 'well4149', 1),
+                                                                                   (9, '2023-11-15 21:48:02', 'well4149', 1),
+                                                                                   (10, '2023-11-15 23:00:00', 'well4149', 1),
+                                                                                   (11, '2023-11-16 23:49:08', 'well4149', 1),
+                                                                                   (12, '2023-11-17 18:00:53', 'well4149', 1),
+                                                                                   (13, '2023-11-17 18:16:28', 'well4149', 1),
+                                                                                   (14, '2023-11-17 18:19:59', 'well4149', 1),
+                                                                                   (15, '2023-11-17 23:00:09', 'well4149', 1),
+                                                                                   (16, '2023-11-17 23:51:48', 'well4149', 1),
+                                                                                   (17, '2023-11-18 00:19:52', 'well4149', 1),
+                                                                                   (18, '2023-11-18 03:36:40', 'well4149', 1);
 SELECT * FROM hashtag;
 INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (1, null, 'spring');
 INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (2, null, 'jquery');
