@@ -7,7 +7,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -20,11 +19,9 @@ public class NoticeController {
     private final SSeService service;
 
     //알림
-    @GetMapping(value = "/subscribe/{id}",produces = MediaType.ALL_VALUE)
-    public SseEmitter subscribe(@PathVariable("id") Integer id){
-        return service.subscribe(id);
+    @GetMapping(value = "/subscribe",produces = MediaType.ALL_VALUE)
+    public SseEmitter subscribe(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return service.subscribe(customUserDetails.getMember().getId());
     }
-
-    //회원의 알림 목록
 
 }

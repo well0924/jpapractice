@@ -3,6 +3,7 @@ package co.kr.board.service;
 import co.kr.board.domain.Board;
 import co.kr.board.config.Exception.dto.ErrorCode;
 import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.domain.Const.NoticeType;
 import co.kr.board.domain.Like;
 import co.kr.board.repository.LikeRepository;
 import co.kr.board.domain.Member;
@@ -21,6 +22,8 @@ public class LikeService {
     private final LikeRepository repository;
     private final MemberRepository memberRepository;
 
+    private final SSeService sseService;
+
     /**
      * 좋아요+1
      * @param board : 게시글 객체
@@ -33,6 +36,10 @@ public class LikeService {
         board.increaseLikeCount();
         Like like = new Like(board,member);
         repository.save(like);
+
+        //알림기능
+        Member writer = board.getWriter();
+        sseService.send(writer, NoticeType.LIKE,"게시글에 좋아요가 달렸습니다.","boardId:"+board.getId());
         return "좋아요 처리 완료";
     }
 

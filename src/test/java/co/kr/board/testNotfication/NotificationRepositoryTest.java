@@ -78,10 +78,12 @@ public class NotificationRepositoryTest {
 
         //when
         Map<String, SseEmitter> ActualResult = emitterRepository.findAllEmitterStartWithByMemberId(String.valueOf(memberId));
+
         System.out.println(ActualResult);
         System.out.println(ActualResult.get(emitterId1).toString());
         System.out.println(ActualResult.get(emitterId2).toString());
         System.out.println(ActualResult.get(emitterId3).toString());
+
         //then
         Assertions.assertEquals(3, ActualResult.size());
     }

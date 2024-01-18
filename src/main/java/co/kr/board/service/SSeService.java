@@ -83,14 +83,16 @@ public class SSeService {
         log.info(eventId);
 
         Map<String, SseEmitter> emitters = emitterRepository.findAllEmitterStartWithByMemberId(receiverId);
+
         log.info(emitters);
+
         emitters.forEach(
-                (key, emitter) -> {
+                (key, object) -> {
                     emitterRepository.saveEventCache(key, notification);
-                    sendNotification(emitter, eventId, key, NoticeDto.create(notification));
+                    sendNotification(object, receiverId, key, NoticeDto.create(notification));
+                    log.info("????::"+key+">>>"+object.toString());
                 }
         );
-        log.info("????:"+emitters.get(receiverId));
     }
 
     private Notification createNotification(Member member,NoticeType noticeType,String message,String data){
