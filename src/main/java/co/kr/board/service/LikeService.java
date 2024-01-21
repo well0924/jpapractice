@@ -39,7 +39,7 @@ public class LikeService {
 
         //알림기능
         Member writer = board.getWriter();
-        sseService.send(writer, NoticeType.LIKE,"게시글에 좋아요가 달렸습니다.","boardId:"+board.getId());
+        sseService.send(writer, NoticeType.LIKE,"게시글에 좋아요가 달렸습니다.", String.valueOf(board.getId()));
         return "좋아요 처리 완료";
     }
 

@@ -1,5 +1,7 @@
 package co.kr.board.service;
 
+import co.kr.board.config.Exception.dto.ErrorCode;
+import co.kr.board.config.Exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Const.NoticeType;
 import co.kr.board.domain.Dto.NoticeDto;
 import co.kr.board.domain.Member;
@@ -9,10 +11,13 @@ import co.kr.board.repository.NotificationRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -22,26 +27,27 @@ public class SSeService {
     private final NotificationRepository notificationRepository;
     private static final Long DEFAULT_TIMEOUT = 60 * 1000L;
 
-    /*
+    /**
      * 구독 알림
-     * @param memberId : 회원 번호
-     */
-    public SseEmitter subscribe(Integer memberId){
-        String emitterId = makeTimeIncludeId(memberId);
+     * @param userName : 회원 아이디
+     **/
+    public SseEmitter subscribe(String userName){
+        String emitterId = makeTimeIncludeId(userName);
+        log.info(emitterId);
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
-
+        log.info(emitter);
         emitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
         emitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
 
         // 503 에러를 방지하기 위한 더미 이벤트 전송
-        String eventId = makeTimeIncludeId(memberId);
-        sendNotification(emitter, eventId, emitterId, "EventStream Created. [userId=" + memberId + "]");
+        String eventId = makeTimeIncludeId(userName);
+        sendNotification(emitter, eventId, emitterId, "EventStream Created. [userId=" + userName + "]");
 
         return emitter;
     }
 
 
-    private String makeTimeIncludeId(Integer memberId) {
+    private String makeTimeIncludeId(String memberId) {
         return memberId + "_" + System.currentTimeMillis();
     }
 
@@ -71,10 +77,10 @@ public class SSeService {
     
     //알림전송
     public void send(Member receiver, NoticeType notificationType, String content, String data) {
-        log.info("send??");
+
         Notification notification = notificationRepository.save(createNotification(receiver, notificationType, content, data));
 
-        String receiverId = String.valueOf(receiver.getId());
+        String receiverId = String.valueOf(receiver.getUsername());
 
         log.info(receiverId);
 
@@ -90,11 +96,35 @@ public class SSeService {
                 (key, object) -> {
                     emitterRepository.saveEventCache(key, notification);
                     sendNotification(object, receiverId, key, NoticeDto.create(notification));
-                    log.info("????::"+key+">>>"+object.toString());
                 }
         );
     }
-
+    
+    //알림 목록
+    @Transactional(readOnly = true)
+    public List<NoticeDto>noticeList(String username){
+        return notificationRepository.findAllByNotification(username);
+    }
+    
+    //알림 개별 조회
+    @Transactional(readOnly = true)
+    public NoticeDto getNotice(String username,Integer noticeId){
+        Optional<NoticeDto>detail = notificationRepository.findByUsername(username,noticeId);
+        //조회시 읽은여부 true로 전환하기.
+        if(detail.isPresent()){
+            Notification notification = Notification
+                    .builder()
+                    .noticeType(detail.get().getNoticeType())
+                    .data(detail.get().getData())
+                    .message(detail.get().getMesseage())
+                    .noticeType(detail.get().getNoticeType())
+                    .isRead(true)
+                    .build();
+            notificationRepository.save(notification);
+        }
+        return detail.orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOTICE_NOT_FOUND));
+    }
+    
     private Notification createNotification(Member member,NoticeType noticeType,String message,String data){
         return Notification
                 .builder()

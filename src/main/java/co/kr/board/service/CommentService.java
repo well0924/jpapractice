@@ -89,7 +89,7 @@ public class CommentService {
 		board.getCommentlist().add(reply);
 		Member writer = board.getWriter();
 		//댓글 알림
-		sSeService.send(writer, NoticeType.REPLY,"게시글에 댓글이 달렸습니다.","boardId :" +board.getId());
+		sSeService.send(writer, NoticeType.REPLY,"게시글에 댓글이 달렸습니다.",String.valueOf(board.getId()));
 
 		return reply.getId();
 	}

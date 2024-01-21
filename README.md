@@ -4,29 +4,26 @@
  
   1. jpa에 적응을 하기 위해서 블로그를 만드는 것을 목표로 한다. 
 
-
   2. 기능이 다 구현된 뒤에는 ci/cd툴을 사용해서 배포를 한다.
 
-
   3. TDD를 배우기 위해서 각 레이어마다 테스트 코드를 작성을 하고 테스트 커버리지를 80%로 한다.
-
 
   4. 기능을 단순히 만드는 것에 집착하지 않고 관련된 기술에 대해서 공부하기.
 
 
 ### 개발 환경
 
-- Back-end: Java17, SpringBoot, Jpa , Redis , SpringSecurity , QueryDsl
+- Back-end: Java17, SpringBoot 2.6.6, Jpa , Redis , SpringSecurity , QueryDsl , Jwt
 
 - DB: MariaDB
 
 - Build: Gradle
 
-- Front-end: TheymLeaf(추후 SPA로 변경해보기.),JQuery
+- Front-end: TheymLeaf(추후 SPA로 변경해보기.),JQuery 
 
-- TestTool: postman,Mockito,Junit5
+- TestTool: postman, Mockito, Junit5
 
-- Deploy: Aws
+- Deploy: Aws ,Github-Action
 
 ### 주요 기능
 
@@ -92,10 +89,9 @@
 
 4.[게시글 조회수에서 발생한 동시성 이슈](https://www.notion.so/2d0c6ea066ff43cbae599b361651f370)
 
-5.[SSE 를 활용해서 실시간 알림기능 구현하기.]()
-
-6.[]()
+5.[SSE 를 활용해서 실시간 알림기능 구현하기.](https://www.notion.so/SSE-fd3abb3cc8b34aaf8f34046177da0637)
 
 
+### 주요 로직
 
 

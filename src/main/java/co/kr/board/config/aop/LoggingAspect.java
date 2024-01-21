@@ -63,8 +63,6 @@ public class LoggingAspect {
                 params = " [" + paramMapToString(paramMap) + "]";
             }
         }
-
         return params;
-
     }
 }
