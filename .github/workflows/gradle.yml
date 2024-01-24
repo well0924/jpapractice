@@ -34,3 +34,6 @@ jobs:
         aws-access-key-id: ${{secrets.ACCESS_KEY_ID}}
         aws-secret-access-key: ${{secrets.SECRET_ACCESS_KEY}}
         aws-region: ap-northeast-2
+
+    - name: Push File to Amazon S3
+      run: aws s3 cp --region ap-northeast-2 jpaboardpractice-0.0.1-SNAPSHOT.jar s3://jpaboard-s3-file
