@@ -41,3 +41,10 @@ jobs:
 
     - name: Push File to Amazon S3
       run: aws s3 cp --region ap-northeast-2 jpaboard.zip s3://jpaboard-s3-file
+
+    - name: Amazon Codedeploy Run
+      run: |
+        aws deploy create-deployment --application-name jpaboard-deploy \
+        --deployment-group-name jpaboard-web-app \
+        --deployment-config-name CodeDeployDefault.AllAtOnce \
+        --s3-location bucket=jpaboard-s3-file,bundleType=zip,key=jpaboard.zip
