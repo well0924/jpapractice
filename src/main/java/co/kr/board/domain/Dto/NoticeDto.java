@@ -15,10 +15,9 @@ public class NoticeDto {
     private Integer id;
     private String data;
     private String messeage;
-
     private boolean isRead;
-
     private NoticeType noticeType;
+    private String username;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime createdTime;
@@ -30,6 +29,7 @@ public class NoticeDto {
         this.messeage = notification.getMessage();
         this.noticeType = notification.getNoticeType();
         this.isRead = notification.isRead();
+        this.username = notification.getMember().getUsername();
         this.createdTime = notification.getCreatedAt();
     }
 

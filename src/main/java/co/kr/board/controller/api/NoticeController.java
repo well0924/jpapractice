@@ -1,15 +1,16 @@
 package co.kr.board.controller.api;
 
-import co.kr.board.config.Security.auth.CustomUserDetails;
+import co.kr.board.domain.Dto.NoticeDto;
 import co.kr.board.service.SSeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 @Log4j2
 @RestController
@@ -18,10 +19,17 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NoticeController {
     private final SSeService service;
 
-    //알림
+    //알림(구독)
     @GetMapping(value = "/subscribe",produces = MediaType.ALL_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        return service.subscribe(customUserDetails.getMember().getId());
+    public SseEmitter subscribe( @RequestParam(value = "userName") String userName){
+        return service.subscribe(userName);
+    }
+    
+    //알림 목록
+    @GetMapping("/list/{username}")
+    public ResponseEntity<?>noticeList(@PathVariable("username")String username){
+        List<NoticeDto>noticeDtoList = service.noticeList(username);
+        return new ResponseEntity<>(noticeDtoList,HttpStatus.OK);
     }
 
 }
