@@ -28,9 +28,6 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build -x test
 
-    - name: File List
-      run: ls
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -38,5 +35,9 @@ jobs:
         aws-secret-access-key: ${{secrets.SECRET_ACCESS_KEY}}
         aws-region: ap-northeast-2
 
+    - name: File Package
+      run: |
+        zip -r jpaboard.zip build/libs/jpaboardpractice-0.0.1-SNAPSHOT.jar scripts/
+
     - name: Push File to Amazon S3
-      run: aws s3 cp --region ap-northeast-2 build/libs/jpaboardpractice-0.0.1-SNAPSHOT.jar s3://jpaboard-s3-file
+      run: aws s3 cp --region ap-northeast-2 jpaboard.zip s3://jpaboard-s3-file
