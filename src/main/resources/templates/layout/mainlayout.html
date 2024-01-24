@@ -10,24 +10,24 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <body id="page-top">
 <div id="wrapper">
     <!--side bar-->
-    <th:block th:replace="/layout/sidebar :: sidebarfragment"></th:block>
+    <th:block th:replace="layout/sidebar :: sidebarfragment"></th:block>
     <div id="content-wrapper" class="d-flex flex-column">
         <div id ="content">
             <!--top bar-->
-            <th:block th:replace="/layout/Topbar :: topbarfragment"></th:block>
+            <th:block th:replace="layout/Topbar :: topbarfragment"></th:block>
             <!--main contents-->
             <th:block layout:fragment= "contents"></th:block>
         </div>
         <!--footer-->
-        <th:block th:replace="/layout/footer :: footerfragment"></th:block>
+        <th:block th:replace="layout/footer :: footerfragment"></th:block>
     </div>
     <!--End of Content Wrapper-->
 </div>
 <!--End of Page Wrapper-->
 <!--common modal & button-->
-<th:block th:replace="/layout/commonfragment::commonfragment"></th:block>
+<th:block th:replace="layout/commonfragment::commonfragment"></th:block>
 </body>
 <!--javascript cnd-->
 <!---->
-<th:block th:replace="/layout/script :: scriptfragment"></th:block>
+<th:block th:replace="layout/script :: scriptfragment"></th:block>
 </html>

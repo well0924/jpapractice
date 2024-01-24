@@ -123,7 +123,7 @@ public class BoardController {
 
 		mv.addObject("detail",dto);
 
-		mv.setViewName("/board/passwordCheck");
+		mv.setViewName("board/passwordCheck");
 		return mv;
 	}
 
@@ -134,7 +134,7 @@ public class BoardController {
 		Page<BoardDto.BoardResponseDto>tagRelatedBoardList = service.findHashTagRelatedBoardList(tagName,pageable);
 
 		mv.addObject("list",tagRelatedBoardList);
-		mv.setViewName("/main/HashTagBoardList");
+		mv.setViewName("main/HashTagBoardList");
 
 		return mv;
 	}

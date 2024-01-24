@@ -8,7 +8,7 @@
 window.onload= function (){
     //로컬스토리지에 토큰값이 있는 경우
     let tokenId = localStorage.getItem('Authorization');
-
+    console.log(tokenId);
     let result = tokenParse(tokenId);
 
     if(tokenId){
@@ -23,7 +23,7 @@ window.onload= function (){
         console.log("유효기간:"+expire);
         console.log(expireTime);
         //알림기능
-        notification();
+        notification(username);
         
         $('#userDetail').attr('href','/page/mypage/detail/'+username);//마이페이지
         $('#userComment').attr('href','/page/mypage/my-comment/'+username);//내가 작성한 댓글
@@ -214,63 +214,26 @@ function deleteCookie(name) {
 /**
  * SSE 알림기능
  **/
-function notification(){
-    const userId=1;
+function notification(username){
 
-    const sourceEvent = new EventSource(`http://localhost:8085/api/notice/subscribe/`+userId);
+    // EventSource로 구독
+    const eventSource = new EventSource("/api/notice/subscribe"+"?userName="+username);
 
-    console.log(sourceEvent);
+    eventSource.onopen = function (event){
+        console.log(event);
+        console.log(username);
+    }
 
-    sourceEvent.addEventListener("open", function (event) {
-        console.log("connection opened");
-        const data = JSON.parse(event);
-        console.log("통신::"+data);
-        (async () => {
-            // 브라우저 알림
-            const showNotification = () => {
-
-                const notification = new Notification('Alarm Test', {
-                    body: data.content
-                });
-
-                setTimeout(() => {
-                    notification.close();
-                }, 10 * 1000);
-
-                notification.addEventListener('click', () => {
-                    window.open(data.url, '_blank');
-                });
-            }
-
-            // 브라우저 알림 허용 권한
-            let granted = false;
-
-            if (Notification.permission === 'granted') {
-                granted = true;
-            } else if (Notification.permission !== 'denied') {
-                let permission = await Notification.requestPermission();
-                granted = permission === 'granted';
-            }
-
-            // 알림 보여주기
-            if (granted) {
-                showNotification();
-            }
-        })();
-        console.log("알림::"+data);
+    //이벤트 알림
+    eventSource.addEventListener("open",function(event){
+        console.log("connect");
+        let message = event.data;
+        console.log(message);
+        new Notification("알림:"+message);
+        
     });
-
-    sourceEvent.addEventListener("alarm", function (event) {
-        console.log(event.data);
-        const data = JSON.parse(event.data);
-    });
-
-    sourceEvent.addEventListener("error", function (event) {
-        console.log(event.target.readyState);
-        if (event.target.readyState === EventSource.CLOSED) {
-            console.log("eventsource closed");
-        }
-        sourceEvent.close();
-    });
-
+    //에러가 났을경우
+    eventSource.onerror = function(error) {
+        console.error("Error:", error);
+    };
 }

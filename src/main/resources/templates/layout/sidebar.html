@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html
+      lang="kr"
+      xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="/layout/mainlayout">
+      layout:decorator="layout/mainlayout">
 <th:block th:fragment="sidebarfragment">
   <!--sidebar-->
   <!-- Sidebar -->
@@ -30,11 +32,8 @@
           <a class="nav-link">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>전체 글[ [[${count}]] ]</span>
-            </br>
             <span id="totalCount"></span>
-            </br>
             <span id="todayCount"></span>
-            </br>
             <span id="yesterdayCount"></span>
           </a>
         </div>
@@ -114,11 +113,6 @@
       <li class="nav-item">
         <a class="nav-link collapsed" th:href="@{/page/member/comment/list}">
           <span>댓글 관리</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" th:href="@{/page/member/visitor/list}">
-          <span>방문자 관리</span>
         </a>
       </li>
     </div>

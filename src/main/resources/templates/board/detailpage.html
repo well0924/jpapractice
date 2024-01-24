@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html 
+<html
+lang="kr"
 xmlns="http://www.w3.org/1999/xhtml"
 xmlns:th="http://www.thymeleaf.org"
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
@@ -46,13 +47,13 @@ layout:decorate="~{layout/mainlayout}">
     <div class="form-group">
         <label for="board_file" class="form-label mt-4">파일첨부</label>
         <th:block th:unless="${#lists.isEmpty(fileList)}" th:each="attachfile:${fileList}">
-            </br>
+            <br>
             <a th:href="@{|/api/file/${attachfile.originFileName}|}">
                 <span id="board_file" th:text="${attachfile.originFileName}"/>
             </a>
         </th:block>
         <th:block th:if="${#lists.isEmpty(fileList)}">
-            </br>
+            <br>
             첨부파일이 없습니다.
         </th:block>
     </div>
@@ -121,7 +122,7 @@ layout:decorate="~{layout/mainlayout}">
                 <label for="replycontents">댓글 내용</label>
                 <textarea class="form-control" id="replycontents" name="replyContents" rows="3"></textarea>
                 <div id="valid_replyContents"></div>
-                <button type="button" class="btn btn-dark mt-3" onclick="javascript:replyInsert();">post reply</button>
+                <button type="button" class="btn btn-dark mt-3" onclick="replyInsert();">post reply</button>
             </li>
         </ul>
     </div>

@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 
 @Controller
 @AllArgsConstructor
-@RequestMapping("/page/login")
+@RequestMapping("/page/login/*")
 public class LoginController {
 
 	//로그인 페이지

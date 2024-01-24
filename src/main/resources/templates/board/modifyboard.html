@@ -1,55 +1,56 @@
 <!DOCTYPE html>
-<html 
-xmlns="http://www.w3.org/1999/xhtml"
-xmlns:th="http://www.thymeleaf.org" 
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-layout:decorate="~{layout/mainlayout}">
+<html
+        lang="kr"
+        layout:decorate="~{layout/mainlayout}"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
-<title>글 수정 화면</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>글 수정 화면</title>
 </head>
 <body>
-<th:block layout:fragment= "contents">
-<form id="updateform" method="post">
-  <fieldset>
-    <legend>글 수정</legend>
-    <input type="hidden" id="boardid" name="boardId" th:value="${modify.boardId}">
-    <input type="hidden" id="categoryid" name="categoryId" th:value="${modify.categoryId}">
-    <div class="form-group">
-      <label for="boardtitle" class="form-label mt-4">글 제목</label>
-      <input type="text" class="form-control" id="boardtitle" name="boardTitle" th:value="${modify.boardTitle}">
-    </div>
-    <div id="valid_boardTitle"></div>
-    <div class="form-group">
-      <label class="form-label mt-4">비밀번호</label>
-      <input type="text" class="form-control" name="password" id="pw">
-    </div>
-    <div class="form-group">
-      <label for="boardcontents" class="form-label mt-4">글 내용</label>
-      <textarea class="form-control" id="boardcontents" name="boardContents" rows="3"></textarea>
-    </div>
-    <div id="valid_boardContents"></div>
-    <div class="form-group">
-      <label class="form-label mt-4">해시태그</label>
-      <input type="text" class="form-control" id="hashtagName" name="hashtagName" placeholder="해시태그를 입력해주세요.">
-      <div id="hashtags-container"></div>
-      <input type="hidden" id="hashtags-hidden"/>
-    </div>
-    <div class="form-group">
-      <label for="files" class="form-label mt-4">파일첨부</label>
-      <input type="file" multiple="multiple" id="files" name="file">
-    </div>
+<th:block layout:fragment="contents">
+  <form id="updateform" method="post">
+    <fieldset>
+      <legend>글 수정</legend>
+      <input type="hidden" id="boardid" name="boardId" th:value="${modify.boardId}">
+      <input type="hidden" id="categoryid" name="categoryId" th:value="${modify.categoryId}">
+      <div class="form-group">
+        <label for="boardtitle" class="form-label mt-4">글 제목</label>
+        <input type="text" class="form-control" id="boardtitle" name="boardTitle" th:value="${modify.boardTitle}">
+      </div>
+      <div id="valid_boardTitle"></div>
+      <div class="form-group">
+        <label for="pw" class="form-label mt-4">비밀번호</label>
+        <input type="text" class="form-control" name="password" id="pw">
+      </div>
+      <div class="form-group">
+        <label for="boardcontents" class="form-label mt-4">글 내용</label>
+        <textarea class="form-control" id="boardcontents" name="boardContents" rows="3"></textarea>
+      </div>
+      <div id="valid_boardContents"></div>
+      <div class="form-group">
+        <label for="hashtagName" class="form-label mt-4">해시태그</label>
+        <input type="text" class="form-control" id="hashtagName" name="hashtagName" placeholder="해시태그를 입력해주세요.">
+        <div id="hashtags-container"></div>
+        <input type="hidden" id="hashtags-hidden"/>
+      </div>
+      <div class="form-group">
+        <label for="files" class="form-label mt-4">파일첨부</label>
+        <input type="file" multiple="multiple" id="files" name="file">
+      </div>
 
-    <button type="button" class="btn btn-primary" onclick="modifypost()">글수정</button>
-    <button type="button" class="btn btn-primary" onclick="deletepost()">글삭제</button>
-    <button type="button" class="btn btn-primary" onclick="mainpage()">목록</button>
-  </fieldset>
-</form>
-<script type="text/javascript" th:src="@{/js/board/boardupdate.js}"></script>
+      <button type="button" class="btn btn-primary" onclick="modifypost()">글수정</button>
+      <button type="button" class="btn btn-primary" onclick="deletepost()">글삭제</button>
+      <button type="button" class="btn btn-primary" onclick="mainpage()">목록</button>
+    </fieldset>
+  </form>
+  <script type="text/javascript" th:src="@{/js/board/boardupdate.js}"></script>
 </th:block>
 </body>
 </html>

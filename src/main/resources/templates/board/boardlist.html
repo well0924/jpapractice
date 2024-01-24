@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html
+        lang="kr"
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:th="http://www.thymeleaf.org"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
@@ -20,12 +21,14 @@
         </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-bottom: 10px">
-            <select class="form-select" id="sort" onchange="boardSortResult()" style="margin-right: 10px">
-                <option th:value="id">번호순</option>
-                <option th:value="boardAuthor">작성자</option>
-                <option th:value="createdAt">작성일</option>
-                <option th:value="readCount">조회수</option>
-            </select>
+            <label for="sort">
+                <select class="form-select" id="sort" onchange="boardSortResult()" style="margin-right: 10px">
+                    <option th:value="id">번호순</option>
+                    <option th:value="boardAuthor">작성자</option>
+                    <option th:value="createdAt">작성일</option>
+                    <option th:value="readCount">조회수</option>
+                </select>
+            </label>
             <a class="btn btn-primary" role="button" th:href="@{/page/board/write}">게시글 작성</a>
         </div>
 
@@ -109,7 +112,9 @@
                         <option th:value="w">작성자</option>
                         <option th:value="all">전체</option>
                     </select>
-                    <input type="text" class="form-control form-control-sm" name="keyword" id="boardkeyword">
+                    <label for="boardkeyword">
+                        <input type="text" class="form-control form-control-sm" name="keyword" id="boardkeyword">
+                    </label>
                     <button class="btn btn-sm btn-primary" id="btnSearch" onclick="boardSearchResult()">검색</button>
                 </div>
             </div>

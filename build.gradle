@@ -15,6 +15,10 @@ configurations {
 	}
 }
 
+test {
+	exclude '**/*'
+}
+
 repositories {
 	mavenCentral()
 	maven { url 'https://repo.spring.io/milestone' }
@@ -77,8 +81,8 @@ dependencies {
 	//mailsender
 	implementation 'org.springframework.boot:spring-boot-starter-mail:2.2.6.RELEASE'
 
-	// Spring WebSocket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	//Aws S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa" // querydsl JPAAnnotationProcessor 사용 지정
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api" // java.lang.NoClassDefFoundError (javax.annotation.Generated) 대응 코드

@@ -4,6 +4,7 @@ INSERT INTO jpaboard.member (id, created_at, membername, password, role, userema
 INSERT INTO jpaboard.member (id, created_at, membername, password, role, useremail, userid) VALUES (274, '2023-03-18 21:13:57', 'user2', '$2a$10$fop70cAwVrKTyT87lfMO4eNGtrT0dP4lHbWmzUlTJuZ2ef2ZATfoO', 'ROLE_USER', 'springboot0924@gmail.com', 'sleep');
 
 SELECT * FROM category;
+ALTER TABLE jpaboard.category CONVERT TO CHARACTER SET utf8;
 INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (1, 'board', null);
 INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (2, 'freeboard', 1);
 INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (4, 'noticeboard', 1);
@@ -18,6 +19,7 @@ INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (12, 'Spring
 INSERT INTO jpaboard.category (category_id, name, parent_id) VALUES (13, 'Web', 11);
 
 SELECT * FROM board;
+ALTER TABLE jpaboard.board CONVERT TO CHARACTER SET utf8;
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (1, '2023-11-01 18:18:10', 'well4149', 'test', 'test titlte', 67, 1, 1, 1, 'qwer4149!');
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (4, '2023-10-08 16:25:57', 'well4149', '수정내용Q', '수정제목', 45, 1, 0, 2, null);
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (5, '2022-10-22 00:06:52', 'well4149', '트트', '테스트', 62, 1, -3, 2, null);
@@ -49,6 +51,7 @@ INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, 
 INSERT INTO jpaboard.board (board_id, created_at, board_author, board_contents, board_title, read_count, useridx, liked, category_id, board_pw) VALUES (435, '2023-11-08 21:34:17', 'well4149', 'test', 'hashtag test', 11, 1, 0, 2, '1234');
 
 SELECT * FROM file;
+ALTER TABLE jpaboard.file CONVERT TO CHARACTER SET utf8;
 INSERT INTO jpaboard.file (id, created_at, file_path, file_size, origin_file_name, board_id) VALUES (31, '2023-03-05 21:18:25', 'C:\\upload\\\\825443066852500..png', 230767, '스크린샷(29).png', 382);
 INSERT INTO jpaboard.file (id, created_at, file_path, file_size, origin_file_name, board_id) VALUES (32, '2023-03-05 21:18:25', 'C:\\upload\\\\825443073357900..png', 230776, '스크린샷(30).png', 382);
 INSERT INTO jpaboard.file (id, created_at, file_path, file_size, origin_file_name, board_id) VALUES (33, '2023-03-05 21:24:02', 'C:\\upload\\\\825780411288900.txt', 404, 'jpa 공부기록.txt', 383);
@@ -56,6 +59,7 @@ INSERT INTO jpaboard.file (id, created_at, file_path, file_size, origin_file_nam
 INSERT INTO jpaboard.file (id, created_at, file_path, file_size, origin_file_name, board_id) VALUES (35, '2023-03-05 21:24:02', 'C:\\upload\\\\825780414571600.txt', 1050, 'ㄴㅇㄴ.txt', 383);
 
 SELECT * FROM reply;
+ALTER TABLE jpaboard.reply CONVERT TO CHARACTER SET utf8;
 INSERT INTO reply (reply_id, created_at, reply_contents, reply_writer, board_id, useridx) VALUES (2, '2022-10-23 14:19:31', 'update!!', 'well', 5, 1);
 INSERT INTO reply (reply_id, created_at, reply_contents, reply_writer, board_id, useridx) VALUES (5, '2022-10-24 01:24:20', 'test!', 'well4149', 5, 2);
 INSERT INTO jpaboard.reply (reply_id, created_at, reply_contents, reply_writer, board_id, useridx) VALUES (11, '2022-10-27 10:41:25', 'sd', 'well4149', 12, 1);
@@ -83,17 +87,18 @@ INSERT INTO jpaboard.reply (reply_id, created_at, reply_contents, reply_writer, 
 INSERT INTO jpaboard.reply (reply_id, created_at, reply_contents, reply_writer, board_id, useridx) VALUES (355, '2023-03-11 17:35:08', '댓글작성!', 'well4149', 5, 1);
 
 SELECT * FROM likes;
-
+ALTER TABLE jpaboard.likes CONVERT TO CHARACTER SET utf8;
 INSERT INTO jpaboard.likes (id, board_id, useridx, like_status) VALUES (57, 5, 2, true);
 INSERT INTO jpaboard.likes (id, board_id, useridx, like_status) VALUES (58, 5, 274, true);
 INSERT INTO jpaboard.likes (id, board_id, useridx, like_status) VALUES (65, 382, 1, true);
 INSERT INTO jpaboard.likes (id, board_id, useridx, like_status) VALUES (88, 1, 1, TRUE);
 
 SELECT *  FROM scrap;
-
+ALTER TABLE jpaboard.scrap CONVERT TO CHARACTER SET utf8;
 INSERT INTO jpaboard.scrap (id, created_at, useridx, board_id) VALUES (5, '2023-11-02 00:21:18', 1, 1);
 
 SELECT * FROM visitors;
+ALTER TABLE jpaboard.visitors CONVERT TO CHARACTER SET utf8;
 INSERT IGNORE INTO `visitors` (`id`, `login_date_time`, `username`, `useridx`) VALUES
                                                                                    (1, '2023-11-06 21:21:28', 'well4149', 1),
                                                                                    (5, '2023-11-07 01:02:49', 'well4149', 1),
@@ -111,10 +116,11 @@ INSERT IGNORE INTO `visitors` (`id`, `login_date_time`, `username`, `useridx`) V
                                                                                    (17, '2023-11-18 00:19:52', 'well4149', 1),
                                                                                    (18, '2023-11-18 03:36:40', 'well4149', 1);
 SELECT * FROM hashtag;
+ALTER TABLE jpaboard.hashtag CONVERT TO CHARACTER SET utf8;
 INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (1, null, 'spring');
 INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (2, null, 'jquery');
 INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (3, null, 'java');
 INSERT INTO jpaboard.hashtag (hashtag_id, created_at, hashtag_name) VALUES (4, null, 'jpa');
 
 SELECT * FROM boardhashtag;
-
+ALTER TABLE jpaboard.boardhashtag CONVERT TO CHARACTER SET utf8;

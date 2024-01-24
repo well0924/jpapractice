@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/mainlayout}">
+<html
+        lang="kr"
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout/mainlayout}">
 <head>
     <meta charset="UTF-8">
     <title>댓글 관리 페이지</title>
@@ -16,24 +18,28 @@
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-bottom: 10px">
             <!--정렬-->
-            <select class="form-select" id="commentSort" onchange="commentSortResult()" style="margin-right: 10px">
-                <option>정렬</option>
-                <option th:value="id">번호순</option>
-                <option th:value="replyWriter">작성자</option>
-                <option th:value="createdAt">작성일</option>
-            </select>
+            <label for="commentSort">
+                <select class="form-select" id="commentSort" onchange="commentSortResult()" style="margin-right: 10px">
+                    <option>정렬</option>
+                    <option th:value="id">번호순</option>
+                    <option th:value="replyWriter">작성자</option>
+                    <option th:value="createdAt">작성일</option>
+                </select>
+            </label>
             <a class="btn btn-primary" role="button" th:href="@{/page/board/write}">게시글 작성</a>
         </div>
         <!--댓글글 검색-->
         <div class="row" style="clear:right;width:500px;margin:auto">
             <div class="col-lg-12">
-                <select name="searchType" id="searchType">
-                    <option>전체보기</option>
-                    <option th:value="t">제목</option>
-                    <option th:value="c">내용</option>
-                    <option th:value="w">작성자</option>
-                    <option th:value="all">전체</option>
-                </select>
+                <label for="searchType">
+                    <select name="searchType" id="searchType">
+                        <option>전체보기</option>
+                        <option th:value="t">제목</option>
+                        <option th:value="c">내용</option>
+                        <option th:value="w">작성자</option>
+                        <option th:value="all">전체</option>
+                    </select>
+                </label>
                 <input type="text" class="form-control" name="keyword" id="commentkeyword">
                 <button class="btn btn-sm btn-primary" id="btnSearch" onclick="commentSearchResult()">검색</button>
             </div>
@@ -46,6 +52,7 @@
                         <!--체크박스 부분 체크박스를 누르기 전까지는 disable상태-->
                         <th scope="col">
                             <input id="allCheckBox" type="checkbox" name="checked" onclick="allChecked(this)">
+                            <label></label>
                             <select id="commentStatus" disabled onchange="selectSwitch()">
                                 <option>---------</option>
                                 <option name="status" th:value="selectDelete">댓글 삭제</option>
@@ -56,10 +63,13 @@
                         <th scope="col">작성일</th>
                     </tr>
                     </thead>
-                    <tbody th:unless="${#lists.isEmpty(list)}"th:each="list:${list}">
+                    <tbody th:unless="${#lists.isEmpty(list)}" th:each="list:${list}">
                     <tr>
                         <td>
-                            <input type="checkbox" id="selectCheck" name="checkboxed" th:value="${list.replyId}" onclick="checkBoxClicked()">
+                            <label for="selectCheck">
+                                <input type="checkbox" id="selectCheck" name="checkboxed" th:value="${list.replyId}"
+                                       onclick="checkBoxClicked()">
+                            </label>
                         </td>
                         <td th:text="${list.replyContents}"></td>
                         <td th:text="${list.replyWriter}"></td>
@@ -87,7 +97,8 @@
                                 <a class="page-link" th:href="@{'/page/member/comment/list'(page= 0)}">First</a>
                             </li>
                             <li class="page-item" th:classappend="${list.first} ? 'disabled'">
-                                <a class="page-link" th:if="${list.first} ? '#' " th:href="@{'/page/member/comment/list'(page=${pageNumber - 1})}">previous</a>
+                                <a class="page-link" th:if="${list.first} ? '#' "
+                                   th:href="@{'/page/member/comment/list'(page=${pageNumber - 1})}">previous</a>
                             </li>
                             <li class="page-item"
                                 th:each="page: ${#numbers.sequence(startPage,endPage)}"
@@ -95,10 +106,13 @@
                                 <a class="page-link" th:href="@{'/page/member/comment/list/'(page=${page - 1})}">[[${page}]]</a>
                             </li>
                             <li class="page-item" th:classappend="${!list.last} ? 'disabled'">
-                                <a class="page-link" th:if="${list.last} ? '#'" th:href="@{'/page/member/comment/list'(page=${pageNumber + 1})}">다음</a>
+                                <a class="page-link" th:if="${list.last} ? '#'"
+                                   th:href="@{'/page/member/comment/list'(page=${pageNumber + 1})}">다음</a>
                             </li>
-                            <li class="page-item" th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
-                                <a class="page-link" th:if="${list.last} ? '#' " th:href="@{'/page/member/comment/list'(page=${totalPages - 1})}">Last</a>
+                            <li class="page-item"
+                                th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
+                                <a class="page-link" th:if="${list.last} ? '#' "
+                                   th:href="@{'/page/member/comment/list'(page=${totalPages - 1})}">Last</a>
                             </li>
                         </ul>
                     </div>
@@ -107,34 +121,32 @@
             <!-- search end -->
             <script th:inline="javascript">
                 //검색
-                function commentSearchResult(){
+                function commentSearchResult() {
                     let searchVal = $('#commentkeyword').val();
                     let searchType = $('#searchType').val();
-                    location.href='/page/member/comment/list/?searchVal='+searchVal+"&searchType="+searchType;
+                    location.href = '/page/member/comment/list/?searchVal=' + searchVal + "&searchType=" + searchType;
                 }
+
                 //검색시 결과가 없는 경우에 결과가 없음을 보여줘야 함.
 
                 //정렬
-                function commentSortResult(){
+                function commentSortResult() {
                     let sort = $('#sort').val();
-                    location.href='/page/member/comment/list?sort='+sort;
+                    location.href = '/page/member/comment/list?sort=' + sort;
                 }
 
                 //체크박스 선택(전체 선택시 체크 및 전체 해제)
-                function allChecked(selectAll){
+                function allChecked(selectAll) {
                     const check = document.getElementsByName('checkboxed');
 
-                    check.forEach((check)=>{
+                    check.forEach((check) => {
                         check.checked = selectAll.checked;
-                        if(check.checked == true){
-                            document.getElementById('commentStatus').disabled=false;
-                        }else{
-                            document.getElementById('commentStatus').disabled = true;
-                        }
+                        document.getElementById('commentStatus').disabled = check.checked !== true;
                     });
                 }
+
                 //체크박스 단건 체크
-                function checkBoxClicked(){
+                function checkBoxClicked() {
                     //체크박스 전체개수
                     const allCount = $("input:checkbox[name=checkboxed]").length;
                     //체크된 체크박스 전체개수
@@ -144,16 +156,16 @@
 
                     const isChecked = $("input:checkbox[name=checkboxed]:checked").is(':checked');
 
-                    if(isChecked){ //클릭하면 셀렉트 박스 disabled 해제
+                    if (isChecked) { //클릭하면 셀렉트 박스 disabled 해제
                         console.log(isChecked);
                         $('#commentStatus').removeAttr('disabled');
-                    }else {
-                        $('#commentStatus').attr('disabled',true);
+                    } else {
+                        $('#commentStatus').attr('disabled', true);
                     }
                 }
 
                 //셀렉트 선택
-                function selectSwitch(){
+                function selectSwitch() {
                     let result = {};
 
                     const commentStatus = document.getElementById('commentStatus');
@@ -165,43 +177,46 @@
                     console.log(status);
 
                     switch (status) {
-                        case 'selectDelete': commentSelectDelete(); break;
+                        case 'selectDelete':
+                            commentSelectDelete();
+                            break;
                     }
                 }
 
                 //댓글 선택 삭제
-                function commentSelectDelete(){
+                function commentSelectDelete() {
                     //로컬 스토리지에 저장된 at
                     let token = getItems();
                     let result = token.value;
                     let commentArray = [];
 
-                    $("input:checkbox[name=checkboxed]:checked").each(function(){
+                    $("input:checkbox[name=checkboxed]:checked").each(function () {
                         commentArray.push($(this).val());
                         console.log(commentArray);
                     });
 
-                    if(commentArray === ""){
+                    if (commentArray === "") {
                         alert("삭제할 항목을 선택해주세요.");
                         return false;
                     }
 
                     const confirmAlert = confirm('정말로 삭제하시겠습니까?');
 
-                    if(confirmAlert){
+                    if (confirmAlert) {
                         $.ajax({
-                            url:'/api/comment/select-delete',
-                            type:'post',
-                            headers:{'Authorization' : 'Bearer '+result},
-                            dataType:'json',
-                            data:JSON.stringify(commentArray),
-                            contentType:'application/json'
-                        }).done(function(status){
+                            url: '/api/comment/select-delete',
+                            type: 'post',
+                            headers: {'Authorization': 'Bearer ' + result},
+                            dataType: 'json',
+                            data: JSON.stringify(commentArray),
+                            contentType: 'application/json'
+                        }).done(function (status) {
+                            console.log(status);
                             alert('삭제되었습니다.');
-                            location.href='/page/member/comment/list';
-                        }).fail(function(err){
+                            location.href = '/page/member/comment/list';
+                        }).fail(function (err) {
                             console.log(err);
-                        });;
+                        });
                     }
                 }
             </script>

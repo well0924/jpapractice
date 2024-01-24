@@ -11,7 +11,7 @@ $(document).ready(function() {
     totalVisitor();
     todayVisitorCount();
     yesterdayVisitorCount();
-    notification();
+    alarmList();
 });
 function calendarInit() {
 
@@ -131,4 +131,25 @@ function yesterdayVisitorCount(){
         let data = '어제 방문자 :'+resp.data.yesterday;
         $('#yesterdayCount').html(data);
     });
+}
+
+function alarmList(){
+    let tokenId = localStorage.getItem('Authorization');
+    console.log(tokenId);
+    let result = tokenParse(tokenId);
+    let username = result.userId;
+    //토큰이 있는 경우 작동
+    if(tokenId){
+        $.ajax({
+            url:"/api/notice/list/"+username,
+            type:'get',
+            dataTye:'json'
+        }).done(function (resp){
+            console.log(resp);
+            if(resp.length>0){
+                let html = '';
+                
+            }
+        });
+    }
 }

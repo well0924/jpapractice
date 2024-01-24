@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html
 xmlns="http://www.w3.org/1999/xhtml"
-xmlns:th="http://www.thymeleaf.org" 
+xmlns:th="http://www.thymeleaf.org"
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 layout:decorate="~{layout/mainlayout}">
 <head>
@@ -32,7 +32,7 @@ layout:decorate="~{layout/mainlayout}">
                         <!--게시글 상세조회-->
                         <input type="hidden" name="password" th:value="${list.password}">
                         <th:block th:if="${not #strings.isEmpty(list.password)}">
-                            <a th:href="@{/page/board/passwordcheck/{id}(id=${list.boardId})}">
+                            <a th:href="@{/page/board/password-check/{id}(id=${list.boardId})}">
                                 <p th:text="${list.boardContents}"></p>
                             </a>
                         </th:block>

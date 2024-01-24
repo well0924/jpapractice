@@ -118,7 +118,7 @@ public class MemberController {
         mv.addObject("search",search);
         mv.addObject("list",list);
 
-        mv.setViewName("/admin/boardManagerList");
+        mv.setViewName("admin/boardManagerList");
 
         return mv;
     }
@@ -133,7 +133,7 @@ public class MemberController {
         Page<CommentDto.CommentResponseDto>list = commentService.findCommentList(pageable);
 
         mv.addObject("list",list);
-        mv.setViewName("/admin/commentManagerList");
+        mv.setViewName("admin/commentManagerList");
 
         return mv;
     }
@@ -146,7 +146,7 @@ public class MemberController {
         List<BoardDto.BoardResponseDto>articleList = boardService.findBoardTop5();
 
         mv.addObject("top5",articleList);
-        mv.setViewName("/admin/categoryManagerList");
+        mv.setViewName("admin/categoryManagerList");
         return mv;
     }
 }

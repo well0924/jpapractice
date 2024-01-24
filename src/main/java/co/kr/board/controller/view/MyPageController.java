@@ -37,7 +37,7 @@ public class MyPageController {
 
         mv.addObject("scrapList",scrapList);
 
-        mv.setViewName("/mypage/mypage");
+        mv.setViewName("mypage/mypage");
 
         return mv;
     }
@@ -54,7 +54,7 @@ public class MyPageController {
         mv.addObject("list",list);
         mv.addObject("scrapList",scrapList);
 
-        mv.setViewName("/mypage/myarticle");
+        mv.setViewName("mypage/myarticle");
 
         return mv;
     }
@@ -71,7 +71,7 @@ public class MyPageController {
         mv.addObject("list",list);
         mv.addObject("scrapList",scrapList);
 
-        mv.setViewName("/mypage/mycomment");
+        mv.setViewName("mypage/mycomment");
 
         return mv;
     }
@@ -80,7 +80,7 @@ public class MyPageController {
     @GetMapping("/hashTag/list")
     public ModelAndView hashTagList(){
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("/main/hashTagList");
+        mv.setViewName("main/hashTagList");
         return mv;
     }
 }

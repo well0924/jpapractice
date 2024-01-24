@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html
+      lang="kr"
+      xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/mainlayout}">
@@ -16,27 +18,33 @@
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-bottom: 10px">
             <!--정렬-->
-            <select class="form-select" id="boardSort" onchange="boardSortResult()" style="margin-right: 10px">
-                <option>정렬</option>
-                <option th:value="id">번호순</option>
-                <option th:value="boardAuthor">작성자</option>
-                <option th:value="createdAt">작성일</option>
-                <option th:value="readCount">조회수</option>
-            </select>
+            <label for="boardSort">
+                <select class="form-select" id="boardSort" onchange="boardSortResult()" style="margin-right: 10px">
+                    <option>정렬</option>
+                    <option th:value="id">번호순</option>
+                    <option th:value="boardAuthor">작성자</option>
+                    <option th:value="createdAt">작성일</option>
+                    <option th:value="readCount">조회수</option>
+                </select>
+            </label>
             <a class="btn btn-primary" role="button" th:href="@{/page/board/write}">게시글 작성</a>
         </div>
         <!--게시글 검색-->
         <div class="row" style="clear:right;width:500px;margin:auto;">
             <div class="col-lg-12">
                 <div class="d-grid gap-2 d-md-flex justify-content-md" style="margin-bottom: 10px">
-                    <select class="form-select form-select-sm" name="searchType" id="searchType" style="margin-right: 10px;">
-                        <option>전체보기</option>
-                        <option th:value="boardTitle">제목</option>
-                        <option th:value="boardContents">내용</option>
-                        <option th:value="boardAuthor">작성자</option>
-                        <option th:value="all">전체</option>
-                    </select>
-                    <input type="text" class="form-control" name="keyword" id="boardkeyword" style="margin-right: 10px">
+                    <label for="searchType">
+                        <select class="form-select form-select-sm" name="searchType" id="searchType" style="margin-right: 10px;">
+                            <option>전체보기</option>
+                            <option th:value="boardTitle">제목</option>
+                            <option th:value="boardContents">내용</option>
+                            <option th:value="boardAuthor">작성자</option>
+                            <option th:value="all">전체</option>
+                        </select>
+                    </label>
+                    <label for="boardkeyword">
+                        <input type="text" class="form-control" name="keyword" id="boardkeyword" style="margin-right: 10px">
+                    </label>
                     <button class="btn btn-sm btn-primary" id="btnSearch" onclick="boardSearchResult()">검색</button>
                 </div>
             </div>
@@ -49,12 +57,16 @@
                         <tr>
                             <!--체크박스를 누르기 전까지는 셀렉트박스는 disable상태-->
                             <th scope="col">
-                                <input id="allCheckBox" type="checkbox" name="checked" onclick="allChecked(this)">
-                                <select id="boardStatus" disabled onchange="selectSwitch()">
-                                    <option>---------</option>
-                                    <option name="status" th:value="selectDelete">게시글 삭제</option>
-                                    <option name="status" th:value="secretMessage">비밀글로 변경</option>
-                                </select>
+                                <label for="allCheckBox">
+                                    <input id="allCheckBox" type="checkbox" name="checked" onclick="allChecked(this)">
+                                </label>
+                                <label for="boardStatus">
+                                    <select id="boardStatus" disabled onchange="selectSwitch()">
+                                        <option>---------</option>
+                                        <option name="status" th:value="selectDelete">게시글 삭제</option>
+                                        <option name="status" th:value="secretMessage">비밀글로 변경</option>
+                                    </select>
+                                </label>
                             </th>
                             <th scope="col">번호</th>
                             <th scope="col">제목</th>
@@ -68,7 +80,9 @@
                         <tr>
                             <td>
                                 <input type="hidden" id="boardPassword" name="password" th:value="${list.password}">
-                                <input type="checkbox" id="selectCheck" name="checkboxed" th:value="${list.boardId}" onclick="checkBoxClicked()">
+                                <label for="selectCheck">
+                                    <input type="checkbox" id="selectCheck" name="checkboxed" th:value="${list.boardId}" onclick="checkBoxClicked()">
+                                </label>
                             </td>
                             <td th:text="${list.boardId}"></td>
                             <td>
@@ -143,11 +157,7 @@
 
                     check.forEach((check)=>{
                         check.checked = selectAll.checked;
-                        if(check.checked == true){
-                            document.getElementById('boardStatus').disabled=false;
-                        }else{
-                            document.getElementById('boardStatus').disabled = true;
-                        }
+                        document.getElementById('boardStatus').disabled = check.checked !== true;
                     });
                 }
                 //체크박스 개별 선택 ->누르면 셀렉트의 disable이 해제
@@ -222,7 +232,7 @@
                             location.href='/page/member/board/list';
                         }).fail(function(err){
                             console.log(err);
-                        });;
+                        });
                     }
                 }
                 //게시글 비밀글로 전환하기.
