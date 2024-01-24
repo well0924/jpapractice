@@ -37,7 +37,7 @@ jobs:
 
     - name: File Package
       run: |
-        zip -r jpaboard.zip build/libs/jpaboardpractice-0.0.1-SNAPSHOT.jar scripts/
+        zip -r jpaboard.zip build/libs/jpaboardpractice-0.0.1-SNAPSHOT.jar scripts/ appspec.yml
 
     - name: Push File to Amazon S3
       run: aws s3 cp --region ap-northeast-2 jpaboard.zip s3://jpaboard-s3-file
