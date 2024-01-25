@@ -125,7 +125,7 @@ function signUp(){
 			}
 		}else if(resp.status == 200){
 			alert('회원가입이 되었습니다.');
- 			location.href='/page/board/list';
+ 			location.href='/page/main/mainpage';
 		}
 	});
 }

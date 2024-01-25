@@ -58,15 +58,22 @@ public class MemberService {
 	  * @exception CustomExceptionHandler : 회원이 없는 경우 해당 회원이 없습니다.
 	 **/
 	@Transactional(readOnly = true)
-	public MemberDto.MemeberResponseDto getMember(Integer userIdx){
+	public MemberDto.MemeberResponseDto getMember(Integer userId){
 		Optional<MemberDto.MemeberResponseDto>result = repository
-				.findByMemberDetail(userIdx);
+				.findByMemberDetail(userId);
 
 		if(!result.isPresent()){
 			throw new CustomExceptionHandler(ErrorCode.NOT_USER);
 		}
 
 		return result.get();
+	}
+
+	@Transactional(readOnly = true)
+	public MemberDto.MemeberResponseDto memberMyPage(String userId){
+		Member member = repository.findByUsername(userId)
+				.orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_USER));
+		return new MemeberResponseDto(member);
 	}
 
 	/*

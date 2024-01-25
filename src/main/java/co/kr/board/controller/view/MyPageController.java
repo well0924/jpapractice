@@ -2,9 +2,11 @@ package co.kr.board.controller.view;
 
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.domain.Dto.CommentDto;
+import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.domain.Dto.ScrapDto;
 import co.kr.board.service.BoardService;
 import co.kr.board.service.CommentService;
+import co.kr.board.service.MemberService;
 import co.kr.board.service.ScrapService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +29,7 @@ public class MyPageController {
     private final ScrapService scrapService;
     private final BoardService boardService;
     private final CommentService commentService;
+    private final MemberService  memberService;
 
     //마이페이지 스크랩 목록
     @GetMapping("/list/{username}")
@@ -81,6 +84,15 @@ public class MyPageController {
     public ModelAndView hashTagList(){
         ModelAndView mv = new ModelAndView();
         mv.setViewName("main/hashTagList");
+        return mv;
+    }
+
+    @GetMapping("/detail/{user-name}")
+    public ModelAndView memberMyPage(@PathVariable("user-name") String userId){
+        ModelAndView mv = new ModelAndView();
+        MemberDto.MemeberResponseDto result = memberService.memberMyPage(userId);
+        mv.addObject("detail",result);
+        mv.setViewName("main");
         return mv;
     }
 }

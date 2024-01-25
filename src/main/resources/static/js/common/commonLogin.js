@@ -58,7 +58,7 @@ window.onload= function (){
             $('#main').css("display","block");//메인 페이지 오픈
             $('.logout').css("display","block");//로그아웃 오픈
             $('#mylist').css("display","block")//마이페이지 오픈
-            $('#mypage').attr('href','/page/mypage/detail/'+username);
+            $('#mypage').attr('href','/page/mypage/list/'+username);//마이페이지
         }
     }else{//토큰이 없는 경우
         console.log('익명');

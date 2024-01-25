@@ -18,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @AllArgsConstructor
 public class BoardService{
+
 	private final CategoryRepository categoryRepository;
 	private final BoardRepository repos;
 	private final AttachRepository attachRepository;
@@ -453,6 +455,12 @@ public class BoardService{
 			boardHashTags.add(boardHashTag);
 		}
 		return boardHashTags;
+	}
+
+
+	@Transactional(readOnly = true)
+	public Slice<BoardResponseDto> list(Pageable pageable){
+		return repos.findAllList(pageable);
 	}
 
 }

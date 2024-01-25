@@ -42,11 +42,11 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository{
 
     //회원 단일 조회하기.
     @Override
-    public Optional<MemberDto.MemeberResponseDto> findByMemberDetail(Integer useridx) {
+    public Optional<MemberDto.MemeberResponseDto> findByMemberDetail(Integer userid) {
         MemberDto.MemeberResponseDto result = jpaQueryFactory
                 .select(Projections.constructor(MemberDto.MemeberResponseDto.class,qMember))
                 .from(qMember)
-                .where(qMember.id.eq(useridx))
+                .where(qMember.id.eq(userid))
                 .fetchOne();
         return Optional.ofNullable(result);
     }
