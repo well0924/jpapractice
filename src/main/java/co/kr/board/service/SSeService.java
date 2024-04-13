@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,9 @@ public class SSeService {
      * 구독 알림
      * @param userName : 회원 아이디
      **/
-    public SseEmitter subscribe(String userName){
+    public SseEmitter subscribe(String userName, HttpServletResponse response){
         String emitterId = makeTimeIncludeId(userName);
+        response.setHeader("X-Accel-Buffering", "no");//Nginx의 프록시에서 필요설정 불필요한 버퍼링방지
         log.info(emitterId);
         SseEmitter emitter = emitterRepository.save(emitterId, new SseEmitter(DEFAULT_TIMEOUT));
         log.info(emitter);

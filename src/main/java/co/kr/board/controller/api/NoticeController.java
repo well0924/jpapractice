@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Log4j2
@@ -21,8 +22,8 @@ public class NoticeController {
 
     //알림(구독)
     @GetMapping(value = "/subscribe",produces = MediaType.ALL_VALUE)
-    public SseEmitter subscribe( @RequestParam(value = "userName") String userName){
-        return service.subscribe(userName);
+    public SseEmitter subscribe( @RequestParam(value = "userName") String userName, HttpServletResponse response){
+        return service.subscribe(userName,response);
     }
     
     //알림 목록

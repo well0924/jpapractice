@@ -54,7 +54,7 @@ public class MemberService {
 	/**
 	  * 회원 정보 단일 조회
 	  * 관리자 페이지 또는 회원 수정 페이지에서 회원 정보조회
-	  * @param userIdx : 회원번호
+	  * @param userId : 회원번호
 	  * @exception CustomExceptionHandler : 회원이 없는 경우 해당 회원이 없습니다.
 	 **/
 	@Transactional(readOnly = true)
