@@ -1,6 +1,6 @@
 package co.kr.board.testmember;
 
-import co.kr.board.Config.TestQueryDslConfig;
+import co.kr.board.config.TestQueryDslConfig;
 import co.kr.board.domain.Const.Role;
 import co.kr.board.domain.Dto.MemberDto;
 import co.kr.board.repository.MemberRepository;

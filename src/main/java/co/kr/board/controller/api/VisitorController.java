@@ -1,7 +1,6 @@
 package co.kr.board.controller.api;
 
-import co.kr.board.config.Exception.dto.Response;
-import co.kr.board.domain.Visitor;
+import co.kr.board.config.exception.dto.Response;
 import co.kr.board.service.VisitorService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -10,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

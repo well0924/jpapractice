@@ -1,7 +1,7 @@
 package co.kr.board.service;
 
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Visitor;
 import co.kr.board.repository.MemberRepository;

@@ -3,7 +3,7 @@ package co.kr.board.repository;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Scrap;
-import co.kr.board.repository.QueryDsl.CustomScrapRepository;
+import co.kr.board.repository.queryDsl.CustomScrapRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

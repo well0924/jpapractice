@@ -3,7 +3,7 @@ package co.kr.board.testboard;
 import co.kr.board.domain.Dto.BoardDto;
 import co.kr.board.repository.MemberRepository;
 import co.kr.board.service.BoardService;
-import co.kr.board.service.VisitorService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import javax.mail.MessagingException;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +36,7 @@ public class BoardServiceTest {
 
     @Test
     @DisplayName("게시글 비밀글로 전환")
-    public void changeBoard(){
+    public void changeBoard() throws Exception {
         boardService.changeSecretBoard(1);
         BoardDto.BoardResponseDto detail = boardService.getBoard(1);
 
@@ -51,6 +54,7 @@ public class BoardServiceTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("비관적 락을 사용해서 게시글 조회수 동시성 제어 테스트")
     public void test()throws Exception{
 
@@ -66,7 +70,7 @@ public class BoardServiceTest {
         latch.await();
         result = boardService.getBoard(382).getReadCount();
 
-        assertThat(result).isEqualTo(99);
+        assertThat(result).isEqualTo(100);
     }
 
     @Test

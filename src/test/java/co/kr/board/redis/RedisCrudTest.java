@@ -1,12 +1,10 @@
 package co.kr.board.redis;
 
-import co.kr.board.config.Redis.RedisService;
-import co.kr.board.config.Redis.RedisService;
+import co.kr.board.config.redis.RedisService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
 
 
 import static org.assertj.core.api.Assertions.assertThat;

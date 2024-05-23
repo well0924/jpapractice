@@ -13,8 +13,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import co.kr.board.repository.BoardRepository;
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Comment;
 import co.kr.board.domain.Dto.CommentDto;

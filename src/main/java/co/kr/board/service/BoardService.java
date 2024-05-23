@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import co.kr.board.config.Email.EmailService;
-import co.kr.board.config.Redis.CacheKey;
+import co.kr.board.config.email.EmailService;
+import co.kr.board.config.redis.CacheKey;
 import co.kr.board.domain.*;
 import co.kr.board.domain.Const.SearchType;
 import co.kr.board.domain.Dto.BoardDto;
@@ -24,8 +24,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,7 +1,7 @@
 package co.kr.board.repository;
 
 import co.kr.board.domain.HashTag;
-import co.kr.board.repository.QueryDsl.HashTagCustomRepository;
+import co.kr.board.repository.queryDsl.HashTagCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import java.util.Optional;

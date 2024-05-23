@@ -3,7 +3,7 @@ package co.kr.board.controller.api;
 import co.kr.board.domain.Dto.CategoryCreateRequest;
 import co.kr.board.domain.Dto.CategoryDto;
 import co.kr.board.service.CategoryService;
-import co.kr.board.config.Exception.dto.Response;
+import co.kr.board.config.exception.dto.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;

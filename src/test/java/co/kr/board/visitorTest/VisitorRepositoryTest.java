@@ -1,6 +1,6 @@
 package co.kr.board.visitorTest;
 
-import co.kr.board.Config.TestQueryDslConfig;
+import co.kr.board.config.TestQueryDslConfig;
 import co.kr.board.domain.Visitor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

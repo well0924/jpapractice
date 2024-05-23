@@ -1,14 +1,12 @@
 package co.kr.board.testNotfication;
 
-import co.kr.board.Config.TestQueryDslConfig;
+import co.kr.board.config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Const.NoticeType;
+import co.kr.board.domain.Dto.NoticeDto;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Notification;
-import co.kr.board.repository.BoardRepository;
-import co.kr.board.repository.EmitterRepository;
-import co.kr.board.repository.EmitterRepositoryImpl;
-import co.kr.board.repository.MemberRepository;
+import co.kr.board.repository.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,23 +16,29 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import({TestQueryDslConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class NotificationRepositoryTest {
 
-    private EmitterRepository emitterRepository = new EmitterRepositoryImpl();
+    private final EmitterRepository emitterRepository = new EmitterRepositoryImpl();
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private BoardRepository boardRepository;
-    private Long DEFAULT_TIMEOUT = 60L * 1000L * 60L;
+    @Autowired
+    private NotificationRepository notificationRepository;
+    private final Long DEFAULT_TIMEOUT = 60L * 1000L * 60L;
 
     @Test
     @DisplayName("새로운 Emitter를 추가한다.")
-    public void save() throws Exception {
+    public void save() {
         //given
         Long memberId = 1L;
         String emitterId =  memberId + "_" + System.currentTimeMillis();
@@ -47,10 +51,10 @@ public class NotificationRepositoryTest {
 
     @Test
     @DisplayName("수신한 이벤트를 캐시에 저장한다.")
-    public void saveEventCache() throws Exception {
+    public void saveEventCache() {
         //given
-        Member member = memberRepository.findById(1).get();
-        Board board = boardRepository.findById(1).get();
+        Member member = memberRepository.findById(1).orElseThrow();
+        Board board = boardRepository.findById(1).orElseThrow();
         Integer memberId = member.getId();
         String eventCacheId =  memberId + "_" + System.currentTimeMillis();
         Notification notification = new Notification(board.getBoardAuthor()+"에 댓글이 작성되었습니다.","boardId"+board.getId(),false,NoticeType.REPLY,member);
@@ -92,8 +96,8 @@ public class NotificationRepositoryTest {
     @DisplayName("어떤 회원에게 수신된 이벤트를 캐시에서 모두 찾는다.")
     public void findAllEventCacheStartWithByMemberId() throws Exception {
         //given
-        Member member = memberRepository.findById(1).get();
-        Board board = boardRepository.findById(1).get();
+        Member member = memberRepository.findById(1).orElseThrow();
+        Board board = boardRepository.findById(1).orElseThrow();
 
         Integer memberId = member.getId();
 
@@ -123,7 +127,7 @@ public class NotificationRepositoryTest {
 
     @Test
     @DisplayName("ID를 통해 Emitter를 Repository에서 제거한다.")
-    public void deleteById() throws Exception {
+    public void deleteById(){
         //given
         Long memberId = 1L;
         String emitterId =  memberId + "_" + System.currentTimeMillis();
@@ -161,7 +165,7 @@ public class NotificationRepositoryTest {
     public void deleteAllEventCacheStartWithId() throws Exception {
         //given
         Long memberId = 1L;
-        Board board = boardRepository.findById(1).get();
+        Board board = boardRepository.findById(1).orElseThrow();
         String eventCacheId1 =  memberId + "_" + System.currentTimeMillis();
         Notification notification1 = new Notification(board.getBoardAuthor()+"에 댓글이 작성되었습니다.","boardId"+board.getId(),false,NoticeType.REPLY,new Member());
         emitterRepository.saveEventCache(eventCacheId1, notification1);
@@ -176,5 +180,25 @@ public class NotificationRepositoryTest {
 
         //then
         Assertions.assertEquals(0, emitterRepository.findAllEventCacheStartWithByMemberId(String.valueOf(memberId)).size());
+    }
+
+    @Test
+    @DisplayName("회원 이름을 기반으로 알림목록을 출력하기.")
+    public void notificationListTest(){
+        String username= "well4149";
+
+        List<NoticeDto>list = notificationRepository.findAllByNotification(username);
+
+        System.out.println(list);
+
+        assertThat(list).isNotNull();
+    }
+
+    @Test
+    @DisplayName("회원 알림 조회")
+    public void NotificationGetTest(){
+        String username = "well4149";
+        Optional<NoticeDto>detail = notificationRepository.findByUsername(username,91);
+        System.out.println(detail.get());
     }
 }

@@ -1,6 +1,6 @@
 package co.kr.board.controller.api;
 
-import co.kr.board.config.Exception.dto.Response;
+import co.kr.board.config.exception.dto.Response;
 import co.kr.board.service.HashTagService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

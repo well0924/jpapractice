@@ -13,7 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import co.kr.board.service.BoardService;
-import co.kr.board.config.Exception.dto.Response;
+import co.kr.board.config.exception.dto.Response;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.multipart.MultipartFile;

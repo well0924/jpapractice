@@ -1,6 +1,6 @@
 package co.kr.board.testboard;
 
-import co.kr.board.Config.TestQueryDslConfig;
+import co.kr.board.config.TestQueryDslConfig;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Category;
 import co.kr.board.domain.Dto.BoardDto;

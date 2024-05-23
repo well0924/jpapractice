@@ -1,7 +1,7 @@
 package co.kr.board.testcategory;
 
 
-import co.kr.board.Config.TestQueryDslConfig;
+import co.kr.board.config.TestQueryDslConfig;
 import co.kr.board.domain.Dto.CategoryDto;
 import co.kr.board.repository.CategoryRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import javax.persistence.EntityManager;
-import java.lang.annotation.Documented;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

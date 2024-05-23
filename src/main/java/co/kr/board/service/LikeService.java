@@ -1,8 +1,8 @@
 package co.kr.board.service;
 
 import co.kr.board.domain.Board;
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Const.NoticeType;
 import co.kr.board.domain.Like;
 import co.kr.board.repository.LikeRepository;

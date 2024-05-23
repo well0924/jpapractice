@@ -1,7 +1,7 @@
 package co.kr.board.domain.Dto;
 
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

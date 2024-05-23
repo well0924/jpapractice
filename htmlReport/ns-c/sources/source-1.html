@@ -95,9 +95,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import javax.servlet.http.HttpServletResponse;
 &nbsp;import javax.validation.Valid;
 &nbsp;
-&nbsp;import co.kr.board.config.Exception.dto.ErrorCode;
-&nbsp;import co.kr.board.config.Exception.handler.CustomExceptionHandler;
-&nbsp;import co.kr.board.config.Redis.CacheKey;
+&nbsp;import co.kr.board.config.exception.dto.ErrorCode;
+&nbsp;import co.kr.board.config.exception.handler.CustomExceptionHandler;
+&nbsp;import co.kr.board.config.redis.CacheKey;
 &nbsp;import co.kr.board.domain.Dto.BoardDto;
 &nbsp;import co.kr.board.domain.Member;
 &nbsp;import co.kr.board.repository.MemberRepository;
@@ -114,7 +114,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;import org.springframework.web.bind.annotation.*;
 &nbsp;
 &nbsp;import co.kr.board.service.BoardService;
-&nbsp;import co.kr.board.config.Exception.dto.Response;
+&nbsp;import co.kr.board.config.exception.dto.Response;
 &nbsp;import lombok.AllArgsConstructor;
 &nbsp;import lombok.extern.log4j.Log4j2;
 &nbsp;import org.springframework.web.multipart.MultipartFile;

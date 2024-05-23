@@ -2,7 +2,7 @@ package co.kr.board.repository;
 
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Dto.BoardDto;
-import co.kr.board.repository.QueryDsl.BoardCustomRepository;
+import co.kr.board.repository.queryDsl.BoardCustomRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import co.kr.board.service.BoardService;
-import co.kr.board.config.Security.auth.CustomUserDetails;
+import co.kr.board.config.security.auth.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 

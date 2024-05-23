@@ -2,7 +2,7 @@ package co.kr.board.repository;
 
 import java.util.Optional;
 
-import co.kr.board.repository.QueryDsl.MemberCustomRepository;
+import co.kr.board.repository.queryDsl.MemberCustomRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import co.kr.board.domain.Member;

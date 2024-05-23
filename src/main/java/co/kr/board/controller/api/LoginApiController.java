@@ -2,13 +2,13 @@ package co.kr.board.controller.api;
 
 import javax.validation.Valid;
 
-import co.kr.board.config.Email.EmailService;
-import co.kr.board.config.Security.auth.AuthService;
+import co.kr.board.config.email.EmailService;
+import co.kr.board.config.security.auth.AuthService;
 import co.kr.board.domain.Dto.LoginDto;
 import co.kr.board.domain.Dto.TokenDto;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import co.kr.board.config.Exception.dto.Response;
+import co.kr.board.config.exception.dto.Response;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 

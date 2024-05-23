@@ -1,8 +1,8 @@
 package co.kr.board.service;
 
 import co.kr.board.domain.AttachFile;
-import co.kr.board.config.Exception.dto.ErrorCode;
-import co.kr.board.config.Exception.handler.CustomExceptionHandler;
+import co.kr.board.config.exception.dto.ErrorCode;
+import co.kr.board.config.exception.handler.CustomExceptionHandler;
 import co.kr.board.domain.Dto.AttachDto;
 import co.kr.board.repository.AttachRepository;
 import lombok.AllArgsConstructor;

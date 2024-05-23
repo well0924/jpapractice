@@ -1,8 +1,8 @@
 package co.kr.board.testreply;
 
-import co.kr.board.CustomSecurity.TestCustomUserDetailsService;
-import co.kr.board.config.Security.SecurityConfig;
-import co.kr.board.config.Security.auth.CustomUserDetails;
+import co.kr.board.customSecurity.TestCustomUserDetailsService;
+import co.kr.board.config.security.SecurityConfig;
+import co.kr.board.config.security.auth.CustomUserDetails;
 import co.kr.board.domain.Board;
 import co.kr.board.domain.Member;
 import co.kr.board.domain.Const.Role;
@@ -20,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
