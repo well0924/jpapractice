@@ -18,16 +18,18 @@ import org.springframework.web.bind.annotation.*;
 @Log4j2
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/like/*")
+@RequestMapping("/api/likes")
 public class LikeController {
+
     private final BoardRepository boardRepository;
+
     private final LikeService likeService;
 
     //좋아요+1기능
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @PostMapping("/plus/{id}")
+    @PostMapping("/increment/{id}")
     @Cacheable(value = CacheKey.LIKE,key = "#boardId",unless = "#result == null")
-    public Response<String> likeBoard(@PathVariable(value = "id")Integer boardId){
+    public Response<String> addLike(@PathVariable(value = "id")Integer boardId){
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
         String likeResult =likeService.createLikeBoard(board);
         return new Response<>(HttpStatus.OK.value(),likeResult);
@@ -36,8 +38,8 @@ public class LikeController {
     //좋아요-1기능
     @Secured({"ROLE_ADMIN","ROLE_USER"})
     @CacheEvict(value = CacheKey.LIKE,key = "#boardId")
-    @PostMapping("/minus/{id}")
-    public Response<String> minusBoard(@PathVariable(value = "id")Integer boardId){
+    @PostMapping("/decrement/{id}")
+    public Response<String> removeLike(@PathVariable(value = "id")Integer boardId){
         Board board = boardRepository.findById(boardId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
         String likeResult = likeService.removeLikeBoard(board);
         return new Response<>(HttpStatus.OK.value(),likeResult);
@@ -45,23 +47,23 @@ public class LikeController {
 
     //좋아요 중복기능
     @Secured({"ROLE_ADMIN","ROLE_USER"})
-    @GetMapping("/duplicated/{id}")
-    public Response<Boolean> likeDuplicated(@PathVariable(value = "id") Integer boardId){
+    @GetMapping("/checks/{id}")
+    public Response<Boolean> checkLiked(@PathVariable(value = "id") Integer boardId){
         Board board = boardRepository.findById(boardId).orElseThrow(()->new CustomExceptionHandler(ErrorCode.NOT_BOARD_DETAIL));
         boolean result = likeService.hasLikeBoard(board);
 
         //true: 1(좋아요 처리) , false : 0 (좋아요 취소)
         log.info("result::"+result);
         if(result){
-            minusBoard(boardId);
+            addLike(boardId);
         }else{
-            likeBoard(boardId);
+            removeLike(boardId);
         }
         return new Response<>(HttpStatus.OK.value(),result);
     }
 
     @GetMapping("/count/{id}")
-    public Response<?>likeCount(@PathVariable("id") Integer boardId){
+    public Response<?>getLikeCount(@PathVariable("id") Integer boardId){
         Integer count = likeService.LikeCount(boardId);
         log.info(count);
         return new Response<>(HttpStatus.OK.value(),count);

@@ -16,7 +16,6 @@ public class GlobalCustomExceptionHandler {
 	
 	@ExceptionHandler(value= Exception.class)
 	public Response<?>IllegalArgumentException(Exception e){
-		
 		return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(),e.getMessage());
 	}
 	

@@ -17,12 +17,13 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class FileService {
+
     private final AttachRepository attachRepository;
 
     /**
      * 파일 전체 목록
      * @param boardId : 게시글 번호
-    **/
+     **/
     @Transactional
     public List<AttachDto> filelist(@Param("id")Integer boardId)throws Exception{
 

@@ -24,19 +24,19 @@ import java.util.List;
 @RequestMapping("/api/file")
 @AllArgsConstructor
 public class FileController {
+
     private final FileService fileService;
 
     //파일 전체 조회
-    @GetMapping("/list/{id}")
-    public Response<List<AttachDto>>fileList(@PathVariable("id")Integer id)throws Exception{
+    @GetMapping("/{id}")
+    public Response<List<AttachDto>>getAllFiles(@PathVariable("id")Integer id)throws Exception{
         List<AttachDto>list = fileService.filelist(id);
         return new Response<>(HttpStatus.OK.value(),list);
     }
 
     //파일 다운로드
-    @GetMapping("/{file-name}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Resource> BoardFileDownload(@PathVariable("file-name")String fileName) throws IOException {
+    @GetMapping("/{filename}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable("filename")String fileName) throws IOException {
         AttachDto getFile = fileService.getFile(fileName);
         Path path = Paths.get(getFile.getFilePath());
         Resource resource = new InputStreamResource(Files.newInputStream(path));

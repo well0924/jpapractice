@@ -21,7 +21,7 @@ import static co.kr.board.domain.QMember.member;
 
 public class MemberCustomRepositoryImpl implements MemberCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
-    QMember qMember;
+    private final QMember qMember;
 
     //생성자 주입
     public MemberCustomRepositoryImpl(EntityManager em){

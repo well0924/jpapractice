@@ -21,93 +21,97 @@ import javax.validation.constraints.Email;
 @RequestMapping("/api/member")
 @AllArgsConstructor
 public class MemberApiController {
+
     private final MemberService service;
 
-    @GetMapping("/logincheck/{id}")
-    @ResponseStatus(code= HttpStatus.OK)
-    public Response<Boolean> idCheck(@PathVariable(value="id") String username){
+    @GetMapping("/login-check/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public Response<Boolean>checkUsernameDuplicate(@PathVariable(value="username") String username){
 
-        Boolean checkresult = service.checkmemberIdDuplicate(username);
+        Boolean checkResult = service.isUsernameDuplicate(username);
 
-        if(checkresult.equals(true)) {//아이디 중복
+        if(checkResult.equals(true)) {//아이디 중복
             return new Response<>(HttpStatus.BAD_REQUEST.value(),true);
         }else{//사용가능한 아이디
             return	new Response<>(HttpStatus.OK.value(),false);
         }
     }
 
-    @GetMapping("/emailcheck/{email}")
-    @ResponseStatus(code=HttpStatus.OK)
-    public Response<Boolean>emailCheck(@PathVariable(value="email")@Email String useremail){
-        Boolean checkresult = service.checkmemberEmailDuplicate(useremail);
+    @GetMapping("/email-check/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public Response<Boolean>checkEmailDuplicate(@PathVariable(value="email")@Email String email){
+        Boolean checkResult = service.isEmailDuplicate(email);
 
-        if(checkresult.equals(true)) {//아이디 중복
+        if(checkResult.equals(true)) {//아이디 중복
             return new Response<>(HttpStatus.BAD_REQUEST.value(),false);
         }else {//사용가능한 아이디
             return	new Response<>(HttpStatus.OK.value(),true);
         }
     }
     //페이징
-    @GetMapping("/list")
-    @ResponseStatus(code=HttpStatus.OK)
-    public Response<Page<MemberDto.MemeberResponseDto>>memberList(@PageableDefault(sort = "id",direction = Sort.Direction.DESC,size = 10) Pageable pageable){
-        Page<MemberDto.MemeberResponseDto>list= service.findAll(pageable);
+    @GetMapping("/")
+    @ResponseStatus(HttpStatus.OK)
+    public Response<Page<MemberDto.MemeberResponseDto>>getAllMembers(@PageableDefault(sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
+        Page<MemberDto.MemeberResponseDto>list= service.getAllMembers(pageable);
         return new Response<>(HttpStatus.OK.value(),list);
     }
     //검색
-    @GetMapping("/list/search")
-    @ResponseStatus(code=HttpStatus.OK)
-    public Response<Page<MemberDto.MemeberResponseDto>>memberSearchList(
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public Response<Page<MemberDto.MemeberResponseDto>>searchMembers(
             @RequestParam(value = "searchVal",required = false) String searchVal,
             @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=5)Pageable pageable){
 
-        Page<MemberDto.MemeberResponseDto>list = service.findByAll(searchVal,pageable);
+        Page<MemberDto.MemeberResponseDto>list = service.searchMembers(searchVal,pageable);
 
         return new Response<>(HttpStatus.OK.value(),list);
     }
     //회원 조회
-    @GetMapping("/detailmember/{idx}/member")
-    @ResponseStatus(code=HttpStatus.OK)
-    public Response<MemberDto.MemeberResponseDto>memberDetail(@PathVariable(value="idx")Integer useridx){
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Response<MemberDto.MemeberResponseDto>getMemberById(@PathVariable(value="id")Integer memberId){
 
-        MemberDto.MemeberResponseDto dto = service.getMember(useridx);
+        MemberDto.MemeberResponseDto dto = service.getMemberById(memberId);
 
         return new Response<>(HttpStatus.OK.value(),dto);
     }
+
     //회원 가입
-    @PostMapping("/memberjoin")
-    @ResponseStatus(code=HttpStatus.OK)
-    public Response<Integer>memberJoin(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult)throws Exception{
-        int joinresult = service.memberjoin(dto);
-        return new Response<>(HttpStatus.OK.value(),joinresult);
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Response<Integer>createMember(@Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult){
+        int joinResult = service.createMember(dto);
+        return new Response<>(HttpStatus.CREATED.value(),joinResult);
     }
     //회원 삭제
-    @DeleteMapping("/memberdelete/{idx}/member")
-    public Response<String>memberDelete(@PathVariable(value="idx")Integer userIdx){
-        service.memberdelete(userIdx);
-        return new Response<>(HttpStatus.OK.value(),"delete");
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public Response<String>deleteMember(@PathVariable(value="id")Integer userId){
+        service.deleteMember(userId);
+        return new Response<>(HttpStatus.NO_CONTENT.value(),"delete");
     }
     //회원 수정
-    @PutMapping("/memberupdate/{idx}/member")
-    public Response<Integer>memberUpdate(
-            @PathVariable(value="idx")Integer useridx,
+    @PutMapping("/{id}")
+    public Response<Integer>modifyMember(
+            @PathVariable(value="id")Integer userId,
             @Valid @RequestBody MemberDto.MemberRequestDto dto, BindingResult bindingresult){
-        int updateresult = service.memberupdate(useridx, dto);
-        return new Response<>(HttpStatus.OK.value(),updateresult);
+        int updateResult = service.updateMember(userId, dto);
+        return new Response<>(HttpStatus.OK.value(),updateResult);
     }
     //회원 아이디 찾기
-    @PostMapping("/userfind/{name}/{email}")
-    public Response<?>userFindId(
-            @PathVariable(value="name")String membername,
-            @PathVariable(value="email")String useremail){
-        String userid = service.findByMembernameAndUseremail(membername, useremail);
+    @PostMapping("/user/{name}/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public Response<?>findUserId(
+            @PathVariable(value="name")String memberName,
+            @PathVariable(value="email")String userEmail){
+        String userid = service.findByUserId(memberName, userEmail);
         return new Response<>(HttpStatus.OK.value(),userid);
     }
     //비밀번호 변경
     @PutMapping("/password-change/{name}")
-    public Response<Integer>passwordChange(@PathVariable(value = "name")String username,
+    public Response<Integer>changeUserPassword(@PathVariable(value = "name")String username,
                                            @RequestBody MemberDto.MemberRequestDto dto){
-        int result = service.passwordchange(username,dto);
+        int result = service.changeUserPassword(username,dto);
         log.info(result);
         return new Response<>(HttpStatus.OK.value(),result);
     }

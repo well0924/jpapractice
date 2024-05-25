@@ -19,24 +19,24 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class ScrapApiController {
 
-    private final ScrapService service;
+    private final ScrapService scrapService;
 
     //회원이 스크랩한 목록
     @Secured({"ROLE_USER","ROLE_ADMIN"})
-    @GetMapping("/list/{username}")
-    public Response<?>scrapList(@PathVariable("username") String username,@PageableDefault(size = 5,direction = Sort.Direction.DESC,sort = "id") Pageable pageable){
-        Page<ScrapDto.ResponseDto>scrapList = service.scrapList(username,pageable);
+    @GetMapping("/{username}")
+    public Response<?>listScrap(@PathVariable("username") String username,@PageableDefault(size = 5,direction = Sort.Direction.DESC,sort = "id") Pageable pageable){
+        Page<ScrapDto.ResponseDto>scrapList = scrapService.scrapList(username,pageable);
         return new Response<>(HttpStatus.OK.value(),scrapList);
     }
 
     //스크랩 여부
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @GetMapping("/duplicate/{id}")
-    public Response<?>scrapDuplicate(@PathVariable("id") Integer boardId){
-        boolean duplicatedResult = service.ScrapDuplicated(boardId);
+    public Response<?>hasScrap(@PathVariable("id") Integer boardId){
+        boolean duplicatedResult = scrapService.ScrapDuplicated(boardId);
         log.info("중복결과::"+duplicatedResult);
         if(duplicatedResult != true){
-            scrapAdd(boardId);
+            createScrap(boardId);
         }
         return new Response<>(HttpStatus.OK.value(),duplicatedResult);
     }
@@ -44,16 +44,16 @@ public class ScrapApiController {
     //스크랩 추가
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @PostMapping("/add/{id}")
-    public Response<?>scrapAdd(@PathVariable("id")Integer boardId){
-        String result = service.scrapAdd(boardId);
+    public Response<?>createScrap(@PathVariable("id")Integer boardId){
+        String result = scrapService.scrapAdd(boardId);
         return new Response<>(HttpStatus.OK.value(),result);
     }
 
     //스크랩 삭제
     @Secured({"ROLE_USER","ROLE_ADMIN"})
     @DeleteMapping("/delete/{id}")
-    public Response<?>scrapDelete(@PathVariable("id")Integer boardId){
-        String result = service.scrapCancel(boardId);
+    public Response<?>deleteScrap(@PathVariable("id")Integer boardId){
+        String result = scrapService.scrapCancel(boardId);
         return new Response<>(HttpStatus.OK.value(), result);
     }
 }

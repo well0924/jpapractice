@@ -15,11 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("/api/category")
 public class CategoryController {
+
     private final CategoryService categoryService;
 
-   
     @Secured({"ROLE_USER","ROLE_ADMIN"})
-    @GetMapping("/list")
+    @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
     public Response<List<CategoryDto>>categoryList(){
         List<CategoryDto>list = categoryService.categoryList();
@@ -27,18 +27,18 @@ public class CategoryController {
     }
 
     @Secured({"ROLE_USER","ROLE_ADMIN"})
-    @PostMapping("/createcategory")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Response<?> categoryCreate(@RequestBody CategoryCreateRequest req){
-        categoryService.create(req);
-        return new Response<>(HttpStatus.OK.value(),200);
+    public Response<?> createCategory(@RequestBody CategoryCreateRequest req){
+        categoryService.createCategory(req);
+        return new Response<>(HttpStatus.CREATED.value(),200);
     }
 
     @Secured({"ROLE_USER","ROLE_ADMIN"})
-    @DeleteMapping("/deletecategory/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Response<?>categoryDelete(@PathVariable(required = true,value = "id") Integer id){
-        categoryService.delete(id);
+    public Response<?>deleteCategory(@PathVariable(required = true,value = "id") Integer id){
+        categoryService.deleteCategory(id);
         return new Response<>(HttpStatus.OK.value(),200);
     }
 }

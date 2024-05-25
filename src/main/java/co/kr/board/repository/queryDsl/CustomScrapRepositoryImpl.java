@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 public class CustomScrapRepositoryImpl implements CustomScrapRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
-    QMember qMember;
-    QScrap qScrap;
-    QBoard qBoard;
+    private final QMember qMember;
+    private final QScrap qScrap;
+    private final QBoard qBoard;
 
     public CustomScrapRepositoryImpl(JPAQueryFactory jpaQueryFactory){
         this.jpaQueryFactory = jpaQueryFactory;

@@ -26,32 +26,32 @@ public class VisitorController {
     private final VisitorService visitorService;
 
     //방문자 목록(당일)
-    @GetMapping("/day-count")
-    public Response<?>visitorDayList(){
+    @GetMapping("/today")
+    public Response<?>getTodayVisitorCount(){
         Map<String,Object>response = new HashMap<>();
-        Integer dayCount = visitorService.countLoginsForLastDay();
+        Integer dayCount = visitorService.getTodayVisitorCount();
         response.put("today",dayCount);
         return new Response<>(HttpStatus.OK.value(),response);
     }
 
     //어제 방문자
-    @GetMapping("/yesterday-count")
-    public Response<?>yesterDayVisitor(){
+    @GetMapping("/yesterday")
+    public Response<?>getYesterdayVisitorCount(){
         Map<String,Object>response = new HashMap<>();
-        Integer yesterDayCount = visitorService.countLoginForYesterDay();
-        response.put("yesterday",yesterDayCount);
+        Integer dayCount = visitorService.getYesterdayVisitorCount();
+        response.put("yesterday",dayCount);
         return new Response<>(HttpStatus.OK.value(),response);
     }
 
     //방문자 목록(일주일)
-    @GetMapping("/week-count")
-    public Response<?>visitorWeekList(){
+    @GetMapping("/week")
+    public Response<?>getWeekVisitorCount(){
         Map<String,Object>response = new HashMap<>();
         //방문일자
         List<LocalDateTime>labels = new ArrayList<>();
         //당일 들어온 회원들의 수
-        List<Integer>visitors = visitorService.countLoginForWeekDayCount();
-        // 현재 시간 (UTC로 설정)
+        List<Integer>visitors = visitorService.getWeeklyVisitorCount();
+        // 현재 시간 (UTC 로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
         ZoneId serverTimeZone = ZoneId.of("Asia/Seoul");
@@ -72,9 +72,9 @@ public class VisitorController {
     }
 
     //전체 방문자
-    @GetMapping("/total-count")
-    public Response<?>totalCount(){
-        Integer count = visitorService.countTotalVisitors();
+    @GetMapping("/total")
+    public Response<?>getTotalVisitorCount(){
+        Integer count = visitorService.getTotalVisitorCount();
         return new Response<>(HttpStatus.OK.value(),count);
     }
 }

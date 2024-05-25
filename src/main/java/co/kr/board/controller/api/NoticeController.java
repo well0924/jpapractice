@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/notice")
 @AllArgsConstructor
 public class NoticeController {
+
     private final SSeService service;
 
     //알림(구독)
@@ -27,8 +28,8 @@ public class NoticeController {
     }
     
     //알림 목록
-    @GetMapping("/list/{username}")
-    public ResponseEntity<?>noticeList(@PathVariable("username")String username){
+    @GetMapping("/{username}")
+    public ResponseEntity<?>listNotice(@PathVariable("username")String username){
         List<NoticeDto>noticeDtoList = service.noticeList(username);
         return new ResponseEntity<>(noticeDtoList,HttpStatus.OK);
     }

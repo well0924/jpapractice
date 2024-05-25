@@ -22,6 +22,7 @@ import java.util.Objects;
 @Log4j2
 @Component
 public class FileHandler {
+
     @Value("${server.file.upload}")
     private String filePath;
 

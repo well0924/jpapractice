@@ -18,7 +18,7 @@ public class HashTagApiController {
     private final HashTagService hashTagService;
 
     //해시 태그 전체 목록
-    @GetMapping("/list")
+    @GetMapping("/")
     public Response<?>hashTagList(){
         List<String> list = hashTagService.findAllHashTagNames();
         return new Response<>(HttpStatus.OK.value(),list);

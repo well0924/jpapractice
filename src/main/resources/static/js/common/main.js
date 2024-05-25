@@ -98,7 +98,7 @@ function calendarInit() {
 //방문자 수 (전체,어제,오늘)
 function totalVisitor(){
     $.ajax({
-        url:'/api/visitor/total-count',
+        url:'/api/visitor/total',
         type:'get',
         dataTye:'json'
     }).done(function(resp){
@@ -111,7 +111,7 @@ function totalVisitor(){
 
 function todayVisitorCount(){
     $.ajax({
-        url:'/api/visitor/day-count',
+        url:'/api/visitor/today',
         type:'get',
         dataTye: 'json'
     }).done(function (resp){
@@ -123,7 +123,7 @@ function todayVisitorCount(){
 
 function yesterdayVisitorCount(){
     $.ajax({
-        url:'/api/visitor/yesterday-count',
+        url:'/api/visitor/yesterday',
         type:'get',
         dataTye:'json'
     }).done(function(resp){
@@ -141,7 +141,7 @@ function alarmList(){
     //토큰이 있는 경우 작동
     if(tokenId){
         $.ajax({
-            url:"/api/notice/list/"+username,
+            url:"/api/notice/"+username,
             type:'get',
             dataTye:'json'
         }).done(function (resp){

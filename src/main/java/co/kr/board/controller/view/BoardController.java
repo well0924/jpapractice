@@ -33,7 +33,9 @@ import java.util.List;
 public class BoardController {
 
 	private final BoardService service;
+
 	private final FileService fileService;
+
 	//게시글 목록
 	@GetMapping("/list/{cname}")
 	public ModelAndView pageList(

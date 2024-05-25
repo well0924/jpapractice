@@ -32,12 +32,12 @@ import java.util.stream.Collectors;
 public class BoardCustomRepositoryImpl implements BoardCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
-    QBoard qBoard;
-    QMember qMember;
-    QLike qLike;
-    QCategory qCategory;
-    QBoardHashTag qBoardHashTag;
-    QHashTag qHashTag;
+    private final QBoard qBoard;
+    private final QMember qMember;
+    private final QLike qLike;
+    private final QCategory qCategory;
+    private final QBoardHashTag qBoardHashTag;
+    private final QHashTag qHashTag;
 
     //생성자 주입
     public BoardCustomRepositoryImpl(EntityManager em) {

@@ -22,10 +22,15 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class AuthService {
+
     private final JwtTokenProvider jwtTokenProvider;
+
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
     private final RedisService redisService;
+
     private final VisitorService visitorService;
+
     private final String SERVER = "Server";
 
     //로그인 -> jwt로그인시 방문자로 기록하기.
@@ -39,12 +44,12 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
         //로그인을 했을 경우에 방문자기록을 저장
-        boolean duplicatedResult = visitorService.isNotDuplicateLogin(authentication.getName());
+        boolean duplicatedResult = visitorService.isDuplicateLogin(authentication.getName());
         log.info(duplicatedResult);
-        if(duplicatedResult == true){
+        if(duplicatedResult){
             log.info("방문자 저장");
             //저장
-            visitorService.visitorSave();
+            visitorService.saveVisitor();
         }else{
             log.info("중복로그인");
         }

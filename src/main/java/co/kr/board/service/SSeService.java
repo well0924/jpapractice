@@ -24,8 +24,11 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class SSeService {
+
     private final EmitterRepositoryImpl emitterRepository;
+
     private final NotificationRepository notificationRepository;
+
     private static final Long DEFAULT_TIMEOUT = 60 * 1000L;
 
     /**

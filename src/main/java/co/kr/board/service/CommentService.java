@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class CommentService {
 	
 	private final CommentRepository repository;
@@ -33,9 +34,9 @@ public class CommentService {
 	private final SSeService sSeService;
 
 	/**
-	  * 댓글 목록 (페이징)
-	  * @param pageable : 페이징 객체
-	  * 어드민 페이지에서 댓글 목록을 페이징으로 출력
+	 * 댓글 목록 (페이징)
+	 * @param pageable : 페이징 객체
+	 * @return 댓글 목록객체                  
 	 **/
 	@Transactional(readOnly = true)
 	public Page<CommentDto.CommentResponseDto>findCommentList(Pageable pageable)throws Exception{
@@ -43,14 +44,17 @@ public class CommentService {
 	}
 
 	/**
-	  * 댓글 목록
-	  * @param id : 게시글 번호
-	  * 게시글 조회화면에서 댓글 목록 출력 
+	 * 댓글 목록
+	 * @param id : 게시글 번호
+	 * @return 댓글 목록객체          
 	 **/
 	@Transactional(readOnly = true)
-	public List<CommentDto.CommentResponseDto> findCommentsBoardId(@Param("id") Integer id)throws Exception{
+	public List<CommentDto.CommentResponseDto> findCommentsBoardId(@Param("id") Integer id) throws Exception {
+
 		Optional<Board> detail = boardrepository.findById(id);
+
 		List<CommentDto.CommentResponseDto> list = new ArrayList<>();
+
 		if(detail.isPresent()){
 			list = repository.findCommnentList(id);
 		}
@@ -58,16 +62,16 @@ public class CommentService {
 	}
 	
 	/**
-	  * 댓글 추가하기.
-	  * @param dto : 댓글 요청 Dto
-	  * @param boardId : 게시글 번호
-	  * @param principal : 회원 객체
-	  * @exception CustomExceptionHandler : 댓글사용시 로그인을 하지 않은 경우 ONLY_USER
-	  * @exception CustomExceptionHandler : 게시판글 조회시 글이 없는 경우에는 NOT_BOARD_DETAIL
+	 * 댓글 추가하기.
+	 * @param dto : 댓글 요청 Dto
+	 * @param boardId : 게시글 번호
+	 * @param principal : 회원 객체
+	 * @exception CustomExceptionHandler : 댓글사용시 로그인을 하지 않은 경우 ONLY_USER
+	 * @exception CustomExceptionHandler : 게시판글 조회시 글이 없는 경우에는 NOT_BOARD_DETAIL
+	 * @return id : 댓글의 번호
 	 **/
-	@Transactional
-	public Integer replyCreate(CommentDto.CommentRequestDto dto,Member principal,Integer boardId){
-		
+	public Integer createComment(CommentDto.CommentRequestDto dto,Member principal,Integer boardId){
+
 		//유저가 아니면 사용불가
 		if(principal == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
@@ -87,7 +91,9 @@ public class CommentService {
 		repository.save(reply);
 
 		board.getCommentlist().add(reply);
+
 		Member writer = board.getWriter();
+
 		//댓글 알림
 		sSeService.send(writer, NoticeType.REPLY,"게시글에 댓글이 달렸습니다.",String.valueOf(board.getId()));
 
@@ -95,13 +101,12 @@ public class CommentService {
 	}
 	
 	/**
-	  * 댓글 삭제 
-	  * @param replyId : 댓글 번호
-	  * @param principal : 회원 인증객체
-	  * @exception CustomExceptionHandler : ONLY_USER (회원만 사용가능)                     
+	 * 댓글 삭제
+	 * @param replyId : 댓글 번호
+	 * @param principal : 회원 인증객체
+	 * @exception CustomExceptionHandler : ONLY_USER (회원만 사용가능)
 	 **/
-	@Transactional
-	public void replyDelete(Integer replyId,Member principal){
+	public void deleteComment(Integer replyId,Member principal){
 		
 		if(principal == null) {
 			throw new CustomExceptionHandler(ErrorCode.ONLY_USER);
@@ -110,6 +115,7 @@ public class CommentService {
 		Comment comment = repository.findById(replyId).orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND));
 		
 		String userid= principal.getUsername();
+
 		String replyWriter= comment.getReplyWriter();
 	
 		if(!userid.equals(replyWriter)) {
@@ -120,27 +126,28 @@ public class CommentService {
 	}
 
 	/**
-	  * 최근에 작성한 댓글 5개 출력하기.
+	 * 최근에 작성한 댓글 5개 출력하기.
 	 **/
 	@Transactional(readOnly = true)
-	public List<CommentDto.CommentResponseDto>commentTop5() throws Exception {
+	public List<CommentDto.CommentResponseDto>recentTop5Comment() throws Exception {
 		return repository.findTop5ByOrderByReplyIdCreatedAtDesc();
 	}
 	
 	/**
-	  * 댓글 선택 삭제
-	  * @param commentId: 선택된 댓글 번호(List)
+	 * 댓글 선택 삭제
+	 * @param commentId: 선택된 댓글 번호(List)
 	 **/
-	public void commentSelectDelete(List<Integer>commentId){
+	public void selectDeleteComment(List<Integer>commentId){
 		IntStream.range(0,commentId.size())
 				.mapToObj(i->commentId)
 				.forEach(repository::deleteAllById);
 	}
 
 	/**
-	  * 회원이 작성한 댓글 목록
-	  * @param username : 회원 아이디
-	  * @param pageable : 페이징 객체                    
+	 * 회원이 작성한 댓글 목록
+	 * @param username : 회원 아이디
+	 * @param pageable : 페이징 객체
+	 * @return 댓글 목록 객체(회원이 작성한)
 	 **/
 	@Transactional(readOnly = true)
 	public Page<CommentDto.CommentResponseDto>getMyComment(String username,Pageable pageable) throws Exception {

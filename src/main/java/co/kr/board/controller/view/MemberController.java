@@ -32,7 +32,7 @@ public class MemberController {
 
     //회원 가입
     @GetMapping("/memberjoin")
-    public ModelAndView mebmerJoin(){
+    public ModelAndView memberJoin(){
 
         ModelAndView mv = new ModelAndView();
 
@@ -54,11 +54,11 @@ public class MemberController {
 
     //회원 수정
     @GetMapping("/memberupdate/{id}")
-    public ModelAndView memberUpdate(@PathVariable("id") Integer userIdx, MemberDto.MemeberResponseDto dto){
+    public ModelAndView memberUpdate(@PathVariable("id") Integer userId, MemberDto.MemeberResponseDto dto){
 
         ModelAndView mv = new ModelAndView();
 
-        dto = service.getMember(userIdx);
+        dto = service.getMemberById(userId);
 
         mv.addObject("detail", dto);
         mv.setViewName("login/membermodify");
@@ -72,11 +72,11 @@ public class MemberController {
 
         ModelAndView mv = new ModelAndView();
         //회원 목록
-        Page<MemberDto.MemeberResponseDto> list= service.findAll(pageable);
+        Page<MemberDto.MemeberResponseDto> list= service.getAllMembers(pageable);
         //최근에 작성한 게시글
-        List<BoardDto.BoardResponseDto>articleList = boardService.findBoardTop5();
+        List<BoardDto.BoardResponseDto>articleList = boardService.recentTop5Board();
         //최근에 작성한 댓글
-        List<CommentDto.CommentResponseDto>commentList = commentService.commentTop5();
+        List<CommentDto.CommentResponseDto>commentList = commentService.recentTop5Comment();
 
         mv.addObject("memberlist", list);
         mv.addObject("top5",articleList);
@@ -89,10 +89,10 @@ public class MemberController {
 
     //회원 조회
     @GetMapping("/detail/{id}")
-    public ModelAndView memberDetail(@PathVariable(value="id")Integer userIdx){
+    public ModelAndView memberDetail(@PathVariable(value="id")Integer userId){
 
         ModelAndView mv = new ModelAndView();
-        MemberDto.MemeberResponseDto dto = service.getMember(userIdx);
+        MemberDto.MemeberResponseDto dto = service.getMemberById(userId);
 
         mv.addObject("detail", dto);
         mv.setViewName("login/membermodify");
@@ -107,7 +107,7 @@ public class MemberController {
                                         @PageableDefault(sort="id",direction = Sort.Direction.DESC,size=10) Pageable pageable){
         ModelAndView mv = new ModelAndView();
 
-        Page<BoardDto.BoardResponseDto>list = boardService.findAll(pageable);
+        Page<BoardDto.BoardResponseDto>list = boardService.findAllBoards(pageable);
         Page<BoardDto.BoardResponseDto>search =null;
 
         //검색어가 있는 경우
@@ -143,7 +143,7 @@ public class MemberController {
     public ModelAndView memberCategoryList(){
         ModelAndView mv = new ModelAndView();
         //최근에 작성한 게시글
-        List<BoardDto.BoardResponseDto>articleList = boardService.findBoardTop5();
+        List<BoardDto.BoardResponseDto>articleList = boardService.recentTop5Board();
 
         mv.addObject("top5",articleList);
         mv.setViewName("admin/categoryManagerList");

@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 public class CommentCustomRepositoryImpl implements CommentCustomRepository{
     private final JPAQueryFactory jpaQueryFactory;
 
-    QMember qMember;
+    private final QMember qMember;
 
-    QComment qComment;
+    private final QComment qComment;
 
-    QCategory qCategory;
+    private final QCategory qCategory;
 
     public CommentCustomRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;

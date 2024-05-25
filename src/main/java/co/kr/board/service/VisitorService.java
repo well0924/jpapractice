@@ -22,9 +22,12 @@ import java.util.Optional;
 
 @Log4j2
 @Service
+@Transactional
 @AllArgsConstructor
 public class VisitorService {
+
     private final VisitorRepository visitorRepository;
+
     private final MemberRepository memberRepository;
 
     /**
@@ -32,7 +35,7 @@ public class VisitorService {
      * 로그인시 1분 이내에 로그인한 기록이 있다면 중복 로그인으로 처리
      * @param username :회원 아이디
      **/
-    public boolean isNotDuplicateLogin(String username) {
+    public boolean isDuplicateLogin(String username) {
         LocalDateTime loginTime = LocalDateTime.now();
         Optional<Visitor> existingLogin = visitorRepository.findByUsernameAndLoginDateTimeAfter(username, loginTime.minusMinutes(1));
 
@@ -48,7 +51,7 @@ public class VisitorService {
     /**
      * 방문자 기록
      **/
-    public void visitorSave(){
+    public void saveVisitor(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication!=null&& authentication.isAuthenticated()){
             String username = authentication.getName();
@@ -66,7 +69,7 @@ public class VisitorService {
      * 총 들어온 방문자의 수
      **/
     @Transactional(readOnly = true)
-    public Integer countTotalVisitors(){
+    public Integer getTotalVisitorCount(){
         return Math.toIntExact(visitorRepository.count());
     }
 
@@ -74,8 +77,8 @@ public class VisitorService {
      * 오늘 하루동안 들어온 회원 방문자수
      **/
     @Transactional(readOnly = true)
-    public Integer countLoginsForLastDay() {
-        // 현재 시간 (UTC로 설정)
+    public Integer getTodayVisitorCount() {
+        // 현재 시간 (UTC 로 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
         ZoneId serverTimeZone = ZoneId.of("Asia/Seoul");
@@ -94,8 +97,8 @@ public class VisitorService {
      * 어제 들어왔던 회원의 수
      **/
     @Transactional(readOnly = true)
-    public Integer countLoginForYesterDay(){
-        // 현재 시간 (UTC로 설정)
+    public Integer getYesterdayVisitorCount(){
+        // 현재 시간 (UTC 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
         ZoneId serverTimeZone = ZoneId.of("Asia/Seoul");
@@ -111,8 +114,8 @@ public class VisitorService {
      * 일주일간의 방문자 수
      **/
     @Transactional(readOnly = true)
-    public List<Integer> countLoginForWeekDayCount(){
-        // 현재 시간 (UTC로 설정)
+    public List<Integer> getWeeklyVisitorCount(){
+        // 현재 시간 (UTC 설정)
         LocalDateTime utcNow = LocalDateTime.now(ZoneId.of("UTC"));
         // 서버의 타임존 설정 (한국 시간대로 설정)
         ZoneId serverTimeZone = ZoneId.of("Asia/Seoul");

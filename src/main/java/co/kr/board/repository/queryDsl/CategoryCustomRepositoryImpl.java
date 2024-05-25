@@ -11,7 +11,7 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository{
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    QCategory qCategory;
+    private final  QCategory qCategory;
 
     public CategoryCustomRepositoryImpl(EntityManager em){
         this.jpaQueryFactory = new JPAQueryFactory(em);

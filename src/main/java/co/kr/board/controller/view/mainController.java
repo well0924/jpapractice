@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @Controller
-@RequestMapping("/page/main/*")
+@RequestMapping("/page/main")
 @AllArgsConstructor
 public class mainController {
 
@@ -31,9 +31,11 @@ public class mainController {
 			@RequestParam(required = false,value = "searchVal")String searchVal,
 			@RequestParam(required = false,value = "searchType")String searchType,
 			@PageableDefault(sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
+
 		ModelAndView mv = new ModelAndView();
+
 		//게시글 목록(전체)
-		Page<BoardDto.BoardResponseDto> boardList = boardService.findAll(pageable);
+		Page<BoardDto.BoardResponseDto> boardList = boardService.findAllBoards(pageable);
 		log.info("list::"+boardList.stream().collect(Collectors.toList()));
 
 		if(searchVal !=null){
