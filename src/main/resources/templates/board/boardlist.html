@@ -4,7 +4,8 @@
         xmlns="http://www.w3.org/1999/xhtml"
         xmlns:th="http://www.thymeleaf.org"
         xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-        layout:decorate="~{layout/mainlayout}">
+        layout:decorate="~{layout/mainlayout}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +15,7 @@
     <title>게시글 목록</title>
 </head>
 <body>
-<th:block layout:fragment= "contents">
+<th:block layout:fragment="contents">
     <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">[[${cname}]] ([[${categoryCount}]])</h1>
@@ -35,39 +36,39 @@
         <div class="row">
             <div class="col-lg-12 mb-4" style="overflow: scroll;">
                 <!-- 작성 게시글 -->
-                <th:block th:unless="${#lists.isEmpty(list)}"th:each="list:${list}">
-                <div class="card shadow mb-4">
-                    <input type="hidden" id="categoryName" name="categoryName" th:value="${list.categoryName}">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="${list.boardTitle}"></h6>
-                        <p class="text-right" th:text="${list.createdAt}"></p>
-                    </div>
-                    <div class="card-body">
-                        <input type="hidden" name="password" th:value="${list.password}">
-                        <th:block th:if="${not #strings.isEmpty(list.password)}">
-                            <a th:href="@{/page/board/passwordcheck/{id}(id=${list.boardId})}">
-                                <p>[[${list.boardContents}]]</p>
-                            </a>
-                        </th:block>
-                        <th:block th:if="${#strings.isEmpty(list.password)}">
-                            <!--게시글 상세조회-->
-                            <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
-                                <p>[[${list.boardContents}]]</p>
-                            </a>
-                        </th:block>
-                        <!--해시태그--->
-                        <th:block th:unless="${list.hashtagName.isEmpty()}">
-                            <div th:with="tagNames=${list.getHashtagName()}">
-                                <a th:each="hashTags:${tagNames}" th:href="@{'/page/board/tag/'+${hashTags}}">
-                                    <span th:text="${'#' +hashTags}"></span>
+                <th:block th:unless="${#lists.isEmpty(list)}" th:each="list:${list}">
+                    <div class="card shadow mb-4">
+                        <input type="hidden" id="categoryName" name="categoryName" th:value="${list.categoryName}">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary" th:text="${list.boardTitle}"></h6>
+                            <p class="text-right" th:text="${list.createdAt}"></p>
+                        </div>
+                        <div class="card-body">
+                            <input type="hidden" name="password" th:value="${list.password}">
+                            <th:block th:if="${not #strings.isEmpty(list.password)}">
+                                <a th:href="@{/page/board/password-check/{id}(id=${list.boardId})}">
+                                    <p>[[${list.boardContents}]]</p>
                                 </a>
-                            </div>
-                        </th:block>
+                            </th:block>
+                            <th:block th:if="${#strings.isEmpty(list.password)}">
+                                <!--게시글 상세조회-->
+                                <a th:href="@{/page/board/detail/{id}(id=${list.boardId})}">
+                                    <p>[[${list.boardContents}]]</p>
+                                </a>
+                            </th:block>
+                            <!--해시태그--->
+                            <th:block th:unless="${list.hashtagName.isEmpty()}">
+                                <div th:with="tagNames=${list.getHashtagName()}">
+                                    <a th:each="hashTags:${tagNames}" th:href="@{'/page/board/tag/'+${hashTags}}">
+                                        <span th:text="${'#' +hashTags}"></span>
+                                    </a>
+                                </div>
+                            </th:block>
+                        </div>
                     </div>
-                </div>
-                <div class="card shadow mb-4" th:if="${#lists.isEmpty(list)}">
-                    게시글이 없습니다.
-                </div>
+                    <div class="card shadow mb-4" th:if="${#lists.isEmpty(list)}">
+                        게시글이 없습니다.
+                    </div>
                 </th:block>
             </div>
             <!--페이징 처리-->
@@ -85,7 +86,8 @@
                                 <a class="page-link" th:href="@{'/page/board/list'+${cname}(page= 0)}">First</a>
                             </li>
                             <li class="page-item" th:classappend="${list.first} ? 'disabled'">
-                                <a class="page-link" th:if="${list.first} ? '#' " th:href="@{'/page/board/list'+${cname}(page=${pageNumber - 1})}">previous</a>
+                                <a class="page-link" th:if="${list.first} ? '#' "
+                                   th:href="@{'/page/board/list'+${cname}(page=${pageNumber - 1})}">previous</a>
                             </li>
                             <li class="page-item"
                                 th:each="page: ${#numbers.sequence(startPage,endPage)}"
@@ -93,10 +95,13 @@
                                 <a class="page-link" th:href="@{'/page/board/list/'+${cname}(page=${page - 1})}">[[${page}]]</a>
                             </li>
                             <li class="page-item" th:classappend="${!list.last} ? 'disabled'">
-                                <a class="page-link" th:if="${list.last} ? '#'" th:href="@{'/page/board/list'+${cname}(page=${pageNumber + 1})}">다음</a>
+                                <a class="page-link" th:if="${list.last} ? '#'"
+                                   th:href="@{'/page/board/list'+${cname}(page=${pageNumber + 1})}">다음</a>
                             </li>
-                            <li class="page-item" th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
-                                <a class="page-link" th:if="${list.last} ? '#' " th:href="@{'/page/board/list'+${cname}(page=${totalPages - 1})}">Last</a>
+                            <li class="page-item"
+                                th:classappend="${T(java.lang.Math).floor(totalPages / pageSize) * pageSize - 1 <= startPage} ? 'disabled'">
+                                <a class="page-link" th:if="${list.last} ? '#' "
+                                   th:href="@{'/page/board/list'+${cname}(page=${totalPages - 1})}">Last</a>
                             </li>
                         </ul>
                     </div>
@@ -107,14 +112,13 @@
                 <div class="d-sm-flex align-items-center">
                     <select name="searchType" id="searchType" class="form-select" aria-label="Default select example">
                         <option>전체보기</option>
-                        <option th:value="t">제목</option>
-                        <option th:value="c">내용</option>
-                        <option th:value="w">작성자</option>
+                        <option th:value="boardTitle">제목</option>
+                        <option th:value="boardContents">내용</option>
+                        <option th:value="boardAuthor">작성자</option>
                         <option th:value="all">전체</option>
                     </select>
-                    <label for="boardkeyword">
-                        <input type="text" class="form-control form-control-sm" name="keyword" id="boardkeyword">
-                    </label>
+                    <label for="board-keyword"></label>
+                    <input type="text" class="form-control form-control-sm" name="searchVal" id="board-keyword">
                     <button class="btn btn-sm btn-primary" id="btnSearch" onclick="boardSearchResult()">검색</button>
                 </div>
             </div>
@@ -122,17 +126,28 @@
             <!-- search end -->
             <script th:inline="javascript">
                 //검색
-                function boardSearchResult(){
-                    let searchVal = $('#boardkeyword').val();
-                    let searchType = $('#searchType').val();
-                    let categoryName = $('#categoryName').val();
-                    location.href='/page/board/list/'+categoryName+'?searchVal='+searchVal+"&searchType="+searchType;
+                function boardSearchResult() {
+                    let searchVal = document.getElementById('board-keyword').value;
+                    let searchType = document.getElementById('searchType').value;
+                    let categoryName = document.getElementById('categoryName').value;
+
+                    if (searchVal.trim() === '') {
+                        alert('검색어를 입력하세요.');
+                        return;
+                    }
+
+                    let searchUrl = `/page/board/list/${categoryName}?searchVal=${encodeURIComponent(searchVal)}&searchType=${encodeURIComponent(searchType)}`;
+                    location.href = searchUrl;
+                    console.log(searchUrl);
+                    console.log(searchVal);
+                    console.log(searchType);
                 }
+
                 //검색시 결과가 없는 경우에 결과가 없음을 보여줘야 함.
-                function boardSortResult(){
+                function boardSortResult() {
                     let sort = $('#sort').val();
                     let categoryName = $('#categoryName').val();
-                    location.href='/page/board/list/'+categoryName+'?sort='+sort+',DESC';
+                    location.href = '/page/board/list/' + categoryName + '?sort=' + sort + ',DESC';
                 }
             </script>
         </div>

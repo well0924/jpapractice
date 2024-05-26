@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import co.kr.board.service.MemberService;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -14,7 +13,7 @@ import lombok.AllArgsConstructor;
 public class LoginController {
 
 	//로그인 페이지
-	@GetMapping("/loginpage")
+	@GetMapping("/login-page")
 	public ModelAndView loginPage(
 			@RequestParam(value="error",required = false) String error, 
 			@RequestParam(value="exception",required = false) String exception){
@@ -30,7 +29,7 @@ public class LoginController {
 	}
 
 	//회원 아이디 찾기
-	@GetMapping("/finduserid")
+	@GetMapping("/find-userid")
 	public ModelAndView findUserIdPage(){
 		ModelAndView mv = new ModelAndView();
 		
@@ -40,7 +39,7 @@ public class LoginController {
 	}
 
 	//회원 비밀번호 재설정
-	@GetMapping("/finduserpw")
+	@GetMapping("/find-user-pwd")
 	public ModelAndView findUserPw(){
 		ModelAndView mv = new ModelAndView();
 		

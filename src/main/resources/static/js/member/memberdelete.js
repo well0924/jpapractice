@@ -7,11 +7,11 @@ function memberdelete(){
 	
 	let id = $('#deleteid').val();
 	
-	const isconfirm = confirm('탈퇴하시겠습니까?');
+	const isConfirm = confirm('탈퇴하시겠습니까?');
 	
-	if(isconfirm){
+	if(isConfirm){
 		$.ajax({
-			url:'/api/member/memberdelete/'+id+'/member',
+			url:'/api/member/'+id+'/member',
 			type:'delete',
 			data:null,
 			contentType:'application/json; charset= utf-8'

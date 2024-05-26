@@ -31,7 +31,7 @@ public class MemberController {
     private final CommentService commentService;
 
     //회원 가입
-    @GetMapping("/memberjoin")
+    @GetMapping("/member-join")
     public ModelAndView memberJoin(){
 
         ModelAndView mv = new ModelAndView();

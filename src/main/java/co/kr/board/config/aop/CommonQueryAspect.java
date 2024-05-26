@@ -34,7 +34,7 @@ public class CommonQueryAspect {
         //게시글 갯수
         Integer boardCount = boardService.articleCount();
         //최근에 작성한 글(5개)
-        List<BoardDto.BoardResponseDto> top5 = boardService.findBoardTop5();
+        List<BoardDto.BoardResponseDto> top5 = boardService.recentTop5Board();
         //해시태그 목록
         List<String>hashTags = hashTagService.findAllHashTagNames();
         //카테고리 목록

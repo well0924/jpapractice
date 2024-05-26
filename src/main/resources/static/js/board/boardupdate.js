@@ -1,6 +1,8 @@
+
 /**
  * 글 수정 페이지 js
- */
+ **/
+
 //해시태그 입력
 const hashtagsInput = document.getElementById("hashtagName");
 const hashtagsContainer = document.getElementById("hashtags-container");
@@ -53,12 +55,11 @@ function modifypost(){
 	let id = $('#boardid').val();
 	let title = $('#boardtitle').val();
 	let contents = $('#boardcontents').val();
-	let categoryId = $('#categoryId').val();
 	let password = $('#pw').val();
 	let inputFiles = $('#files');
 	let files = inputFiles[0].files;
-	let filecount = 4;
-	let formdate = new FormData();
+	let fileCount = 4;
+	let formDate = new FormData();
 	
 	let date= {
 			boardTitle : title,
@@ -67,18 +68,18 @@ function modifypost(){
 			hashTagName:hashtags
 	};
 
-	if(files.length>filecount){
+	if(files.length>fileCount){
 		alert('파일은 4개까지 입니다.');
 		return false;
 	}
 
-	formdate.append("boardupdate",new Blob([JSON.stringify(date)],{type:"application/json"}));
+	formDate.append("boardupdate",new Blob([JSON.stringify(date)],{type:"application/json"}));
 
-	//첨부파일이 있는 경우 formdate에 추가.
+	//첨부파일이 있는 경우 formDate 에 추가.
 	if(inputFiles != null){
-		for(var i =0; i<files.lenght;i++){
+		for(let i =0; i<files.length; i++){
 			console.log(files[i]);
-			formdate.append("image",files[i]);
+			formDate.append("image",files[i]);
 		}
 	}
 
@@ -86,7 +87,7 @@ function modifypost(){
 		
 		url:'/api/board/update/'+id,
 		type:'patch',
-		data:formdate,
+		data:formDate,
 		headers: {
 			'Authorization':'Bearer '+token
 		},
@@ -100,7 +101,7 @@ function modifypost(){
 			alert('글이 수정되었습니다.');
  			location.href='/page/board/list/freeboard';
 		}
-		if(resp.status== 400){
+		if(resp.status=== 400){
 			
 			if(resp.data.hasOwnProperty('valid_boardTitle')){
 				$('#valid_boardTitle').text(resp.data.valid_boardTitle);

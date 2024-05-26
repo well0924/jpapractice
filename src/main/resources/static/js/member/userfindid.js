@@ -4,15 +4,15 @@
  
  //유효성 검사
 function validation(){
-	let name = $('#username').val();
-	let email = $('#user_email').val();
+	let name = document.getElementById('username').value;
+	let email = document.getElementById('useremail').value;
 	
 	if(name.trim().length == 0){
 		alert('이름을 입력해주세요.');
 		return false;
 	}
 	
-	if(email.trim().lenght == 0){
+	if(email.trim().length == 0){
 		alert('이메일을 입력해주세요.');
 		return false;
 	}
@@ -20,18 +20,19 @@ function validation(){
 }
 //회원아이디 찾기
 function finduserid(){
-	let name = $('#username').val();
-	let email = $('#user_email').val();
+
+	let name = document.getElementById('username').value;
+	let email = document.getElementById('user_email').value;
 	
 	let data ={
-			membername : name, 
-			useremail : email
+			memberName : name,
+			userEmail : email
 	};
 	
 	if(validation()){
 		$.ajax({
 		
-			url:'/api/member/userfind/'+name+'/'+email,
+			url:'/api/member/user/'+name+'/'+email,
 			type:'post',
 			data:JSON.stringify(data),
 			dataType:'json',

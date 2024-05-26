@@ -76,7 +76,7 @@
                             <th scope="col"></th>
                         </tr>
                     </thead>
-                    <tbody th:unless="${#lists.isEmpty(list)}"th:each="list:${list}">
+                    <tbody th:unless="${#lists.isEmpty(list)}" th:each="list:${list}">
                         <tr>
                             <td>
                                 <input type="hidden" id="boardPassword" name="password" th:value="${list.password}">
@@ -141,7 +141,7 @@
                 function boardSearchResult(){
                     let searchVal = $('#boardkeyword').val();
                     let searchType = $('#searchType').val();
-                    location.href='/page/member/board/list/?searchVal='+searchVal+"&searchType="+searchType;
+                    location.href='/page/member/board/list?searchVal='+searchVal+'&searchType='+searchType;
                 }
                 //검색시 결과가 없는 경우에 결과가 없음을 보여줘야 함.
 

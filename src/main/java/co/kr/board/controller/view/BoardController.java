@@ -52,6 +52,7 @@ public class BoardController {
 
 		//검색어가 있으면 검색.
 		if(searchVal!=null){
+			log.info("검색어::"+searchVal);
 			list= service.findAllSearch(searchVal, String.valueOf(SearchType.toSearch(searchType)),pageable);
 		}
 

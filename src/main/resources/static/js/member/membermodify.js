@@ -18,8 +18,8 @@ function memberupdate(){
 	}
 	
 	$.ajax({
-		url:'/api/member/memberupdate/'+idx+'/member',
-		type:'put',
+		url:'/api/member/'+idx,
+		type:'PUT',
 		data:JSON.stringify(memberdate),
 		dataType:'json',
 		contentType:'application/json; charset=utf-8'
@@ -34,7 +34,7 @@ function memberdelete(){
 	let idx = $('#userno').val();
 	
 	$.ajax({
-		url:'/api/login/memberdelete/'+idx+'/member',
+		url:'/api/login/'+idx,
 		type:'delete',
 		data:null,
 		contentType:'application/json; charset=utf-8'

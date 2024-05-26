@@ -37,6 +37,8 @@ public class ScrapApiController {
         log.info("중복결과::"+duplicatedResult);
         if(duplicatedResult != true){
             createScrap(boardId);
+        }else{
+            deleteScrap(boardId);
         }
         return new Response<>(HttpStatus.OK.value(),duplicatedResult);
     }

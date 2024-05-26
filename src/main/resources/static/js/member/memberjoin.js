@@ -7,7 +7,7 @@ function usernameCheck(){
 	let userid = $('#userId').val();
 	console.log(userid);
 		$.ajax({
-			url:'/api/member/logincheck/'+ userid,
+			url:'/api/member/login-check/'+ userid,
 			type:'get',
 			dataType:'json',
 			contentType:'application/json; charset = utf-8'	
@@ -48,7 +48,7 @@ function useremailCheck(){
 	let email = $('#userEmail').val();
 	
 	$.ajax({
-		url:'/api/member/emailcheck/'+email,
+		url:'/api/member/email-check/'+email,
 		type:'get',
 		dataType:'json',
 		contentType:'application/json; charset = utf-8'
@@ -70,7 +70,7 @@ function useremailCheck(){
 //회원이메일
 function reUseremail(){
 	let email = $('#userEmail').val('');
-	$('#duplicatedemail').vla('');
+	$('#duplicatedemail').val('');
 }
 
 //회원가입o.k
@@ -83,12 +83,12 @@ function signUp(){
 	const joindate = {
 			username : id,
 			password : pw,
-			membername : name,
-			useremail : email
+			memberName : name,
+			userEmail : email
 	};
 	
 	$.ajax({
-		url:'/api/member/memberjoin',
+		url:'/api/member/create',
 		type:'post',
 		data:JSON.stringify(joindate),
 		dataType:'json',

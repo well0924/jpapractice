@@ -6,11 +6,14 @@ $(document).ready(function(){
     //좋아요 갯수
     likeCount();
 });
+
 //좋아요 갯수
 function likeCount(){
+
     let id = $('#boardid').val();
     let token = localStorage.getItem('Authorization');
     let result = JSON.parse(token);
+
     $.ajax({
         url:'/api/like/count/'+id,
         type:'get',
@@ -24,11 +27,14 @@ function likeCount(){
         $('#likecount').html(html);
     });
 }
+
 //좋아요 중복기능
 function addDuplicatedLike(){
+
     let id = $('#boardid').val();
     let token = localStorage.getItem('Authorization');
     let result = JSON.parse(token);
+
     $.ajax({
         url:'/api/like/duplicated/'+id,
         type:'get',

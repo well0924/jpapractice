@@ -15,7 +15,7 @@ function getCommentlist(){
 	console.log(boardid);
 	
 	$.ajax({
-		url:'/api/reply/list/'+boardid,
+		url:'/api/reply/'+boardid,
 		headers:{'Authorization':'Bearer '+result.value},
 		type:'get',
 		dataType:'json',
@@ -62,15 +62,15 @@ function replyInsert(){
 	let token = localStorage.getItem('Authorization');
 	let result = JSON.parse(token);
 	let content=$('#replycontents').val();
-	let boardid=$('#boardid').val();
+	let boardId=$('#boardid').val();
 
 	let data = {			
 		replyContents : content,
-		boardId : boardid
+		boardId : boardId
 	}
 	
 	$.ajax({
-		url:'/api/reply/write/'+boardid,
+		url:'/api/reply/'+boardId,
 		type:'post',
 		headers:{
 			'Authorization':'Bearer '+result.value,
@@ -104,11 +104,11 @@ function replyInsert(){
 function commentDelete(replyId){
 	let token = localStorage.getItem('Authorization');
 	let result = JSON.parse(token);
-	let Isconfirm = confirm('삭제하겠습니까?');
+	let IsConfirm = confirm('삭제하겠습니까?');
 	
-	if(Isconfirm){
+	if(IsConfirm){
 		$.ajax({
-			url:'/api/reply/delete/'+replyId,
+			url:'/api/reply/'+replyId,
 			type:'delete',
 			headers:{
 				'Authorization':'Bearer '+result.value,
@@ -131,37 +131,4 @@ function commentDelete(replyId){
 			getCommentlist();
 		});
 	}
-}
-
-//댓글 내용 변경
-function commentUpdate(replyId,replyContents){
-	console.log("????????");
-	var html = '';
-	
-	html+='<div class="commentcontent'+replyId+'">';
-     	html += '<input type="text" name="replyContents" id="contents"></input>';
- 		html +='<div>';
- 			html+='<button type="button" class="btn btn-primary" onclick="commentUpdate('+replyId+',\''+replyContents+'\')";>'+'수정'+'</button>';	                
- 		html +='</div>';
-	html +='</div>';
-
-	$('.commentconetent'+replyId).html(html);	
-}
-//댓글 수정기능
-function commentUpdateProc(replyId){
-	console.log("??");	
-	
-	let contents = $('[name=content_'+replyId+']').val();
-	const data = {replyContents : contents, replyId : replydId};
-	$.ajax({
-		url:'/api/reply/update/'+replyId,
-		type:'put',
-		data:JSON.stringify(data),
-		dataType:'json',
-		contentType:'application/json; charset=utf-8'
-	}).done(function(resp){
-		console.log(resp);
-		alert('댓글이 수정 되었습니다.');
-		getCommentlist();
-	});
 }
