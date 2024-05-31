@@ -1,8 +1,10 @@
-# 스프링 jpa 게시판
+# JPA Blog
 
 ### 프로젝트 설명
 
-Jpa를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 있어서 가장 보편적인 블로그를 만들기로 했습니다. 
+Jpa Blog 는 JPA를 사용해서 
+
+JPA를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 있어서 가장 보편적인 블로그를 만들기로 했습니다. 
 
 스프링부트를 사용해서 개발에서 배포까지의 개발의 한 사이클을 경험을 하는 것을 목표로 했고, 
 
@@ -12,10 +14,10 @@ Jpa를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 
 
 ### 목표
  
-  1. **jpa에 적응을 하기 위해서 블로그를 만드는 것을 목표로 한다.** 
+  1. **JPA에 적응을 하기 위해서 블로그를 만드는 것을 목표로 한다.** 
 
 
-  2. **기능이 다 구현된 뒤에는 ci/cd 까지 해본다.**
+  2. **기능이 다 구현된 뒤에는 CI/CD를 구축한다.**
 
 
   3. **TDD를 배우기 위해서 각 레이어마다 테스트 코드를 작성을 하고 테스트 커버리지를 80%로 한다.**
@@ -24,11 +26,11 @@ Jpa를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 
   4. **기능을 단순히 만드는 것에 집착하지 않고 관련된 기술에 대해서 공부하기.**
 
 
-  5. **Redis를 활용해서 캐시를 사용해서 디비의 부하를 줄이기.**
+  5. **Redis를 활용해서 캐시를 사용해서 조회속도를 향상시키기 위해서 디비의 접근을 줄이기.**
 
 ### 개발 환경
 
-- Back-end: Java17, SpringBoot 2.6.6, Jpa , Redis , SpringSecurity , QueryDsl , Jwt
+- Back-end: JAVA17, SpringBoot 2.6.6,Spring data JPA , Redis , Spring Security , QueryDSL , JWT
 
 
 - DB: MariaDB
@@ -37,13 +39,13 @@ Jpa를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 
 - Build: Gradle
 
 
-- Front-end: TheymLeaf(추후 SPA로 변경해보기.),JQuery 
+- Front-end: TheymLeaf(추후 SPA 변경해보기.),JQuery 
 
 
-- TestTool: postman, Mockito, Junit5
+- TestTool: Postman, Mockito, Junit5
 
 
-- Deploy: Aws ,Github-Action
+- Deploy: Aws ,Github-Actions
 
 ### 주요 기능
 
@@ -66,7 +68,7 @@ Jpa를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 
 | 마이 페이지      | 회원이 작성한 글,댓글 및 스크랩을 한 게시글을 확인할 수 있습니다.           |
 | 실시간 알림      | 타회원이 좋아요,댓글을 작성하면 실시간 알림으로 확인을 할 수 있습니다.         |
 
-### 프로젝트 구조 (아키텍쳐 구조)
+### 아키텍쳐 구조
 
 ![jpaBlog-Arc](https://github.com/well0924/jpapractice/assets/89343159/a5d6ebe6-3644-4417-ada8-8eac46058204)
 
@@ -81,41 +83,25 @@ Jpa를 처음으로 사용하는데 적응 및 공부를 위해서 웹개발에 
 
 ### 트러블 슈팅 및 구현 
 
-1.[jwt을 사용한 로그인 구현](https://www.notion.so/Jwt-e70c536c4bf7414a97ab928b28760d8d)
+1.[Jwt을 사용한 로그인 구현](https://codingweb.tistory.com/185)
 
-2.[Redis를 활용한 캐시적용으로 응답속도 증가.](https://www.notion.so/Redis-0fd3ad8e6b1f457097bfd59a9b09fab5)
+2.[Redis Global Cache로 조회성능 향상시키기](https://codingweb.tistory.com/186)
 
-3.[Jpql에서 QueryDsl로 변경](https://www.notion.so/Jpql-QueryDsl-481d9f34d9244eb791e005ecc1e92a38)
+3.[JPQL에서 QueryDSL을 활용한 동적쿼리 적용](https://codingweb.tistory.com/187)
 
-4.[게시글 조회수에서 발생한 동시성 이슈](https://www.notion.so/2d0c6ea066ff43cbae599b361651f370)
+4.[게시글 조회수에서 발생한 동시성 제어](https://codingweb.tistory.com/188)
 
-5.[SSE 를 활용해서 실시간 알림기능 구현하기.](https://www.notion.so/SSE-fd3abb3cc8b34aaf8f34046177da0637)
+5.[SSE를 활용해서 실시간 댓글알림기능 구현하기](https://codingweb.tistory.com/190)
 
-6.[Aop를 활용해서 공통로직 분리하기.](https://www.notion.so/Aop-a81c4ab22f0a4d2ba3c394083209388e)
+6.[AOP를 활용해서 공통로직에 적용되는 코드 리팩토링](https://codingweb.tistory.com/189)
 
 ### 주요 로직
 
-jwt 로그인 로직
+Jwt 로그인 로직
 
-![jwt 로그인 순서 drawio](https://github.com/well0924/jpapractice/assets/89343159/4ed2d159-0afd-48ea-a77b-6f578b810e4d)
+![Jwt 로그인 순서 drawio](https://github.com/well0924/jpapractice/assets/89343159/4ed2d159-0afd-48ea-a77b-6f578b810e4d)
 
 
 Redis 캐시 로직
 
-![redis 캐시적용 drawio](https://github.com/well0924/jpapractice/assets/89343159/00bbb763-0385-42dc-bb6d-cf24d5ec10a4)
-
-### 소감
-
-- 처음에 jpa를 배운다고 해서 가볍게 게시판 crud기능만 붙여서 몇 주만에 끝낼 생각이었는데 개별적으로 공부한 내용을 붙이면서 제작기간이 기하급수적으로 늘어났다.
-  **지난 번에 만들었던 포트폴리오에서도 만드는데  기간이 오래걸렸었는데 이 부분에 대해서는 반성을 해야 되는 부분이다.**
-
-
-- 이전에는 단순히 기능을 구현하기 위해서만 코드를 작성을 했는데 **테스트 코드**를 알게 되면서   기능을 구현하기 전에 **내가 의도한대로 코드가 제대로 구현이 되는지** 그리고 **에러가 발생했을 경우 의도한 에러가 나는지를 확인**을 해서 성공하는 케이스와 실패를 하는 케이스를 구별을 해서 좀더 **견고하게 코드를 작성**을 할 수 있었습니다.
-
-- Mybatis에서는 쿼리에 매핑만 하면 별 어려움 없이 진행이 되었지만 **엔티티간의 연관관계를 이해하면서 적용**해야 되는 점에서 마냥 쉬워보였던 JPA였는데 생각보다 데이터베이스의 공부가 많이 부족한 점이 많아서 데이터 베이스 공부를 해야겠다는 생각이 많이 들었고 jpa를 사용하면서 스트림을 사용하게 되었는데 사용을 많이 해보지 않아서 처음에 코드를 작성할 때 많이 애를 먹어서 자바공부를 하는 좋은 계기 되었습니다.
-
-
-- 소규모 프로젝트였지만 기능에 대한 **성능을 올리는 방법**으로 **캐싱**을 알게 되었고 **Redis를 사용해서 반복되는 데이터의 조회를  줄임으로서 디비의 부하**를 줄일 수 있었고, 게시글 조회수를 통해서 **경재상태와 동시성**에 대해서 알게 되었고 **동시성을 제어하기 위해서 데이터베이스의 락과 쓰레드에 대한 개념**에 대해서 알게 되었습니다.
-
-
-- **AWS와 CI/CD 파이프라인 구축 프로세스**를 통해 추후 유지 및 보수에 용이한 서버 아키텍쳐를 구축함으로써  **무중단 배포와 같이 서버 환경 운영에서의 이슈들을 해결할 수 있는 역량을 기를 수 있게 되었습니다.**
+![Redis 캐시적용 drawio](https://github.com/well0924/jpapractice/assets/89343159/00bbb763-0385-42dc-bb6d-cf24d5ec10a4)
