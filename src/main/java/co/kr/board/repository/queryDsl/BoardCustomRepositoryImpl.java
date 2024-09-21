@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -206,7 +207,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository{
 
     //게시글 조회수 증가 o.k
     @Modifying
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void updateReadCount(Integer boardId) {
         jpaQueryFactory.update(qBoard)

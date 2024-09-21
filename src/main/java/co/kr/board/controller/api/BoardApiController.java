@@ -30,7 +30,7 @@ public class BoardApiController {
 
 	//게시글 목록(카테고리 + 페이징 + 정렬)
 	@Secured({"ROLE_USER","ROLE_ADMIN"})
-	@GetMapping("/{cname}")
+	@GetMapping("/{cname:[a-zA-Z]+}")
 	@ResponseStatus(HttpStatus.OK)
 	public Response<Page<BoardDto.BoardResponseDto>>listBoard(
 			@PathVariable(value = "cname") String categoryName,
@@ -57,7 +57,7 @@ public class BoardApiController {
 	
 	//게시글 조회
 	@Secured({"ROLE_ADMIN","ROLE_USER"})
-	@GetMapping("/{id}")
+	@GetMapping("/detail/{id}")
 	@ResponseStatus(HttpStatus.OK)
 	public Response<BoardDto.BoardResponseDto> findBoard(@PathVariable(value="id")Integer boardId){
 		log.info("detail");

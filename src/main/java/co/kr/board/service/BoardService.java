@@ -139,7 +139,7 @@ public class BoardService{
 	 * @return : 단일 조회된 게시글 객체
 	 **/
 	@Transactional(readOnly = true)
-	@Cacheable(value = CacheKey.BOARD,key = "#boardId")
+	//@Cacheable(value = CacheKey.BOARD,key = "#boardId")
 	public BoardResponseDto getBoard(Integer boardId){
 		//글 조회
 		Optional<BoardResponseDto>boardDetail = Optional
