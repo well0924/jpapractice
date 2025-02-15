@@ -68,7 +68,7 @@ Jpa Blog 는 JPA를 사용해서 적응 및 공부를 위해서 블로그를 만
 
 ### 아키텍쳐 구조
 
-![jpaBlog-Arc](https://github.com/well0924/jpapractice/assets/89343159/a5d6ebe6-3644-4417-ada8-8eac46058204)
+![Image](https://github.com/user-attachments/assets/cf85b867-8704-482d-85fe-a5c5e0792ca8)
 
 ### Api 명세서
 
