@@ -103,3 +103,10 @@ Jwt 로그인 로직
 Redis 캐시 로직
 
 ![Redis 캐시적용 drawio](https://github.com/well0924/jpapractice/assets/89343159/00bbb763-0385-42dc-bb6d-cf24d5ec10a4)
+
+화면 예시
+<img width="1897" height="912" alt="메인 페이지" src="https://github.com/user-attachments/assets/9beb2d18-7c12-47c9-9ade-d1387eae01b7" />
+
+<img width="1920" height="612" alt="로그인화면" src="https://github.com/user-attachments/assets/97242a14-9ec6-4a59-9803-7494f9ecb3fd" />
+
+
